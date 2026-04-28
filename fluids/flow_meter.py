@@ -294,10 +294,7 @@ def flow_meter_discharge(D, Do, P1, P2, rho, C, expansibility=1.0, meter_type="I
        Differential Devices Inserted in Circular Cross-Section Conduits Running
        Full -- Part 2: Orifice Plates.
     """
-    beta = differential_pressure_meter_beta(D=D, D2=Do, meter_type=meter_type)
-    beta2 = beta*beta
-    D_beta = D*beta
-    return (0.25*pi*D_beta*D_beta)*C*expansibility*sqrt((2.0*rho*(P1 - P2))/(1.0 - beta2*beta2))
+    pass
 
 
 def orifice_expansibility(D: float, Do: float, P1: float, P2: float, k: float) -> float:
@@ -352,11 +349,7 @@ def orifice_expansibility(D: float, Do: float, P1: float, P2: float, k: float) -
        Differential Devices Inserted in Circular Cross-Section Conduits Running
        Full -- Part 2: Orifice Plates.
     """
-    beta = Do/D
-    beta2 = beta*beta
-    beta4 = beta2*beta2
-    return (1.0 - (0.351 + beta4*(0.93*beta4 + 0.256))*(
-            1.0 - (P2/P1)**(1./k)))
+    pass
 
 
 def orifice_expansibility_1989(D: float, Do: float, P1: float, P2: float, k: float) -> float:
@@ -420,10 +413,7 @@ def orifice_expansibility_1989(D: float, Do: float, P1: float, P2: float, k: flo
     .. [2] Miller, Richard W. Flow Measurement Engineering Handbook. 3rd
        edition. New York: McGraw-Hill Education, 1996.
     """
-    beta_ratio_4 = Do/D
-    beta_ratio_4 = beta_ratio_4*beta_ratio_4
-    beta_ratio_4 = beta_ratio_4*beta_ratio_4
-    return 1.0 - (0.41 + 0.35*beta_ratio_4)*(P1 - P2)/(k*P1)
+    pass
 
 
 def C_Reader_Harris_Gallagher(D: float, Do: float, rho: float, mu: float, m: float, taps: str="corner") -> float:
@@ -542,70 +532,7 @@ def C_Reader_Harris_Gallagher(D: float, Do: float, rho: float, mu: float, m: flo
     .. [4] Reader-Harris, Michael. Orifice Plates and Venturi Tubes. Springer,
        2015.
     """
-    A_pipe = 0.25*pi*D*D
-    v = m/(A_pipe*rho)
-    Re_D = rho*v*D/mu
-    Re_D_inv = 1.0/Re_D
-
-    beta = Do/D
-    if taps == "corner":
-        L1, L2_prime = 0.0, 0.0
-    elif taps == "flange":
-        L1 = L2_prime = 0.0254/D
-    elif taps in ("D", "D/2", ORIFICE_D_AND_D_2_TAPS):
-        L1 = 1.0
-        L2_prime = 0.47
-    else:
-        raise ValueError("Unsupported tap location")
-
-    beta2 = beta*beta
-    beta4 = beta2*beta2
-    beta8 = beta4*beta4
-
-    A = 2648.5177066967326*(beta*Re_D_inv)**0.8 # 19000.0^0.8 = 2648.51....
-    M2_prime = 2.0*L2_prime/(1.0 - beta)
-
-    # These two exps
-    expnL1 = exp(-L1)
-    expnL2 = expnL1*expnL1
-    expnL3 = expnL1*expnL2
-    delta_C_upstream = ((0.043 + expnL3*expnL2*expnL2*(0.080*expnL3 - 0.123))
-            *(1.0 - 0.11*A)*beta4/(1.0 - beta4))
-
-    # The max part is not in the ISO standard
-    t1 = log10(3700.*Re_D_inv)
-    if t1 < 0.0:
-        t1 = 0.0
-    delta_C_downstream = (-0.031*(M2_prime - 0.8*M2_prime**1.1)*beta**1.3
-                          *(1.0 + 8.0*t1))
-
-    # C_inf is discharge coefficient with corner taps for infinite Re
-    # Cs, slope term, provides increase in discharge coefficient for lower
-    # Reynolds numbers.
-    x1 = 63.095734448019314*(Re_D_inv)**0.3 # 63.095... = (1e6)**0.3
-    x2 = 22.7 - 0.0047*Re_D
-    t2 = max(x2, x1)
-    # max term is not in the ISO standard
-    C_inf_C_s = (0.5961 + 0.0261*beta2 - 0.216*beta8
-                 + 0.000521*(1E6*beta*Re_D_inv)**0.7
-                 + (0.0188 + 0.0063*A)*beta2*beta*sqrt(beta)*(
-                 t2))
-
-    C = (C_inf_C_s + delta_C_upstream + delta_C_downstream)
-    if D < 0.07112:
-        # Limit is 2.8 inches, .1 inches smaller than the internal diameter of
-        # a sched. 80 pipe.
-        # Suggested to be required not because of any effect of small
-        # diameters themselves, but because of edge radius differences.
-        # max term is given in [4]_ Reader-Harris, Michael book
-        # There is a check for t3 being negative and setting it to zero if so
-        # in some sources but that only occurs when t3 is exactly the limit
-        # (0.07112) so it is not needed
-        t3 = (2.8 - D*inch_inv)
-        delta_C_diameter = 0.011*(0.75 - beta)*t3
-        C += delta_C_diameter
-
-    return C
+    pass
 
 
 _Miller_1996_unsupported_type = "Supported orifice types are {}".format(str(
@@ -831,99 +758,7 @@ def C_Miller_1996(D: float, Do: float, rho: float, mu: float, m: float, subtype:
     .. [2] "RW Miller & Associates." Accessed April 13, 2020.
        http://rwmillerassociates.com/.
     """
-    A_pipe = 0.25*pi*D*D
-    v = m/(A_pipe*rho)
-    Re = rho*v*D/mu
-    D_mm = D*1000.0
-
-    beta = Do/D
-    beta2 = beta*beta
-    beta3 = beta2*beta
-    beta4 = beta*beta3
-    beta8 = beta4*beta4
-    beta21 = beta**2.1
-
-    if subtype in (MILLER_ORIFICE, CONCENTRIC_ORIFICE):
-        b = 91.706*beta2*sqrt(beta)
-        n = 0.75
-        if taps == ORIFICE_CORNER_TAPS:
-            C_inf = 0.5959 + 0.0312*beta21 - 0.184*beta8
-        elif taps == ORIFICE_FLANGE_TAPS:
-            if D_mm >= 58.4:
-                C_inf = 0.5959 + 0.0312*beta21 - 0.184*beta8 + 2.286*beta4/(D_mm*(1.0 - beta4)) - 0.856*beta3/D_mm
-            else:
-                C_inf = 0.5959 + 0.0312*beta21 - 0.184*beta8 + 0.039*beta4/(1.0 - beta4) - 0.856*beta3/D_mm
-        elif taps == ORIFICE_D_AND_D_2_TAPS:
-            C_inf = 0.5959 + 0.0312*beta21 - 0.184*beta8 + 0.039*beta4/(1.0 - beta4) - 0.01584
-        elif taps == ORIFICE_PIPE_TAPS:
-            C_inf = 0.5959 + 0.461*beta21 + 0.48*beta8 + 0.039*beta4/(1.0 - beta4)
-        else:
-            raise ValueError(_Miller_1996_unsupported_tap_concentric)
-    elif subtype in (MILLER_ECCENTRIC_ORIFICE, ECCENTRIC_ORIFICE):
-        if tap_position not in (TAPS_OPPOSITE, TAPS_SIDE):
-            raise ValueError(_Miller_1996_unsupported_tap_pos_eccentric)
-        n = 0.75
-        if taps == ORIFICE_FLANGE_TAPS:
-            if tap_position == TAPS_OPPOSITE:
-                if D < 0.1:
-                    b = 7.3 - 15.7*beta + 170.8*beta2 - 399.7*beta3 + 332.2*beta4
-                    C_inf = 0.5917 + 0.3061*beta21 + 0.3406*beta8 - 0.1019*beta4/(1.0-beta4) - 0.2715*beta3
-                else:
-                    b = -139.7 + 1328.8*beta - 4228.2*beta2 + 5691.9*beta3 - 2710.4*beta4
-                    C_inf = 0.6016 + 0.3312*beta21 - 1.5581*beta8 + 0.6510*beta4/(1.0-beta4) - 0.7308*beta3
-            elif tap_position == TAPS_SIDE:
-                if D < 0.1:
-                    b = 69.1 - 469.4*beta + 1245.6*beta2 -1287.5*beta3 + 486.2*beta4
-                    C_inf = 0.5866 + 0.3917*beta21 + 0.7586*beta8 - 0.2273*beta4/(1.0-beta4) - 0.3343*beta3
-                else:
-                    b = -103.2 + 898.3*beta - 2557.3*beta2 + 2977.0*beta3 - 1131.3*beta4
-                    C_inf = 0.6037 + 0.1598*beta21 - 0.2918*beta8 + 0.0244*beta4/(1.0-beta4) - 0.0790*beta3
-        elif taps == ORIFICE_VENA_CONTRACTA_TAPS:
-            if tap_position == TAPS_OPPOSITE:
-                if D < 0.1:
-                    b = 23.3 -207.0*beta + 821.5*beta2 -1388.6*beta3 + 900.3*beta4
-                    C_inf = 0.5925 + 0.3380*beta21 + 0.4016*beta8 - 0.1046*beta4/(1.0-beta4) - 0.3212*beta3
-                else:
-                    b = 55.7 - 471.4*beta + 1721.8*beta2 - 2722.6*beta3 + 1569.4*beta4
-                    C_inf = 0.5922 + 0.3932*beta21 + 0.3412*beta8 - 0.0569*beta4/(1.0-beta4) - 0.4628*beta3
-            elif tap_position == TAPS_SIDE:
-                if D < 0.1:
-                    b = -69.3 + 556.9*beta - 1332.2*beta2 + 1303.7*beta3 - 394.8*beta4
-                    C_inf = 0.5875 + 0.3813*beta21 + 0.6898*beta8 - 0.1963*beta4/(1.0-beta4) - 0.3366*beta3
-                else:
-                    b = 52.8 - 434.2*beta + 1571.2*beta2 - 2460.9*beta3 + 1420.2*beta4
-                    C_inf = 0.5949 + 0.4078*beta21 + 0.0547*beta8 + 0.0955*beta4/(1.0-beta4) - 0.5608*beta3
-        else:
-            raise ValueError(_Miller_1996_unsupported_tap_eccentric)
-    elif subtype in (MILLER_SEGMENTAL_ORIFICE, SEGMENTAL_ORIFICE):
-        n = b = 0.0
-        if taps == ORIFICE_FLANGE_TAPS:
-            if D < 0.1:
-                C_inf = 0.6284 + 0.1462*beta21 - 0.8464*beta8 + 0.2603*beta4/(1.0-beta4) - 0.2886*beta3
-            else:
-                C_inf = 0.6276 + 0.0828*beta21 + 0.2739*beta8 - 0.0934*beta4/(1.0-beta4) - 0.1132*beta3
-        elif taps == ORIFICE_VENA_CONTRACTA_TAPS:
-            if D < 0.1:
-                C_inf = 0.6261 + 0.1851*beta21 - 0.2879*beta8 + 0.1170*beta4/(1.0-beta4) - 0.2845*beta3
-            else:
-                # Yes these are supposed to be the same as the flange, large set
-                C_inf = 0.6276 + 0.0828*beta21 + 0.2739*beta8 - 0.0934*beta4/(1.0-beta4) - 0.1132*beta3
-        else:
-            raise ValueError(_Miller_1996_unsupported_tap_segmental)
-    elif subtype in (MILLER_CONICAL_ORIFICE, CONICAL_ORIFICE):
-        n = b = 0.0
-        if 250.0*beta <= Re <= 500.0*beta:
-            C_inf = 0.734
-        else:
-            C_inf = 0.730
-    elif subtype in (MILLER_QUARTER_CIRCLE_ORIFICE, QUARTER_CIRCLE_ORIFICE):
-        n = b = 0.0
-        C_inf = (0.7746 - 0.1334*beta21 + 1.4098*beta8
-                 + 0.0675*beta4/(1.0 - beta4) + 0.3865*beta3)
-    else:
-        raise ValueError(_Miller_1996_unsupported_type)
-    C = C_inf + b*Re**-n
-    return C
+    pass
 
 # Data from: Discharge Coefficient Performance of Venturi, Standard Concentric Orifice Plate, V-Cone, and Wedge Flow Meters at Small Reynolds Numbers
 orifice_std_Res_Hollingshead = [1.0, 5.0, 10.0, 20.0, 30.0, 40.0, 60.0, 80.0, 100.0, 200.0, 300.0, 500.0, 1000.0, 2000.0, 3000.0, 5000.0, 10000.0, 100000.0,
@@ -1042,9 +877,7 @@ def C_eccentric_orifice_ISO_15377_1998(D: float, Do: float) -> float:
        Analysis of Flow through Single and Multi Stage Eccentric Orifice Plate
        Assemblies," 2017.
     """
-    beta = Do/D
-    C = beta*(beta*(3.0428 - 1.7989*beta) - 1.6889) + 0.9355
-    return C
+    pass
 
 def C_quarter_circle_orifice_ISO_15377_1998(D: float, Do: float) -> float:
     r"""Calculates the coefficient of discharge of a quarter circle orifice based
@@ -1103,9 +936,7 @@ def C_quarter_circle_orifice_ISO_15377_1998(D: float, Do: float) -> float:
        Means of Pressure-Differential Devices - Guide for the Specification of
        Nozzles and Orifice Plates beyond the Scope of ISO 5167-1.
     """
-    beta = Do/D
-    C = beta*(beta*(1.5084*beta - 1.16158) + 0.3309) + 0.73823
-    return C
+    pass
 
 def discharge_coefficient_to_K(D: float, Do: float, C: float) -> float:
     r"""Converts a discharge coefficient to a standard loss coefficient,
@@ -1150,11 +981,7 @@ def discharge_coefficient_to_K(D: float, Do: float, C: float) -> float:
        Differential Devices Inserted in Circular Cross-Section Conduits Running
        Full -- Part 2: Orifice Plates.
     """
-    beta = Do/D
-    beta2 = beta*beta
-    beta4 = beta2*beta2
-    root_K = (sqrt(1.0 - beta4*(1.0 - C*C))/(C*beta2) - 1.0)
-    return root_K*root_K
+    pass
 
 
 def K_to_discharge_coefficient(D: float, Do: float, K: float) -> float:
@@ -1202,11 +1029,7 @@ def K_to_discharge_coefficient(D: float, Do: float, K: float) -> float:
        Differential Devices Inserted in Circular Cross-Section Conduits Running
        Full -- Part 2: Orifice Plates.
     """
-    beta = Do/D
-    beta2 = beta*beta
-    beta4 = beta2*beta2
-    root_K = sqrt(K)
-    return sqrt((1.0 - beta4)/((2.0*root_K + K)*beta4))
+    pass
 
 def dP_orifice(D: float, Do: float, P1: float, P2: float, C: float) -> float:
     r"""Calculates the non-recoverable pressure drop of an orifice plate based
@@ -1260,13 +1083,7 @@ def dP_orifice(D: float, Do: float, P1: float, P2: float, C: float) -> float:
        Differential Devices Inserted in Circular Cross-Section Conduits Running
        Full -- Part 2: Orifice Plates.
     """
-    beta = Do/D
-    beta2 = beta*beta
-    beta4 = beta2*beta2
-    dP = P1 - P2
-    delta_w = (sqrt(1.0 - beta4*(1.0 - C*C)) - C*beta2)/(
-               sqrt(1.0 - beta4*(1.0 - C*C)) + C*beta2)*dP
-    return delta_w
+    pass
 
 
 def velocity_of_approach_factor(D: float, Do: float) -> float:
@@ -1301,10 +1118,7 @@ def velocity_of_approach_factor(D: float, Do: float) -> float:
     .. [1] American Society of Mechanical Engineers. Mfc-3M-2004 Measurement
        Of Fluid Flow In Pipes Using Orifice, Nozzle, And Venturi. ASME, 2001.
     """
-    beta_ratio_4 = Do/D
-    beta_ratio_4 *= beta_ratio_4
-    beta_ratio_4 *= beta_ratio_4
-    return 1.0/sqrt(1.0 - beta_ratio_4)
+    pass
 
 
 def flow_coefficient(D: float, Do: float, C: float) -> float:
@@ -1349,10 +1163,7 @@ def flow_coefficient(D: float, Do: float, C: float) -> float:
     .. [2] Miller, Richard W. Flow Measurement Engineering Handbook. 3rd
        edition. New York: McGraw-Hill Education, 1996.
     """
-    beta_ratio_4 = Do/D
-    beta_ratio_4 *= beta_ratio_4
-    beta_ratio_4 *= beta_ratio_4
-    return C*1.0/sqrt(1.0 - beta_ratio_4)
+    pass
 
 
 def nozzle_expansibility(D: float, Do: float, P1: float, P2: float, k: float, beta: float | None=None) -> float:
@@ -1423,44 +1234,7 @@ def nozzle_expansibility(D: float, Do: float, P1: float, P2: float, k: float, be
        Differential Devices Inserted in Circular Cross-Section Conduits Running
        Full -- Part 3: Nozzles and Venturi Nozzles.
     """
-    if beta is None:
-        beta = Do/D
-    beta2 = beta*beta
-    beta4 = beta2*beta2
-    tau = P2/P1
-    if k == 1.0:
-        """Avoid a zero division error:
-        from sympy import *
-        D, Do, P1, P2, k = symbols('D, Do, P1, P2, k')
-        beta = Do/D
-        tau = P2/P1
-        term1 = k*tau**(2/k )/(k - 1)
-        term2 = (1 - beta**4)/(1 - beta**4*tau**(2/k))
-        term3 = (1 - tau**((k - 1)/k))/(1 - tau)
-        val= sqrt(term1*term2*term3)
-        print(simplify(limit((term1*term2*term3), k, 1)))
-        """
-        limit_val = (P1*P2**2*(-D**4 + Do**4)*log(P2/P1)/(D**4*P1**3
-                    - D**4*P1**2*P2 - Do**4*P1*P2**2 + Do**4*P2**3))
-        return sqrt(limit_val)
-
-    term1 = k*tau**(2.0/k)/(k - 1.0)
-    term2 = (1.0 - beta4)/(1.0 - beta4*tau**(2.0/k))
-    if tau == 1.0:
-        """Avoid a zero division error.
-        Obtained with:
-            from sympy import *
-            tau, k = symbols('tau, k')
-            expr = (1 - tau**((k - 1)/k))/(1 - tau)
-            limit(expr, tau, 1)
-        """
-        term3 = (k - 1.0)/k
-    else:
-        # This form of the equation is mathematically equivalent but
-        # does not have issues where k = 1.
-        term3 = (P1 - P2*(tau)**(-1.0/k))/(P1 - P2)
-        # term3 = (1.0 - tau**((k - 1.0)/k))/(1.0 - tau)
-    return sqrt(term1*term2*term3)
+    pass
 
 
 def C_long_radius_nozzle(D: float, Do: float, rho: float, mu: float, m: float) -> float:
@@ -1506,11 +1280,7 @@ def C_long_radius_nozzle(D: float, Do: float, rho: float, mu: float, m: float) -
        Differential Devices Inserted in Circular Cross-Section Conduits Running
        Full -- Part 3: Nozzles and Venturi Nozzles.
     """
-    A_pipe = 0.25*pi*D*D
-    v = m/(A_pipe*rho)
-    Re_D = rho*v*D/mu
-    beta = Do/D
-    return 0.9965 - 0.00653*sqrt(beta)*sqrt(1E6/Re_D)
+    pass
 
 
 def C_ISA_1932_nozzle(D: float, Do: float, rho: float, mu: float, m: float) -> float:
@@ -1557,13 +1327,7 @@ def C_ISA_1932_nozzle(D: float, Do: float, rho: float, mu: float, m: float) -> f
        Differential Devices Inserted in Circular Cross-Section Conduits Running
        Full -- Part 3: Nozzles and Venturi Nozzles.
     """
-    A_pipe = 0.25*pi*D*D
-    v = m/(A_pipe*rho)
-    Re_D = rho*v*D/mu
-    beta = Do/D
-    C = (0.9900 - 0.2262*beta**4.1
-         - (0.00175*beta*beta - 0.0033*beta**4.15)*(1E6/Re_D)**1.15)
-    return C
+    pass
 
 
 def C_venturi_nozzle(D: float, Do: float) -> float:
@@ -1601,10 +1365,7 @@ def C_venturi_nozzle(D: float, Do: float) -> float:
        Differential Devices Inserted in Circular Cross-Section Conduits Running
        Full -- Part 3: Nozzles and Venturi Nozzles.
     """
-    beta = Do/D
-    beta_ratio_4 = beta*beta
-    beta_ratio_4 *= beta_ratio_4
-    return 0.9858 - 0.196*beta_ratio_4*sqrt(beta)
+    pass
 
 
 # Relative pressure loss as a function of beta ratio for venturi nozzles
@@ -1701,12 +1462,7 @@ def dP_venturi_tube(D: float, Do: float, P1: float, P2: float) -> float:
        Differential Devices Inserted in Circular Cross-Section Conduits Running
        Full -- Part 4: Venturi Tubes.
     """
-    # Effect of Re is not currently included
-    beta = Do/D
-    epsilon_D65 = interp(beta, venturi_tube_betas, venturi_tube_dP_high)
-    epsilon_D500 = interp(beta, venturi_tube_betas, venturi_tube_dP_low)
-    epsilon = interp(D, D_bound_venturi_tube, [epsilon_D65, epsilon_D500])
-    return epsilon*(P1 - P2)
+    pass
 
 
 def diameter_ratio_cone_meter(D: float, Dc: float) -> float:
@@ -1747,8 +1503,7 @@ def diameter_ratio_cone_meter(D: float, Dc: float) -> float:
        Small Reynolds Numbers." May 1, 2011.
        https://digitalcommons.usu.edu/etd/869.
     """
-    D_ratio = Dc/D
-    return sqrt(1.0 - D_ratio*D_ratio)
+    pass
 
 
 def cone_meter_expansibility_Stewart(D: float, Dc: float, P1: float, P2: float, k: float) -> float:
@@ -1800,11 +1555,7 @@ def cone_meter_expansibility_Stewart(D: float, Dc: float, P1: float, P2: float, 
        Differential Devices Inserted in Circular Cross-Section Conduits Running
        Full -- Part 5: Cone meters.
     """
-    dP = P1 - P2
-    beta = diameter_ratio_cone_meter(D, Dc)
-    beta *= beta
-    beta *= beta
-    return 1.0 - (0.649 + 0.696*beta)*dP/(k*P1)
+    pass
 
 
 def dP_cone_meter(D: float, Dc: float, P1: float, P2: float) -> float:
@@ -1849,9 +1600,7 @@ def dP_cone_meter(D: float, Dc: float, P1: float, P2: float) -> float:
        Differential Devices Inserted in Circular Cross-Section Conduits Running
        Full -- Part 5: Cone meters.
     """
-    dP = P1 - P2
-    beta = diameter_ratio_cone_meter(D, Dc)
-    return (1.09 - 0.813*beta)*dP
+    pass
 
 
 def diameter_ratio_wedge_meter(D: float, H: float) -> float:
@@ -1894,13 +1643,7 @@ def diameter_ratio_wedge_meter(D: float, H: float) -> float:
     .. [2] IntraWedge WEDGE FLOW METER Type: IWM. January 2011.
        http://www.intra-automation.com/download.php?file=pdf/products/technical_information/en/ti_iwm_en.pdf
     """
-    H_D = H/D
-    t0 = 1.0 - 2.0*H_D
-    t1 = acos(t0)
-    t2 = t0 + t0
-    t3 = sqrt(H_D - H_D*H_D)
-    t4 = t1 - t2*t3
-    return sqrt(pi_inv*t4)
+    pass
 
 
 def C_wedge_meter_Miller(D: float, H: float) -> float:
@@ -1958,17 +1701,7 @@ def C_wedge_meter_Miller(D: float, H: float) -> float:
        and Pressure Tap Locations on the Characteristics of a Wedge Flowmeter."
        IJEMS Vol.01(5), October 1994.
     """
-    beta = diameter_ratio_wedge_meter(D, H)
-    beta *= beta
-    if D <= 0.7*inch:
-        # suggested limit 0.5 inch for this equation
-        C = 0.7883 + 0.107*(1.0 - beta)
-    elif D <= 1.4*inch:
-        # Suggested limit is under 1.5 inches
-        C = 0.6143 + 0.718*(1.0 - beta)
-    else:
-        C = 0.5433 + 0.2453*(1.0 - beta)
-    return C
+    pass
 
 
 def C_wedge_meter_ISO_5167_6_2017(D: float, H: float) -> float:
@@ -2020,8 +1753,7 @@ def C_wedge_meter_ISO_5167_6_2017(D: float, H: float) -> float:
        Differential Devices Inserted in Circular Cross-Section Conduits Running
        Full -- Part 6: Wedge Meters.
     """
-    beta = diameter_ratio_wedge_meter(D, H)
-    return 0.77 - 0.09*beta
+    pass
 
 
 def dP_wedge_meter(D: float, H: float, P1: float, P2: float) -> float:
@@ -2067,9 +1799,7 @@ def dP_wedge_meter(D: float, H: float, P1: float, P2: float) -> float:
        Differential Devices Inserted in Circular Cross-Section Conduits Running
        Full -- Part 6: Wedge Meters.
     """
-    dP = P1 - P2
-    beta = diameter_ratio_wedge_meter(D, H)
-    return (1.09 - 0.79*beta)*dP
+    pass
 
 
 def C_Reader_Harris_Gallagher_wet_venturi_tube(mg: float, ml: float, rhog: float, rhol: float, D: float, Do: float, H: float=1) -> float:
@@ -2165,23 +1895,7 @@ def C_Reader_Harris_Gallagher_wet_venturi_tube(mg: float, ml: float, rhog: float
     .. [2] ISO/TR 11583:2012 Measurement of Wet Gas Flow by Means of Pressure
        Differential Devices Inserted in Circular Cross-Section Conduits.
     """
-    V = 4.0*mg/(rhog*pi*D*D)
-    Frg = Froude_densimetric(V, L=D, rho1=rhol, rho2=rhog, heavy=False)
-    beta = Do/D
-    beta2 = beta*beta
-    Fr_gas_th = Frg/(beta2*sqrt(beta))
-
-    n = max(0.583 - 0.18*beta2 - 0.578*exp(-0.8*Frg/H),
-            0.392 - 0.18*beta2)
-
-    t0 = rhog/rhol
-    t1 = (t0)**n
-    C_Ch = t1 + 1.0/t1
-    X =  ml/mg*sqrt(t0)
-    # OF = sqrt(1.0 + X*(C_Ch + X))
-
-    C = 1.0 - 0.0463*exp(-0.05*Fr_gas_th)*min(1.0, sqrt(X/0.016))
-    return C
+    pass
 
 
 def dP_Reader_Harris_Gallagher_wet_venturi_tube(D: float, Do: float, P1: float, P2: float, ml: float, mg: float, rhol: float,
@@ -2259,19 +1973,7 @@ def dP_Reader_Harris_Gallagher_wet_venturi_tube(D: float, Do: float, P1: float, 
     .. [2] ISO/TR 11583:2012 Measurement of Wet Gas Flow by Means of Pressure
        Differential Devices Inserted in Circular Cross-Section Conduits.
     """
-    dP = P1 - P2
-    beta = Do/D
-    X =  ml/mg*sqrt(rhog/rhol)
-
-    V = 4*mg/(rhog*pi*D*D)
-    Frg =  Froude_densimetric(V, L=D, rho1=rhol, rho2=rhog, heavy=False)
-
-    Y_ratio = 1.0 - exp(-35.0*X**0.75*exp(-0.28*Frg/H))
-    Y_max = 0.61*exp(-11.0*rhog/rhol - 0.045*Frg/H)
-    Y = Y_max*Y_ratio
-    rhs = -0.0896 - 0.48*beta**9
-    dw = dP*(Y - rhs)
-    return dw
+    pass
 
 
 # Venturi tube loss coefficients as a function of Re
@@ -2447,15 +2149,7 @@ def differential_pressure_meter_beta(D: float, D2: float, meter_type: str) -> fl
     ... meter_type='cone meter')
     0.6995709873957624
     """
-    if meter_type in beta_simple_meters:
-        beta = D2/D
-    elif meter_type in (CONE_METER, HOLLINGSHEAD_CONE):
-        beta = diameter_ratio_cone_meter(D=D, Dc=D2)
-    elif meter_type in (WEDGE_METER, HOLLINGSHEAD_WEDGE):
-        beta = diameter_ratio_wedge_meter(D=D, H=D2)
-    else:
-        raise ValueError(_unsupported_meter_msg)
-    return beta
+    pass
 
 
 _meter_type_to_corr_default = {
@@ -2549,149 +2243,25 @@ def differential_pressure_meter_C_epsilon(D: float, D2: float, m: float, P1: flo
     ... meter_type='ISO 5167 orifice', taps='D')
     (0.6151252900244296, 0.9711026966676307)
     """
-    # Translate default meter type to implementation specific correlation
-    if meter_type == CONCENTRIC_ORIFICE:
-        meter_type = ISO_5167_ORIFICE
-    elif meter_type == ECCENTRIC_ORIFICE:
-        meter_type = ISO_15377_ECCENTRIC_ORIFICE
-    elif meter_type == CONICAL_ORIFICE:
-        meter_type = ISO_15377_CONICAL_ORIFICE
-    elif meter_type == QUARTER_CIRCLE_ORIFICE:
-        meter_type = ISO_15377_QUARTER_CIRCLE_ORIFICE
-    elif meter_type == SEGMENTAL_ORIFICE:
-        meter_type = MILLER_SEGMENTAL_ORIFICE
+    pass
 
-    if meter_type == ISO_5167_ORIFICE:
-        taps_val = taps if taps is not None else "corner"
-        C = C_Reader_Harris_Gallagher(D, D2, rho, mu, m, taps_val)
-        epsilon = orifice_expansibility(D, D2, P1, P2, k)
-    elif meter_type == ISO_15377_ECCENTRIC_ORIFICE:
-        C = C_eccentric_orifice_ISO_15377_1998(D, D2)
-        epsilon = orifice_expansibility(D, D2, P1, P2, k)
-    elif meter_type == ISO_15377_QUARTER_CIRCLE_ORIFICE:
-        C = C_quarter_circle_orifice_ISO_15377_1998(D, D2)
-        epsilon = orifice_expansibility(D, D2, P1, P2, k)
-    elif meter_type == ISO_15377_CONICAL_ORIFICE:
-        C = ISO_15377_CONICAL_ORIFICE_C
-        # Average of concentric square edge orifice and ISA 1932 nozzles
-        epsilon = 0.5*(orifice_expansibility(D, D2, P1, P2, k)
-                       + nozzle_expansibility(D=D, Do=D2, P1=P1, P2=P2, k=k))
 
-    elif meter_type in (MILLER_ORIFICE, MILLER_ECCENTRIC_ORIFICE,
-                      MILLER_SEGMENTAL_ORIFICE, MILLER_QUARTER_CIRCLE_ORIFICE):
-        C = C_Miller_1996(D, D2, rho, mu, m, subtype=meter_type, taps=taps,
-                          tap_position=tap_position)
-        epsilon = orifice_expansibility(D, D2, P1, P2, k)
-    elif meter_type == MILLER_CONICAL_ORIFICE:
-        C = C_Miller_1996(D, D2, rho, mu, m, subtype=meter_type, taps=taps,
-                          tap_position=tap_position)
-        epsilon = 0.5*(orifice_expansibility(D, D2, P1, P2, k)
-                       + nozzle_expansibility(D=D, Do=D2, P1=P1, P2=P2, k=k))
-    elif meter_type == LONG_RADIUS_NOZZLE:
-        epsilon = nozzle_expansibility(D=D, Do=D2, P1=P1, P2=P2, k=k)
-        C = C_long_radius_nozzle(D=D, Do=D2, rho=rho, mu=mu, m=m)
-    elif meter_type == ISA_1932_NOZZLE:
-        epsilon = nozzle_expansibility(D=D, Do=D2, P1=P1, P2=P2, k=k)
-        C = C_ISA_1932_nozzle(D=D, Do=D2, rho=rho, mu=mu, m=m)
-    elif meter_type == VENTURI_NOZZLE:
-        epsilon = nozzle_expansibility(D=D, Do=D2, P1=P1, P2=P2, k=k)
-        C = C_venturi_nozzle(D=D, Do=D2)
 
-    elif meter_type == AS_CAST_VENTURI_TUBE:
-        epsilon = nozzle_expansibility(D=D, Do=D2, P1=P1, P2=P2, k=k)
-        C = AS_CAST_VENTURI_TUBE_C
-    elif meter_type == MACHINED_CONVERGENT_VENTURI_TUBE:
-        epsilon = nozzle_expansibility(D=D, Do=D2, P1=P1, P2=P2, k=k)
-        C = MACHINED_CONVERGENT_VENTURI_TUBE_C
-    elif meter_type == ROUGH_WELDED_CONVERGENT_VENTURI_TUBE:
-        epsilon = nozzle_expansibility(D=D, Do=D2, P1=P1, P2=P2, k=k)
-        C = ROUGH_WELDED_CONVERGENT_VENTURI_TUBE_C
 
-    elif meter_type == CONE_METER:
-        epsilon = cone_meter_expansibility_Stewart(D=D, Dc=D2, P1=P1, P2=P2, k=k)
-        C = CONE_METER_C
-    elif meter_type == WEDGE_METER:
-        beta = diameter_ratio_wedge_meter(D=D, H=D2)
-        epsilon = nozzle_expansibility(D=D, Do=D2, P1=P1, P2=P2, k=k, beta=beta)
-        C = C_wedge_meter_ISO_5167_6_2017(D=D, H=D2)
-    elif meter_type == HOLLINGSHEAD_ORIFICE:
-        v = m/((0.25*pi*D*D)*rho)
-        Re_D = rho*v*D/mu
-        C = float(bisplev(D2/D, log(Re_D), orifice_std_Hollingshead_tck))
-        epsilon = orifice_expansibility(D, D2, P1, P2, k)
-    elif meter_type == HOLLINGSHEAD_VENTURI_SMOOTH:
-        v = m/((0.25*pi*D*D)*rho)
-        Re_D = rho*v*D/mu
-        C = interp(log(Re_D), venturi_logRes_Hollingshead, venturi_smooth_Cs_Hollingshead, extrapolate=True)
-        epsilon = nozzle_expansibility(D=D, Do=D2, P1=P1, P2=P2, k=k)
-    elif meter_type == HOLLINGSHEAD_VENTURI_SHARP:
-        v = m/((0.25*pi*D*D)*rho)
-        Re_D = rho*v*D/mu
-        C = interp(log(Re_D), venturi_logRes_Hollingshead, venturi_sharp_Cs_Hollingshead, extrapolate=True)
-        epsilon = nozzle_expansibility(D=D, Do=D2, P1=P1, P2=P2, k=k)
-    elif meter_type == HOLLINGSHEAD_CONE:
-        v = m/((0.25*pi*D*D)*rho)
-        Re_D = rho*v*D/mu
-        beta = diameter_ratio_cone_meter(D, D2)
-        C = float(bisplev(beta, log(Re_D), cone_Hollingshead_tck))
-        epsilon = cone_meter_expansibility_Stewart(D=D, Dc=D2, P1=P1, P2=P2, k=k)
-    elif meter_type == HOLLINGSHEAD_WEDGE:
-        v = m/((0.25*pi*D*D)*rho)
-        Re_D = rho*v*D/mu
-        beta = diameter_ratio_wedge_meter(D=D, H=D2)
-        C = float(bisplev(beta, log(Re_D), wedge_Hollingshead_tck))
-        epsilon = nozzle_expansibility(D=D, Do=D2, P1=P1, P2=P2, k=k, beta=beta)
-    elif meter_type == UNSPECIFIED_METER:
-        epsilon = orifice_expansibility(D, D2, P1, P2, k) # Default to orifice type expansibility
-        if C_specified is None:
-            raise ValueError("For unspecified meter type, C_specified is required")
-    else:
-        raise ValueError(_unsupported_meter_msg)
-    if C_specified is not None:
-        C = C_specified
-    if epsilon_specified is not None:
-        epsilon = epsilon_specified
-    return C, epsilon
 
 
 
 def err_dp_meter_solver_m(m_D: float, D: float, D2: float, P1: float, P2: float, rho: float, mu: float, k: float, meter_type: str, taps: str | None, tap_position: str | None, C_specified: float | None, epsilon_specified: int | None) -> float:
-    m = m_D*D
-    C, epsilon = differential_pressure_meter_C_epsilon(D, D2, m, P1, P2, rho,
-                                                  mu, k, meter_type,
-                                                  taps=taps, tap_position=tap_position,
-                                                  C_specified=C_specified, epsilon_specified=epsilon_specified)
-    m_calc = flow_meter_discharge(D=D, Do=D2, P1=P1, P2=P2, rho=rho,
-                                C=C, expansibility=epsilon, meter_type=meter_type)
-    err =  m - m_calc
-    return err
+    pass
 
 def err_dp_meter_solver_P2(P2: float, D: float, D2: float, m: float, P1: float, rho: float, mu: float, k: float, meter_type: str, taps: str | None, tap_position: str | None, C_specified: float | None, epsilon_specified: None) -> float:
-    C, epsilon = differential_pressure_meter_C_epsilon(D, D2, m, P1, P2, rho,
-                                                  mu, k, meter_type,
-                                                  taps=taps, tap_position=tap_position,
-                                                  C_specified=C_specified, epsilon_specified=epsilon_specified)
-    m_calc = flow_meter_discharge(D=D, Do=D2, P1=P1, P2=P2, rho=rho,
-                                C=C, expansibility=epsilon, meter_type=meter_type)
-    return m - m_calc
+    pass
 
 def err_dp_meter_solver_D2(D2: float, D: float, m: float, P1: float, P2: float, rho: float, mu: float, k: float, meter_type: str, taps: str | None, tap_position: str | None, C_specified: float | None, epsilon_specified: None) -> float:
-    C, epsilon = differential_pressure_meter_C_epsilon(D, D2, m, P1, P2, rho,
-                                                  mu, k, meter_type,
-                                                  taps=taps, tap_position=tap_position, C_specified=C_specified,
-                                                  epsilon_specified=epsilon_specified)
-    m_calc = flow_meter_discharge(D=D, Do=D2, P1=P1, P2=P2, rho=rho,
-                                C=C, expansibility=epsilon, meter_type=meter_type)
-    return m - m_calc
+    pass
 
 def err_dp_meter_solver_P1(P1: float, D: float, D2: float, m: float, P2: float, rho: float, mu: float, k: float, meter_type: str, taps: str | None, tap_position: str | None, C_specified: float | None, epsilon_specified: None) -> float:
-    C, epsilon = differential_pressure_meter_C_epsilon(D, D2, m, P1, P2, rho,
-                                                  mu, k, meter_type,
-                                                  taps=taps, tap_position=tap_position, C_specified=C_specified,
-                                                  epsilon_specified=epsilon_specified)
-    m_calc = flow_meter_discharge(D=D, Do=D2, P1=P1, P2=P2, rho=rho,
-                                C=C, expansibility=epsilon, meter_type=meter_type)
-    return m - m_calc
+    pass
 
 def differential_pressure_meter_solver(D: float, rho: float, mu: float, k: float | None=None, D2: float | None=None, P1: float | None=None, P2: float | None=None,
                                        m: float | None=None, meter_type: str=ISO_5167_ORIFICE,
@@ -2792,48 +2362,7 @@ def differential_pressure_meter_solver(D: float, rho: float, mu: float, k: float
     ... meter_type='ISO 5167 orifice', taps='D')
     0.0499999999
     """
-    if k is None and epsilon_specified is not None:
-        k = 1.4
-    if m is None and D is not None and D2 is not None and P1 is not None and P2 is not None:
-        # Initialize via analytical formulas
-        C_guess = 0.7
-        D4 = D*D
-        D4 *= D4
-        D24 = D2*D2
-        D24 *= D24
-        m_guess = root_two*pi*C_guess*D2*D2*sqrt(D4*rho*(P1 - P2)/(D4 - D24))*0.25
-        m_D_guess = m_guess/D
-        # Diameter to mass flow ratio
-        # m_D_guess = 40
-        # if rho < 100.0:
-        #     m_D_guess *= 1e-2
-        return secant(err_dp_meter_solver_m, m_D_guess, args=(D, D2, P1, P2, rho, mu, k, meter_type, taps, tap_position, C_specified, epsilon_specified), low=1e-40)*D
-    elif D2 is None and D is not None and m is not None and P1 is not None and P2 is not None:
-        args = (D, m, P1, P2, rho, mu, k, meter_type, taps, tap_position, C_specified, epsilon_specified)
-        try:
-            try:
-                return secant(err_dp_meter_solver_D2, D*.3, args=args, high=D, low=D*1e-10, bisection=True)
-            except:
-                return secant(err_dp_meter_solver_D2, D*.75, args=args, high=D, low=D*1e-10, bisection=True)
-        except:
-            return brenth(err_dp_meter_solver_D2, D*(1-1E-9), D*5E-3, args=args)
-    elif P2 is None and D is not None and D2 is not None and m is not None and P1 is not None:
-        args = (D, D2, m, P1, rho, mu, k, meter_type, taps, tap_position, C_specified, epsilon_specified)
-        try:
-            try:
-                return secant(err_dp_meter_solver_P2, P1*0.9, low=P1*0.5, args=args, high=P1, bisection=True)
-            except:
-                return secant(err_dp_meter_solver_P2, P1*0.9, low=P1*1e-10, args=args, high=P1, bisection=True)
-        except:
-            return brenth(err_dp_meter_solver_P2, P1*(1-1E-9), P1*0.5, args=args)
-    elif P1 is None and D is not None and D2 is not None and m is not None and P2 is not None:
-        args = (D, D2, m, P2, rho, mu, k, meter_type, taps, tap_position, C_specified, epsilon_specified)
-        try:
-            return secant(err_dp_meter_solver_P1, P2*1.5, args=args, low=P2, bisection=True)
-        except:
-            return brenth(err_dp_meter_solver_P1, P2*(1+1E-9), P2*1.4, args=args)
-    else:
-        raise ValueError("Solver is capable of solving for one of P1, P2, D2, or m only.")
+    pass
 
 # Set of orifice types that get their dP calculated with `dP_orifice`.
 _dP_orifice_set = {ISO_5167_ORIFICE, ISO_15377_ECCENTRIC_ORIFICE,
@@ -2904,28 +2433,4 @@ def differential_pressure_meter_dP(D: float, D2: float, P1: float, P2: float, C:
     ... P2=183000.0, meter_type='as cast convergent venturi tube')
     1788.5717754177406
     """
-    if meter_type in _dP_orifice_set:
-        if C is None:
-            raise ValueError(_missing_C_msg)
-        dP = dP_orifice(D=D, Do=D2, P1=P1, P2=P2, C=C)
-    elif meter_type == LONG_RADIUS_NOZZLE:
-        if C is None:
-            raise ValueError(_missing_C_msg)
-        dP = dP_orifice(D=D, Do=D2, P1=P1, P2=P2, C=C)
-    elif meter_type == ISA_1932_NOZZLE:
-        if C is None:
-            raise ValueError(_missing_C_msg)
-        dP = dP_orifice(D=D, Do=D2, P1=P1, P2=P2, C=C)
-    elif meter_type == VENTURI_NOZZLE:
-        raise NotImplementedError("Venturi meter does not have an implemented pressure drop correlation")
-
-    elif (meter_type in (AS_CAST_VENTURI_TUBE, MACHINED_CONVERGENT_VENTURI_TUBE, ROUGH_WELDED_CONVERGENT_VENTURI_TUBE, HOLLINGSHEAD_VENTURI_SMOOTH, HOLLINGSHEAD_VENTURI_SHARP)):
-        dP = dP_venturi_tube(D=D, Do=D2, P1=P1, P2=P2)
-
-    elif meter_type in (CONE_METER, HOLLINGSHEAD_CONE):
-        dP = dP_cone_meter(D=D, Dc=D2, P1=P1, P2=P2)
-    elif meter_type in (WEDGE_METER, HOLLINGSHEAD_WEDGE):
-        dP = dP_wedge_meter(D=D, H=D2, P1=P1, P2=P2)
-    else:
-        raise ValueError(_unsupported_meter_msg)
-    return dP
+    pass

@@ -45,6 +45,7 @@ Solar Radiation and Position
 .. autofunction:: earthsun_distance
 
 """
+
 from __future__ import annotations
 
 import datetime
@@ -64,12 +65,10 @@ __all__: list[str] = [
     "sunrise_sunset",
 ]
 
-H_std = [0.0, 11E3, 20E3, 32E3, 47E3, 51E3, 71E3, 84852.0]
-T_grad = [-6.5E-3, 0.0, 1E-3, 2.8E-3, 0.0, -2.8E-3, -2E-3, 0.0]
+H_std = [0.0, 11e3, 20e3, 32e3, 47e3, 51e3, 71e3, 84852.0]
+T_grad = [-6.5e-3, 0.0, 1e-3, 2.8e-3, 0.0, -2.8e-3, -2e-3, 0.0]
 T_std = [288.15, 216.65, 216.65, 228.65, 270.65, 270.65, 214.65, 186.946]
-P_std = [101325, 22632.06397346291, 5474.8886696777745, 868.0186847552279,
-        110.90630555496608, 66.93887311868738, 3.956420428040732,
-        0.3733835899762159]
+P_std = [101325, 22632.06397346291, 5474.8886696777745, 868.0186847552279, 110.90630555496608, 66.93887311868738, 3.956420428040732, 0.3733835899762159]
 
 r0 = 6356766.0
 P0 = 101325.0
@@ -77,12 +76,14 @@ M0 = 28.9644
 g0 = 9.80665
 gamma = 1.400
 
+
 def H_for_P_ATMOSPHERE_1976_err(H: float, P1: float) -> float:
-    return ATMOSPHERE_1976(H, 0.0).P - P1
+    pass
+
 
 def to_int_dP_ATMOSPHERE_1976(Z: float, dT: float) -> float:
-    atm = ATMOSPHERE_1976(Z, dT)
-    return atm.g*atm.rho
+    pass
+
 
 class ATMOSPHERE_1976:
     r"""US Standard Atmosphere 1976 class, which calculates `T`, `P`,
@@ -144,10 +145,10 @@ class ATMOSPHERE_1976:
        http://www.dtic.mil/cgi-bin/GetTRDoc?AD=ADA588839
     """
 
-    def __init__(self, Z: float, dT: float=0.0) -> None:
+    def __init__(self, Z: float, dT: float = 0.0) -> None:
         self.Z = Z
         self.dT = dT
-        self.H = r0*Z/(r0+Z)
+        self.H = r0 * Z / (r0 + Z)
 
         i = self._get_ind_from_H(self.H)
         self.T_layer = T_std[i]
@@ -156,17 +157,16 @@ class ATMOSPHERE_1976:
         self.H_layer = H_std[i]
 
         self.H_above_layer = self.H - self.H_layer
-        self.T = self.T_layer + self.T_increase*self.H_above_layer
+        self.T = self.T_layer + self.T_increase * self.H_above_layer
 
         R = 8314.32
         if self.T_increase == 0.0:
-            self.P = self.P_layer*exp(-g0*M0*(self.H_above_layer)/(R*self.T_layer))
+            self.P = self.P_layer * exp(-g0 * M0 * (self.H_above_layer) / (R * self.T_layer))
         else:
-            self.P = self.P_layer*(self.T_layer/self.T)**(g0*M0/(R*self.T_increase))
+            self.P = self.P_layer * (self.T_layer / self.T) ** (g0 * M0 / (R * self.T_increase))
 
         # Affects only the following properties
         self.T += dT
-
 
         self.rho = self.density(self.T, self.P)
         self.v_sonic = self.sonic_velocity(self.T)
@@ -180,12 +180,7 @@ class ATMOSPHERE_1976:
         the index of the layer a specified elevation is above. Levels are
         0, 11E3, 20E3, 32E3, 47E3, 51E3, 71E3, 84852 meters respectively.
         """
-        if H <= 0.0:
-            return 0
-        for ind, Hi in enumerate(H_std):
-            if Hi >= H :
-                return ind - 1
-        return 7 # case for > 84852 m.
+        pass
 
     @staticmethod
     def thermal_conductivity(T: float) -> float:
@@ -206,8 +201,7 @@ class ATMOSPHERE_1976:
         kg : float
             Thermal conductivity, [W/m/K]
         """
-        # 10**(-12./T) = exp(-12*log(10)/T) = -27.63102111...
-        return 2.64638E-3*T*sqrt(T)/(T + 245.4*exp(-27.63102111592855/T))
+        pass
 
     @staticmethod
     def viscosity(T: float) -> float:
@@ -227,7 +221,7 @@ class ATMOSPHERE_1976:
         mug : float
             Viscosity, [Pa*s]
         """
-        return 1.458E-6*T*sqrt(T)/(T + 110.4)
+        pass
 
     @staticmethod
     def density(T: float, P: float) -> float:
@@ -250,8 +244,7 @@ class ATMOSPHERE_1976:
         rho : float
             Mass density, [kg/m^3]
         """
-        # 0.00348367635597379 = M0/R
-        return P*0.00348367635597379/T
+        pass
 
     @staticmethod
     def sonic_velocity(T: float) -> float:
@@ -271,8 +264,7 @@ class ATMOSPHERE_1976:
         c : float
             Speed of sound, [m/s]
         """
-        # 401.87... = gamma*R/MO
-        return sqrt(401.87430086589046*T)
+        pass
 
     @staticmethod
     def gravity(Z: float) -> float:
@@ -293,8 +285,7 @@ class ATMOSPHERE_1976:
         g : float
             Acceleration due to gravity, [m/s^2]
         """
-        x0 = (r0/(r0+Z))
-        return g0*x0*x0
+        pass
 
     @staticmethod
     def pressure_integral(T1: float, P1: float, dH: float) -> float:
@@ -322,14 +313,7 @@ class ATMOSPHERE_1976:
         delta_P : float
             Pressure difference between the elevations, [Pa]
         """
-        # Compute the elevation to obtain the pressure specified
-        H_ref = secant(H_for_P_ATMOSPHERE_1976_err, x0=10.0, low=-610.0, high=86000.0, bisection=True, args=(P1,))
-
-        # Compute the temperature delta
-        dT = T1 - ATMOSPHERE_1976(H_ref, 0.0).T
-
-        return quad(to_int_dP_ATMOSPHERE_1976, H_ref, H_ref+dH, args=(dT,))[0]
-
+        pass
 
 
 class ATMOSPHERE_NRLMSISE00:
@@ -448,12 +432,20 @@ class ATMOSPHERE_NRLMSISE00:
     """
 
     components = ["N2", "O2", "Ar", "He", "O", "H", "N"]
-    attrs = ["N2_density", "O2_density", "Ar_density", "He_density",
-             "O_density", "H_density", "N_density"]
+    attrs = ["N2_density", "O2_density", "Ar_density", "He_density", "O_density", "H_density", "N_density"]
     MWs = [28.0134, 31.9988, 39.948, 4.002602, 15.9994, 1.00794, 14.0067]
 
-    def __init__(self, Z: float, latitude: float=0.0, longitude: float=0.0, day: int=0, seconds: float=0.0,
-                 f107: float=150., f107_avg: float=150., geomagnetic_disturbance_indices: None=None) -> None:
+    def __init__(
+        self,
+        Z: float,
+        latitude: float = 0.0,
+        longitude: float = 0.0,
+        day: int = 0,
+        seconds: float = 0.0,
+        f107: float = 150.0,
+        f107_avg: float = 150.0,
+        geomagnetic_disturbance_indices: None = None,
+    ) -> None:
         self.Z = Z
         self.latitude = latitude
         self.longitude = longitude
@@ -464,12 +456,13 @@ class ATMOSPHERE_NRLMSISE00:
         self.geomagnetic_disturbance_indices = geomagnetic_disturbance_indices
 
         from fluids.nrlmsise00 import ap_array, gtd7, nrlmsise_flags, nrlmsise_input, nrlmsise_output
-        alt = Z*1e-3
+
+        alt = Z * 1e-3
         output_obj = nrlmsise_output()
         input_obj = nrlmsise_input()
         flags = nrlmsise_flags()
 
-        flags.switches = [0] + [1]*23
+        flags.switches = [0] + [1] * 23
 
         if geomagnetic_disturbance_indices:
             aph = ap_array()
@@ -484,42 +477,37 @@ class ATMOSPHERE_NRLMSISE00:
         input_obj.alt = alt
         input_obj.g_lat = latitude
         input_obj.g_long = longitude
-        input_obj.lst = seconds/3600. + longitude/15.
+        input_obj.lst = seconds / 3600.0 + longitude / 15.0
         input_obj.f107A = f107_avg
         input_obj.f107 = f107
         gtd7(input_obj, flags, output_obj)
 
-        self.He_density = output_obj.d[0]*1E6 # 1/cm^3 to 1/m^3
-        self.O_density = output_obj.d[1]*1E6 # 1/cm^3 to 1/m^3
-        self.N2_density = output_obj.d[2]*1E6 # 1/cm^3 to 1/m^3
-        self.O2_density = output_obj.d[3]*1E6 # 1/cm^3 to 1/m^3
-        self.Ar_density = output_obj.d[4]*1E6 # 1/cm^3 to 1/m^3
-        self.rho = output_obj.d[5]*1000 # gram/cm^3 to kg/m^3
-        self.H_density = output_obj.d[6]*1E6 # 1/cm^3 to 1/m^3
-        self.N_density = output_obj.d[7]*1E6 # 1/cm^3 to 1/m^3
-        self.O_anomalous_density = output_obj.d[8]*1E6 # 1/cm^3 to 1/m^3
+        self.He_density = output_obj.d[0] * 1e6  # 1/cm^3 to 1/m^3
+        self.O_density = output_obj.d[1] * 1e6  # 1/cm^3 to 1/m^3
+        self.N2_density = output_obj.d[2] * 1e6  # 1/cm^3 to 1/m^3
+        self.O2_density = output_obj.d[3] * 1e6  # 1/cm^3 to 1/m^3
+        self.Ar_density = output_obj.d[4] * 1e6  # 1/cm^3 to 1/m^3
+        self.rho = output_obj.d[5] * 1000  # gram/cm^3 to kg/m^3
+        self.H_density = output_obj.d[6] * 1e6  # 1/cm^3 to 1/m^3
+        self.N_density = output_obj.d[7] * 1e6  # 1/cm^3 to 1/m^3
+        self.O_anomalous_density = output_obj.d[8] * 1e6  # 1/cm^3 to 1/m^3
         self.T_exospheric = output_obj.t[0]
         self.T = output_obj.t[1]
 
         # Calculate pressure with the ideal gas law PV = nRT with V = 1 m^3
-        self.P = sum([getattr(self, a) for a in self.attrs])*self.T*R/N_A
+        self.P = sum([getattr(self, a) for a in self.attrs]) * self.T * R / N_A
         # Calculate mass density with known MWs
-        self.rho_calculated = sum([getattr(self, a)*MW for a, MW in
-                                   zip(self.attrs, self.MWs)])/(1000.*N_A)
+        self.rho_calculated = sum([getattr(self, a) * MW for a, MW in zip(self.attrs, self.MWs)]) / (1000.0 * N_A)
 
         self.particle_density = sum(getattr(self, a) for a in self.attrs)
-        self.zs = [getattr(self, a)/self.particle_density for a in self.attrs]
+        self.zs = [getattr(self, a) / self.particle_density for a in self.attrs]
 
 
 def to_int_airmass(Z: float, c1: float, c2: float, angle_term: float, R_planet_inv: float, func: Callable) -> float:
-    rho = func(Z)
-    t1 = c2 - rho*c1
-    x0 = angle_term/(1.0 + Z*R_planet_inv)
-    t2 = x0*x0
-    t3 = 1.0/sqrt(1.0 - t1*t2)
-    return rho*t3
+    pass
 
-def airmass(func: Callable, angle: float, H_max: float=86400.0, R_planet: float=6.371229E6, RI: float=1.000276) -> float:
+
+def airmass(func: Callable, angle: float, H_max: float = 86400.0, R_planet: float = 6.371229e6, RI: float = 1.000276) -> float:
     r"""Calculates mass of air per square meter in the atmosphere using a
     provided atmospheric model. The lowest air mass is calculated straight up;
     as the angle is lowered to nearer and nearer the horizon, the air mass
@@ -568,16 +556,7 @@ def airmass(func: Callable, angle: float, H_max: float=86400.0, R_planet: float=
        and Approximation Formula." Applied Optics 28, no. 22 (November 15,
        1989): 4735-38. https://doi.org/10.1364/AO.28.004735.
     """
-    delta0 = RI - 1.0
-    rho0_inv = 1.0/func(0.0)
-    angle_term = cos(radians(angle))
-    R_planet_inv = 1.0/R_planet
-
-    c0 = delta0 + delta0
-    c1 = c0*rho0_inv
-    c2 = 1.0 + c0
-    return quad(to_int_airmass, 0.0, H_max, args=(c1, c2, angle_term, R_planet_inv, func))[0]
-
+    pass
 
 
 PVLIB_MISSING_MSG = "The module pvlib is required for this function; install it first"
@@ -647,16 +626,12 @@ def earthsun_distance(moment: datetime.datetime) -> float:
        Solar Radiation Applications." Solar Energy 76, no. 5 (January 1, 2004):
        577-89. https://doi.org/10.1016/j.solener.2003.12.003.
     """
-    from fluids.optional import spa
-    delta_t = spa.calculate_deltat(moment.year, moment.month)
-    import calendar
-    unixtime = calendar.timegm(moment.utctimetuple())
-    # Convert datetime object to unixtime
-    return spa.earthsun_distance(unixtime, delta_t=delta_t)*au
+    pass
 
 
-def solar_position(moment: datetime.datetime, latitude: float, longitude: float, Z: float=0.0, T: float=298.15, P: float=101325.0,
-                   atmos_refract: float=0.5667) -> list[float]:
+def solar_position(
+    moment: datetime.datetime, latitude: float, longitude: float, Z: float = 0.0, T: float = 298.15, P: float = 101325.0, atmos_refract: float = 0.5667
+) -> list[float]:
     r"""Calculate the position of the sun in the sky. It is defined in terms of
     two angles - the zenith and the azimuth. The azimuth tells where a sundial
     would see the sun as coming from; the zenith tells how high in the sky it
@@ -745,15 +720,15 @@ def solar_position(moment: datetime.datetime, latitude: float, longitude: float,
     -----
     If you were standing at the same longitude of the sun such that it was no
     further east or west than you were, the amount of angle it was south or
-    north of you is the *zenith*. If it were directly overhead it would be 0°;
+    north of you is the *zenith*. If it were directly overhead it would be 0Â°;
     a little north or south and it would be a little positive;
-    near sunset or sunrise, near 90°; and at night, between 90° and 180°.
+    near sunset or sunrise, near 90Â°; and at night, between 90Â° and 180Â°.
 
-    The *solar altitude angle* is defined as 90° -`zenith`.
+    The *solar altitude angle* is defined as 90Â° -`zenith`.
     Note the *elevation* angle is just another name for the *altitude* angle.
 
     The *azimuth* the angle in degrees that the sun is East of the North angle.
-    It is positive North eastwards 0° to 360°. Other conventions may be used.
+    It is positive North eastwards 0Â° to 360Â°. Other conventions may be used.
 
     Note that due to differences in atmospheric refractivity, estimation of
     sunset and sunrise are accurate to no more than one minute. Refraction
@@ -769,24 +744,7 @@ def solar_position(moment: datetime.datetime, latitude: float, longitude: float,
        Astronomy Stack Exchange."
        https://astronomy.stackexchange.com/questions/237/what-azimuth-description-systems-are-in-use?rq=1.
     """
-    import calendar
-
-    from fluids.optional import spa
-    tt = moment.utctimetuple()
-    delta_t = spa.calculate_deltat(tt.tm_year, tt.tm_mon)
-    unixtime = calendar.timegm(tt)
-    # Input pressure in milibar; input temperature in deg C
-#    print(dict(unixtime=unixtime, lat=latitude, lon=longitude, elev=Z,
-#                          pressure=P*1E-2, temp=T-273.15, delta_t=delta_t,
-#                          atmos_refract=atmos_refract, sst=False))
-    result = spa.solar_position(unixtime, lat=latitude, lon=longitude, elev=Z,
-                          pressure=P*1E-2, temp=T-273.15, delta_t=delta_t,
-                          atmos_refract=atmos_refract, sst=False)
-    # confirmed equation of time https://www.minasi.com/figeot.asp
-    # Convert minutes to seconds; sometimes negative, sometimes positive
-
-    result[-1] = result[-1]*60.0
-    return result
+    pass
 
 
 def sunrise_sunset(moment: datetime.datetime, latitude: float, longitude: float) -> tuple[datetime.datetime, datetime.datetime, datetime.datetime]:
@@ -852,66 +810,36 @@ def sunrise_sunset(moment: datetime.datetime, latitude: float, longitude: float)
        Solar Radiation Applications." Solar Energy 76, no. 5 (January 1, 2004):
        577-89. https://doi.org/10.1016/j.solener.2003.12.003.
     """
-    import calendar
-
-    from fluids.optional import spa
-    utc_offset = moment.utcoffset()
-    if utc_offset is not None:
-        moment_utc = moment + utc_offset
-    else:
-        moment_utc = moment
-
-    delta_t = spa.calculate_deltat(moment_utc.year, moment_utc.month)
-    # Strip the part of the day
-    ymd_moment_utc = datetime.datetime(moment_utc.year, moment_utc.month, moment_utc.day)
-    unixtime = calendar.timegm(ymd_moment_utc.utctimetuple())
-
-    unixtime = unixtime - unixtime % (86400) # Remove the remainder of the value, rounding it to the day it is
-    transit, sunrise, sunset = spa.transit_sunrise_sunset(unixtime, lat=latitude, lon=longitude, delta_t=delta_t)
-
-    transit = datetime.datetime.fromtimestamp(transit, datetime.timezone.utc).replace(tzinfo=None)
-    sunrise = datetime.datetime.fromtimestamp(sunrise, datetime.timezone.utc).replace(tzinfo=None)
-    sunset = datetime.datetime.fromtimestamp(sunset, datetime.timezone.utc).replace(tzinfo=None)
-
-    if moment.tzinfo is not None:
-        sunrise = moment.tzinfo.fromutc(sunrise)
-        sunset = moment.tzinfo.fromutc(sunset)
-        transit = moment.tzinfo.fromutc(transit)
-    return sunrise, sunset, transit
+    pass
 
 
-apparent_zenith_airmass_models = {"simple", "kasten1966", "kastenyoung1989",
-                                   "gueymard1993", "pickering2002"}
+apparent_zenith_airmass_models = {"simple", "kasten1966", "kastenyoung1989", "gueymard1993", "pickering2002"}
 true_zenith_airmass_models = {"youngirvine1967", "young1994"}
 
 
-def _get_extra_radiation_shim(datetime_or_doy: int | datetime.datetime, solar_constant: float=1366.1,
-    method: str="spencer", epoch_year: int=2014, **kwargs) -> float:
-    if method == "spencer":
-        if not isinstance(datetime_or_doy, (float, int)):
-            dayofyear = datetime_or_doy.timetuple().tm_yday
-        else:
-            dayofyear = datetime_or_doy
-        B = (2.*pi/365.)*(dayofyear - 1)
-        RoverR0sqrd = (1.00011 + 0.034221*cos(B) + 0.00128*sin(B) +
-        0.000719*cos(2.0*B) + 7.7e-05*sin(2.0*B))
-
-        Ea = solar_constant * RoverR0sqrd
-        return Ea
-    from pvlib.irradiance import get_extra_radiation
-    return get_extra_radiation(datetime_or_doy=datetime_or_doy,
-                              solar_constant=solar_constant,
-                              method=method,
-                              epoch_year=epoch_year,
-                              **kwargs)
+def _get_extra_radiation_shim(
+    datetime_or_doy: int | datetime.datetime, solar_constant: float = 1366.1, method: str = "spencer", epoch_year: int = 2014, **kwargs
+) -> float:
+    pass
 
 
-def solar_irradiation(latitude: float, longitude: float, Z: float, moment: datetime.datetime, surface_tilt: float,
-                      surface_azimuth: float, T: None=None, P: None=None, solar_constant: float=1366.1,
-                      atmos_refract: float=0.5667, albedo: float=0.25, linke_turbidity: float | None=None,
-                      extraradiation_method: str="spencer",
-                      airmass_model: str="kastenyoung1989",
-                      cache: None=None) -> tuple[float, float, float, float, float]:
+def solar_irradiation(
+    latitude: float,
+    longitude: float,
+    Z: float,
+    moment: datetime.datetime,
+    surface_tilt: float,
+    surface_azimuth: float,
+    T: None = None,
+    P: None = None,
+    solar_constant: float = 1366.1,
+    atmos_refract: float = 0.5667,
+    albedo: float = 0.25,
+    linke_turbidity: float | None = None,
+    extraradiation_method: str = "spencer",
+    airmass_model: str = "kastenyoung1989",
+    cache: None = None,
+) -> tuple[float, float, float, float, float]:
     r"""Calculates the amount of solar radiation and radiation reflected back
     the atmosphere which hits a surface at a specified tilt, and facing a
     specified azimuth.
@@ -936,7 +864,7 @@ def solar_irradiation(latitude: float, longitude: float, Z: float, moment: datet
         The angle above the horizontal of the object being hit by radiation,
         [degrees]
     surface_azimuth : float
-        The angle the object is facing (positive, North eastwards 0° to 360°),
+        The angle the object is facing (positive, North eastwards 0Â° to 360Â°),
         [degrees]
     T : float, optional
         Temperature of atmosphere at ground level, [K]
@@ -1035,81 +963,4 @@ def solar_irradiation(latitude: float, longitude: float, Z: float, moment: datet
        DaCoEx, mayudong, et al. Pvlib/Pvlib-Python: 0.5.1. Zenodo, 2017.
        https://doi.org/10.5281/zenodo.1016425.
     """
-    # Atmospheric refraction at sunrise/sunset (0.5667 deg is an often used value)
-    from fluids.optional.irradiance import get_absolute_airmass, get_relative_airmass, get_total_irradiance, ineichen
-
-    moment_timetuple = moment.timetuple()
-    moment_arg_dni = (moment_timetuple.tm_yday if
-                      extraradiation_method == "spencer" else moment)
-
-    dni_extra = _get_extra_radiation_shim(moment_arg_dni, solar_constant=solar_constant,
-                               method=extraradiation_method,
-                               epoch_year=moment.year)
-
-    T_calc: float
-    P_calc: float
-    if T is None or P is None:
-        atmosphere = ATMOSPHERE_NRLMSISE00(Z=Z, latitude=latitude,
-                                           longitude=longitude,
-                                           day=moment_timetuple.tm_yday)
-        T_calc = atmosphere.T if T is None else T
-        P_calc = atmosphere.P if P is None else P
-    else:
-        T_calc = T
-        P_calc = P
-
-    if cache is not None and "zenith" in cache:
-        zenith = cache["zenith"]
-        apparent_zenith = cache["apparent_zenith"]
-        azimuth = cache["azimuth"]
-    else:
-        apparent_zenith, zenith, _, _, azimuth, _ = solar_position(moment=moment,
-                                                                   latitude=latitude,
-                                                                   longitude=longitude,
-                                                                   Z=Z, T=T_calc, P=P_calc,
-                                                                   atmos_refract=atmos_refract)
-
-    if linke_turbidity is None:
-        try:
-            import pvlib  # noqa: F401
-        except ImportError:
-            raise ImportError(PVLIB_MISSING_MSG)
-        import pandas as pd
-        from pvlib.clearsky import lookup_linke_turbidity
-        linke_turbidity = float(lookup_linke_turbidity(
-            pd.DatetimeIndex([moment]), latitude, longitude).values)
-
-
-    if airmass_model in apparent_zenith_airmass_models:
-        used_zenith = apparent_zenith
-    elif airmass_model in true_zenith_airmass_models:
-        used_zenith = zenith
-    else:
-        raise ValueError("Unrecognized airmass model")
-
-    relative_airmass = get_relative_airmass(used_zenith, model=airmass_model)
-    airmass_absolute = get_absolute_airmass(relative_airmass, pressure=P_calc)
-
-
-    ans = ineichen(apparent_zenith=apparent_zenith,
-                   airmass_absolute=airmass_absolute,
-                   linke_turbidity=linke_turbidity,
-                   altitude=Z, dni_extra=solar_constant, perez_enhancement=True)
-    ghi = ans["ghi"]
-    dni = ans["dni"]
-    dhi = ans["dhi"]
-
-
-#    from pvlib.irradiance import get_total_irradiance
-    ans = get_total_irradiance(surface_tilt=surface_tilt,
-                      surface_azimuth=surface_azimuth,
-                      solar_zenith=apparent_zenith, solar_azimuth=azimuth,
-                      dni=dni, ghi=ghi, dhi=dhi, dni_extra=dni_extra,
-                      airmass=airmass_absolute, albedo=albedo)
-    poa_global = float(ans["poa_global"])
-    poa_direct = float(ans["poa_direct"])
-    poa_diffuse = float(ans["poa_diffuse"])
-    poa_sky_diffuse = float(ans["poa_sky_diffuse"])
-    poa_ground_diffuse = float(ans["poa_ground_diffuse"])
-    return (poa_global, poa_direct, poa_diffuse, poa_sky_diffuse,
-            poa_ground_diffuse)
+    pass

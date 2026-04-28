@@ -271,7 +271,7 @@ def thermal_diffusivity(k: float, rho: float, Cp: float) -> float:
     .. [1] Blevins, Robert D. Applied Fluid Dynamics Handbook. New York, N.Y.:
        Van Nostrand Reinhold Co., 1984.
     """
-    return k/(rho*Cp)
+    pass
 
 
 ### Ideal gas fluid properties
@@ -317,8 +317,7 @@ def c_ideal_gas(T: float, k: float, MW: float) -> float:
     .. [2] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and
        Applications. Boston: McGraw Hill Higher Education, 2006.
     """
-    Rspecific = R*1000./MW
-    return sqrt(k*Rspecific*T)
+    pass
 
 
 ### Dimensionless groups with documentation
@@ -374,11 +373,7 @@ def Reynolds(V: float, D: float, rho: float | None=None, mu: float | None=None, 
     .. [2] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and
        Applications. Boston: McGraw Hill Higher Education, 2006.
     """
-    if rho is not None and mu is not None:
-        nu = mu/rho
-    elif nu is None:
-        raise ValueError("Either density and viscosity, or kinematic viscosity is needed")
-    return V*D/nu
+    pass
 
 
 def Peclet_heat(V: float, L: float, rho: float | None=None, Cp: float | None=None, k: float | None=None, alpha: float | None=None) -> float:
@@ -435,11 +430,7 @@ def Peclet_heat(V: float, L: float, rho: float | None=None, Cp: float | None=Non
     .. [2] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and
        Applications. Boston: McGraw Hill Higher Education, 2006.
     """
-    if rho is not None and Cp is not None and k is not None:
-        alpha = k/(rho*Cp)
-    elif alpha is None:
-        raise ValueError("Either heat capacity and thermal conductivity and density, or thermal diffusivity is needed")
-    return V*L/alpha
+    pass
 
 
 def Peclet_mass(V: float, L: float, D: float) -> float:
@@ -478,7 +469,7 @@ def Peclet_mass(V: float, L: float, D: float) -> float:
     .. [1] Green, Don, and Robert Perry. Perry's Chemical Engineers' Handbook,
        Eighth Edition. McGraw-Hill Professional, 2007.
     """
-    return V*L/D
+    pass
 
 
 def Fourier_heat(t: float, L: float, rho: float | None=None, Cp: float | None=None, k: float | None=None, alpha: float | None=None) -> float:
@@ -536,11 +527,7 @@ def Fourier_heat(t: float, L: float, rho: float | None=None, Cp: float | None=No
     .. [2] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and
        Applications. Boston: McGraw Hill Higher Education, 2006.
     """
-    if rho is not None and Cp is not None and k is not None:
-        alpha = k/(rho*Cp)
-    elif alpha is None:
-        raise ValueError("Either heat capacity and thermal conductivity and density, or thermal diffusivity is needed")
-    return t*alpha/(L*L)
+    pass
 
 
 def Fourier_mass(t: float, L: float, D: float) -> float:
@@ -579,7 +566,7 @@ def Fourier_mass(t: float, L: float, D: float) -> float:
     .. [1] Green, Don, and Robert Perry. Perry's Chemical Engineers' Handbook,
        Eighth Edition. McGraw-Hill Professional, 2007.
     """
-    return t*D/(L*L)
+    pass
 
 
 def Graetz_heat(V: float, D: float, x: float, rho: float | None=None, Cp: float | None=None, k: float | None=None, alpha: float | None=None) -> float:
@@ -641,11 +628,7 @@ def Graetz_heat(V: float, D: float, x: float, rho: float | None=None, Cp: float 
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
        Wiley, 2011.
     """
-    if rho is not None and Cp is not None and k is not None:
-        alpha = k/(rho*Cp)
-    elif alpha is None:
-        raise ValueError("Either heat capacity and thermal conductivity and density, or thermal diffusivity is needed")
-    return V*D*D/(x*alpha)
+    pass
 
 
 def Schmidt(D: float, mu: float | None=None, nu: float | None=None, rho: float | None=None) -> float:
@@ -698,12 +681,7 @@ def Schmidt(D: float, mu: float | None=None, nu: float | None=None, rho: float |
     .. [2] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and
        Applications. Boston: McGraw Hill Higher Education, 2006.
     """
-    if rho is not None and mu is not None:
-        return mu/(rho*D)
-    elif nu is not None:
-        return nu/D
-    else:
-        raise ValueError("Insufficient information provided for Schmidt number calculation")
+    pass
 
 
 def Lewis(D: float, alpha: float | None=None, Cp: float | None=None, k: float | None=None, rho: float | None=None) -> float:
@@ -759,13 +737,7 @@ def Lewis(D: float, alpha: float | None=None, Cp: float | None=None, k: float | 
     .. [3] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd edition.
        Berlin; New York:: Springer, 2010.
     """
-    if D is None:
-        raise ValueError("Diffusivity D is required for Le calculation")
-    if k is not None and Cp is not None and rho is not None:
-        alpha = k/(rho*Cp)
-    elif alpha is None:
-        raise ValueError("Insufficient information provided for Le calculation")
-    return alpha/D
+    pass
 
 
 def Weber(V: float, L: float, rho: float, sigma: float) -> float:
@@ -813,7 +785,7 @@ def Weber(V: float, L: float, rho: float, sigma: float) -> float:
     .. [3] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd edition.
        Berlin; New York:: Springer, 2010.
     """
-    return V*V*L*rho/sigma
+    pass
 
 
 def Mach(V: float, c: float) -> float:
@@ -854,7 +826,7 @@ def Mach(V: float, c: float) -> float:
     .. [2] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and
        Applications. Boston: McGraw Hill Higher Education, 2006.
     """
-    return V/c
+    pass
 
 
 def Confinement(D: float, rhol: float, rhog: float, sigma: float, g: float=g) -> float:
@@ -911,7 +883,7 @@ def Confinement(D: float, rhol: float, rhog: float, sigma: float, g: float=g) ->
        Journal of Multiphase Flow 26, no. 11 (November 1, 2000): 1739-54.
        doi:10.1016/S0301-9322(99)00119-6.
     """
-    return sqrt(sigma/(g*(rhol-rhog)))/D
+    pass
 
 
 def Morton(rhol: float, rhog: float, mul: float, sigma: float, g: float=g) -> float:
@@ -953,12 +925,11 @@ def Morton(rhol: float, rhog: float, mul: float, sigma: float, g: float=g) -> fl
     .. [1] Kunes, Josef. Dimensionless Physical Quantities in Science and
        Engineering. Elsevier, 2012.
     .. [2] Yan, Xiaokang, Kaixin Zheng, Yan Jia, Zhenyong Miao, Lijun Wang,
-       Yijun Cao, and Jiongtian Liu. “Drag Coefficient Prediction of a Single
-       Bubble Rising in Liquids.” Industrial & Engineering Chemistry Research,
+       Yijun Cao, and Jiongtian Liu. â€œDrag Coefficient Prediction of a Single
+       Bubble Rising in Liquids.â€� Industrial & Engineering Chemistry Research,
        April 2, 2018. https://doi.org/10.1021/acs.iecr.7b04743.
     """
-    mul2 = mul*mul
-    return g*mul2*mul2*(rhol - rhog)/(rhol*rhol*sigma*sigma*sigma)
+    pass
 
 
 def Knudsen(path: float, L: float) -> float:
@@ -999,7 +970,7 @@ def Knudsen(path: float, L: float) -> float:
     .. [2] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and
        Applications. Boston: McGraw Hill Higher Education, 2006.
     """
-    return path/L
+    pass
 
 
 def Prandtl(Cp: float | None=None, k: float | None=None, mu: float | None=None, nu: float | None=None, rho: float | None=None, alpha: float | None=None) -> float:
@@ -1060,14 +1031,7 @@ def Prandtl(Cp: float | None=None, k: float | None=None, mu: float | None=None, 
     .. [3] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd edition.
        Berlin; New York:: Springer, 2010.
     """
-    if k is not None and Cp is not None and mu is not None:
-        return Cp*mu/k
-    elif nu is not None and rho is not None and Cp is not None and k is not None:
-        return nu*rho*Cp/k
-    elif nu is not None and alpha is not None:
-        return nu/alpha
-    else:
-        raise ValueError("Insufficient information provided for Pr calculation")
+    pass
 
 
 def Grashof(L: float, beta: float, T1: float, T2: float=0, rho: float | None=None, mu: float | None=None, nu: float | None=None, g: float=g) -> float:
@@ -1132,11 +1096,7 @@ def Grashof(L: float, beta: float, T1: float, T2: float=0, rho: float | None=Non
     .. [2] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and
        Applications. Boston: McGraw Hill Higher Education, 2006.
     """
-    if rho is not None and mu is not None:
-        nu = mu/rho
-    elif nu is None:
-        raise ValueError("Either density and viscosity, or kinematic viscosity is needed")
-    return g*beta*abs(T2-T1)*L*L*L/(nu*nu)
+    pass
 
 
 def Bond(rhol: float, rhog: float, sigma: float, L: float) -> float:
@@ -1173,7 +1133,7 @@ def Bond(rhol: float, rhog: float, sigma: float, L: float) -> float:
     .. [1] Green, Don, and Robert Perry. Perry's Chemical Engineers' Handbook,
        Eighth Edition. McGraw-Hill Professional, 2007.
     """
-    return (g*(rhol-rhog)*L*L/sigma)
+    pass
 
 Eotvos = Bond
 
@@ -1215,7 +1175,7 @@ def Rayleigh(Pr: float, Gr: float) -> float:
     .. [2] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and
        Applications. Boston: McGraw Hill Higher Education, 2006.
     """
-    return Pr*Gr
+    pass
 
 
 def Froude(V: float, L: float, g: float=g, squared: bool=False) -> float:
@@ -1264,10 +1224,7 @@ def Froude(V: float, L: float, g: float=g, squared: bool=False) -> float:
     .. [2] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and
        Applications. Boston: McGraw Hill Higher Education, 2006.
     """
-    Fr = V/sqrt(L*g)
-    if squared:
-        Fr *= Fr
-    return Fr
+    pass
 
 
 def Froude_densimetric(V: float, L: float, rho1: float, rho2: float, heavy: bool=True, g: float=g) -> float:
@@ -1333,11 +1290,7 @@ def Froude_densimetric(V: float, L: float, rho1: float, rho2: float, heavy: bool
        SouthEast Asia Hydrocarbon Flow Measurement Workshop, KualaLumpur,
        Malaysia, 2008.
     """
-    if heavy:
-        rho3 = rho1
-    else:
-        rho3 = rho2
-    return V/(sqrt(g*L))*sqrt(rho3/(rho1 - rho2))
+    pass
 
 
 def Strouhal(f: float, L: float, V: float) -> float:
@@ -1381,7 +1334,7 @@ def Strouhal(f: float, L: float, V: float) -> float:
     .. [2] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and
        Applications. Boston: McGraw Hill Higher Education, 2006.
     """
-    return f*L/V
+    pass
 
 
 def Nusselt(h: float, L: float, k: float) -> float:
@@ -1429,7 +1382,7 @@ def Nusselt(h: float, L: float, k: float) -> float:
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
        Wiley, 2011.
     """
-    return h*L/k
+    pass
 
 
 def Sherwood(K: float, L: float, D: float) -> float:
@@ -1469,7 +1422,7 @@ def Sherwood(K: float, L: float, D: float) -> float:
     .. [1] Green, Don, and Robert Perry. Perry's Chemical Engineers' Handbook,
        Eighth Edition. McGraw-Hill Professional, 2007.
     """
-    return K*L/D
+    pass
 
 
 def Biot(h: float, L: float, k: float) -> float:
@@ -1516,7 +1469,7 @@ def Biot(h: float, L: float, k: float) -> float:
     .. [2] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and
        Applications. Boston: McGraw Hill Higher Education, 2006.
     """
-    return h*L/k
+    pass
 
 
 def Stanton(h: float, V: float, rho: float, Cp: float) -> float:
@@ -1561,7 +1514,7 @@ def Stanton(h: float, V: float, rho: float, Cp: float) -> float:
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
        Wiley, 2011.
     """
-    return h/(V*rho*Cp)
+    pass
 
 
 def Euler(dP: float, rho: float, V: float) -> float:
@@ -1606,7 +1559,7 @@ def Euler(dP: float, rho: float, V: float) -> float:
     .. [2] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and
        Applications. Boston: McGraw Hill Higher Education, 2006.
     """
-    return dP/(rho*V*V)
+    pass
 
 
 def Cavitation(P: float, Psat: float, rho: float, V: float) -> float:
@@ -1653,7 +1606,7 @@ def Cavitation(P: float, Psat: float, rho: float, V: float) -> float:
     .. [2] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and
        Applications. Boston: McGraw Hill Higher Education, 2006.
     """
-    return (P-Psat)/(0.5*rho*V*V)
+    pass
 
 
 def Eckert(V: float, Cp: float, dT: float) -> float:
@@ -1694,7 +1647,7 @@ def Eckert(V: float, Cp: float, dT: float) -> float:
     .. [1] Goldstein, Richard J. ECKERT NUMBER. Thermopedia. Hemisphere, 2011.
        10.1615/AtoZ.e.eckert_number
     """
-    return V*V/(Cp*dT)
+    pass
 
 
 def Jakob(Cp: float, Hvap: float, Te: float) -> float:
@@ -1739,7 +1692,7 @@ def Jakob(Cp: float, Hvap: float, Te: float) -> float:
     .. [2] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and
        Applications. Boston: McGraw Hill Higher Education, 2006.
     """
-    return Cp*Te/Hvap
+    pass
 
 
 def Power_number(P: float, L: float, N: float, rho: float) -> float:
@@ -1785,7 +1738,7 @@ def Power_number(P: float, L: float, N: float, rho: float) -> float:
     .. [2] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and
        Applications. Boston: McGraw Hill Higher Education, 2006.
     """
-    return P/(rho*N*N*N*L**5)
+    pass
 
 
 def Drag(F: float, A: float, V: float, rho: float) -> float:
@@ -1831,7 +1784,7 @@ def Drag(F: float, A: float, V: float, rho: float) -> float:
     .. [2] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and
        Applications. Boston: McGraw Hill Higher Education, 2006.
     """
-    return F/(0.5*A*rho*V*V)
+    pass
 
 
 def Stokes_number(V: float, Dp: float, D: float, rhop: float, mu: float) -> float:
@@ -1878,7 +1831,7 @@ def Stokes_number(V: float, Dp: float, D: float, rhop: float, mu: float) -> floa
        Eliminators in Bubble Column." Journal of Saudi Chemical Society 14, no.
        4 (October 1, 2010): 331-39. https://doi.org/10.1016/j.jscs.2010.04.001.
     """
-    return rhop*V*(Dp*Dp)/(18.0*mu*D)
+    pass
 
 
 def Capillary(V: float, mu: float, sigma: float) -> float:
@@ -1923,7 +1876,7 @@ def Capillary(V: float, mu: float, sigma: float) -> float:
     .. [2] Kundu, Pijush K., Ira M. Cohen, and David R. Dowling. Fluid
        Mechanics. Academic Press, 2012.
     """
-    return V*mu/sigma
+    pass
 
 
 def Archimedes(L: float, rhof: float, rhop: float, mu: float, g: float=g) -> float:
@@ -1971,7 +1924,7 @@ def Archimedes(L: float, rhof: float, rhop: float, mu: float, g: float=g) -> flo
     .. [2] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and
        Applications. Boston: McGraw Hill Higher Education, 2006.
     """
-    return L*L*L*rhof*(rhop-rhof)*g/(mu*mu)
+    pass
 
 
 def Ohnesorge(L: float, rho: float, mu: float, sigma: float) -> float:
@@ -2015,7 +1968,7 @@ def Ohnesorge(L: float, rho: float, mu: float, sigma: float) -> float:
     .. [1] Green, Don, and Robert Perry. Perry's Chemical Engineers' Handbook,
        Eighth Edition. McGraw-Hill Professional, 2007.
     """
-    return mu/sqrt(L*rho*sigma)
+    pass
 
 
 def Suratman(L: float, rho: float, mu: float, sigma: float) -> float:
@@ -2068,7 +2021,7 @@ def Suratman(L: float, rho: float, mu: float, sigma: float) -> float:
        Industrial & Engineering Chemistry 58, no. 3 (March 1, 1966): 46-60.
        doi:10.1021/ie50675a012.
     """
-    return rho*sigma*L/(mu*mu)
+    pass
 
 
 def Hagen(Re: float, fd: float) -> float:
@@ -2112,7 +2065,7 @@ def Hagen(Re: float, fd: float) -> float:
 
     References
     ----------
-    .. [1] Martin, Holger. "The Generalized Lévêque Equation and Its Practical
+    .. [1] Martin, Holger. "The Generalized LÃ©vÃªque Equation and Its Practical
        Use for the Prediction of Heat and Mass Transfer Rates from Pressure
        Drop." Chemical Engineering Science, Jean-Claude Charpentier
        Festschrift Issue, 57, no. 16 (August 1, 2002): 3217-23.
@@ -2122,7 +2075,7 @@ def Hagen(Re: float, fd: float) -> float:
     .. [3] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd edition.
        Berlin; New York:: Springer, 2010.
     """
-    return 0.5*fd*Re*Re
+    pass
 
 
 def Bejan_L(dP: float, L: float, mu: float, alpha: float) -> float:
@@ -2166,7 +2119,7 @@ def Bejan_L(dP: float, L: float, mu: float, alpha: float) -> float:
     .. [2] Bejan, Adrian. Convection Heat Transfer. 4E. Hoboken, New Jersey:
        Wiley, 2013.
     """
-    return dP*L*L/(alpha*mu)
+    pass
 
 
 def Bejan_p(dP: float, K: float, mu: float, alpha: float) -> float:
@@ -2210,7 +2163,7 @@ def Bejan_p(dP: float, K: float, mu: float, alpha: float) -> float:
     .. [2] Bejan, Adrian. Convection Heat Transfer. 4E. Hoboken, New Jersey:
        Wiley, 2013.
     """
-    return dP*K/(alpha*mu)
+    pass
 
 
 def Boiling(G: float, q: float, Hvap: float) -> float:
@@ -2264,7 +2217,7 @@ def Boiling(G: float, q: float, Hvap: float) -> float:
        tubing at pressures from 500 to 3300 pounds" Trans. ASME, Vol. 65, 9,
        February 1943, pp. 553-591.
     """
-    return q/(G*Hvap)
+    pass
 
 
 def Dean(Re: float, Di: float, D: float) -> float:
@@ -2309,7 +2262,7 @@ def Dean(Re: float, Di: float, D: float) -> float:
        Industrial & Engineering Chemistry 58, no. 3 (March 1, 1966): 46-60.
        doi:10.1021/ie50675a012.
     """
-    return sqrt(Di/D)*Re
+    pass
 
 
 def relative_roughness(D: float, roughness: float=1.52e-06) -> float:
@@ -2343,7 +2296,7 @@ def relative_roughness(D: float, roughness: float=1.52e-06) -> float:
     .. [2] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and
        Applications. Boston: McGraw Hill Higher Education, 2006.
     """
-    return roughness/D
+    pass
 
 
 ### Misc utilities
@@ -2384,11 +2337,7 @@ def nu_mu_converter(rho: float, mu: float | None=None, nu: float | None=None) ->
     .. [1] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and
        Applications. Boston: McGraw Hill Higher Education, 2006.
     """
-    if mu is not None and nu is None:
-        return mu/rho
-    elif nu is not None and mu is None:
-        return nu*rho
-    raise ValueError("Inputs must be rho and one of mu and nu.")
+    pass
 
 def gravity(latitude: float, H: float) -> float:
     r"""Calculates local acceleration due to gravity `g` according to [1]_.
@@ -2424,9 +2373,7 @@ def gravity(latitude: float, H: float) -> float:
     .. [1] Haynes, W.M., Thomas J. Bruno, and David R. Lide. CRC Handbook of
        Chemistry and Physics. [Boca Raton, FL]: CRC press, 2014.
     """
-    lat = latitude*pi/180
-    g = 9.780356*(1+0.0052885*sin(lat)**2 -0.0000059*sin(2*lat)**2)-3.086E-6*H
-    return g
+    pass
 
 ### Friction loss conversion functions
 
@@ -2461,7 +2408,7 @@ def K_from_f(fd: float, L: float, D: float) -> float:
     >>> K_from_f(fd=0.018, L=100., D=.3)
     6.0
     """
-    return fd*L/D
+    pass
 
 def f_from_K(K: float, L: float, D: float) -> float:
     r"""Calculates friction factor, `fd`, from a loss coefficient, K,
@@ -2494,7 +2441,7 @@ def f_from_K(K: float, L: float, D: float) -> float:
     >>> f_from_K(K=0.6, L=100., D=.3)
     0.0018
     """
-    return K*D/L
+    pass
 
 
 def K_from_L_equiv(L_D: float, fd: float=0.015) -> float:
@@ -2525,7 +2472,7 @@ def K_from_L_equiv(L_D: float, fd: float=0.015) -> float:
     >>> K_from_L_equiv(240)
     3.5999999999999996
     """
-    return fd*L_D
+    pass
 
 
 def L_equiv_from_K(K: float, fd: float=0.015) -> float:
@@ -2556,7 +2503,7 @@ def L_equiv_from_K(K: float, fd: float=0.015) -> float:
     >>> L_equiv_from_K(3.6)
     240.00000000000003
     """
-    return K/fd
+    pass
 
 
 def L_from_K(K: float, D: float, fd: float=0.015) -> float:
@@ -2585,7 +2532,7 @@ def L_from_K(K: float, D: float, fd: float=0.015) -> float:
     >>> L_from_K(K=6, D=.3, fd=0.018)
     100.0
     """
-    return K*D/fd
+    pass
 
 
 def dP_from_K(K: float, rho: float, V: float) -> float:
@@ -2619,7 +2566,7 @@ def dP_from_K(K: float, rho: float, V: float) -> float:
     >>> dP_from_K(K=10, rho=1000, V=3)
     45000.0
     """
-    return K*0.5*rho*V*V
+    pass
 
 
 def head_from_K(K: float, V: float, g: float=g) -> float:
@@ -2653,7 +2600,7 @@ def head_from_K(K: float, V: float, g: float=g) -> float:
     >>> head_from_K(K=10, V=1.5)
     1.1471807396001694
     """
-    return K*0.5*V*V/g
+    pass
 
 
 def head_from_P(P: float, rho: float, g: float=g) -> float:
@@ -2687,7 +2634,7 @@ def head_from_P(P: float, rho: float, g: float=g) -> float:
     >>> head_from_P(P=98066.5, rho=1000)
     10.000000000000002
     """
-    return P/rho/g
+    pass
 
 
 def P_from_head(head: float, rho: float, g: float=g) -> float:
@@ -2719,7 +2666,7 @@ def P_from_head(head: float, rho: float, g: float=g) -> float:
     >>> P_from_head(head=5., rho=800.)
     39226.6
     """
-    return head*rho*g
+    pass
 
 
 
@@ -2755,7 +2702,7 @@ def C2K(C: float) -> float:
     >>> C2K(-40)
     233.14999999999998
     """
-    return C + zero_Celsius
+    pass
 
 
 def K2C(K: float) -> float:
@@ -2781,7 +2728,7 @@ def K2C(K: float) -> float:
     >>> K2C(233.15)
     -39.99999999999997
     """
-    return K - zero_Celsius
+    pass
 
 
 def F2C(F: float) -> float:
@@ -2806,7 +2753,7 @@ def F2C(F: float) -> float:
     >>> F2C(-40.0)
     -40.0
     """
-    return (F - 32.0) / 1.8
+    pass
 
 
 def C2F(C: float) -> float:
@@ -2831,7 +2778,7 @@ def C2F(C: float) -> float:
     >>> C2F(-40.0)
     -40.0
     """
-    return 1.8*C + 32.0
+    pass
 
 
 def F2K(F: float) -> float:
@@ -2858,7 +2805,7 @@ def F2K(F: float) -> float:
     >>> F2K(-40)
     233.14999999999998
     """
-    return (F - 32.0)/1.8 + zero_Celsius
+    pass
 
 
 def K2F(K: float) -> float:
@@ -2885,7 +2832,7 @@ def K2F(K: float) -> float:
     >>> K2F(233.15)
     -39.99999999999996
     """
-    return 1.8*(K - zero_Celsius) + 32.0
+    pass
 
 
 def C2R(C: float) -> float:
@@ -2912,7 +2859,7 @@ def C2R(C: float) -> float:
     >>> C2R(-40)
     419.66999999999996
     """
-    return 1.8 * (C + zero_Celsius)
+    pass
 
 
 def K2R(K: float) -> float:
@@ -2937,7 +2884,7 @@ def K2R(K: float) -> float:
     >>> K2R(273.15)
     491.66999999999996
     """
-    return 1.8 * K
+    pass
 
 
 def F2R(F: float) -> float:
@@ -2964,7 +2911,7 @@ def F2R(F: float) -> float:
     >>> F2R(100)
     559.67
     """
-    return F - 32.0 + 1.8 * zero_Celsius
+    pass
 
 
 def R2C(Ra: float) -> float:
@@ -2991,7 +2938,7 @@ def R2C(Ra: float) -> float:
     >>> R2C(459.67)
     -17.777777777777743
     """
-    return Ra / 1.8 - zero_Celsius
+    pass
 
 
 def R2K(Ra: float) -> float:
@@ -3016,7 +2963,7 @@ def R2K(Ra: float) -> float:
     >>> R2K(491.67)
     273.15
     """
-    return Ra / 1.8
+    pass
 
 
 def R2F(Ra: float) -> float:
@@ -3043,50 +2990,13 @@ def R2F(Ra: float) -> float:
     >>> R2F(491.67)
     32.00000000000006
     """
-    return Ra - 1.8*zero_Celsius + 32.0
+    pass
 
 
 def Engauge_2d_parser(lines, flat=False):
     """Not exposed function to read a 2D file generated by engauge-digitizer;
     for curve fitting.
     """
-    z_values = []
-    x_lists = []
-    y_lists = []
-    working_xs = []
-    working_ys = []
-
-    new_curve = True
-    for line in lines:
-        if line.strip() == "":
-            new_curve = True
-        elif new_curve:
-            z = float(line.split(",")[1])
-            z_values.append(z)
-            if working_xs and working_ys:
-                x_lists.append(working_xs)
-                y_lists.append(working_ys)
-            working_xs = []
-            working_ys = []
-            new_curve = False
-        else:
-            x, y = (float(i) for i in line.strip().split(","))
-            working_xs.append(x)
-            working_ys.append(y)
-    x_lists.append(working_xs)
-    y_lists.append(working_ys)
-
-    if flat:
-        all_zs = []
-        all_xs = []
-        all_ys = []
-        for z, xs, ys in zip(z_values, x_lists, y_lists):
-            for x, y in zip(xs, ys):
-                all_zs.append(z)
-                all_xs.append(x)
-                all_ys.append(y)
-        return all_zs, all_xs, all_ys
-
-    return z_values, x_lists, y_lists
+    pass
 
 

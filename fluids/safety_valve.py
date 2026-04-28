@@ -133,10 +133,7 @@ def API520_round_size(A: float) -> float:
     ----------
     .. [1] API Standard 526.
     """
-    for area in API526_A:
-        if area >= A:
-            return area
-    raise ValueError("Required relief area is larger than can be provided with one valve")
+    pass
 
 
 def API520_C(k: float) -> float:
@@ -180,11 +177,7 @@ def API520_C(k: float) -> float:
     ----------
     .. [1] API Standard 520, Part 1 - Sizing and Selection.
     """
-    if k != 1:
-        kp1 = k+1
-        return 0.03948*sqrt(k*(2./kp1)**(kp1/(k-1.)))
-    else:
-        return 0.023945830445454768
+    pass
         # return 0.03948*sqrt(1./exp(1))
 
 
@@ -230,8 +223,7 @@ def API520_F2(k: float, P1: float, P2: float) -> float:
     ----------
     .. [1] API Standard 520, Part 1 - Sizing and Selection.
     """
-    r = P2/P1
-    return sqrt(k/(k-1.0)*r**(2./k) * ((1-r**((k-1.)/k))/(1.-r)))
+    pass
 
 
 def API520_N(P1: float) -> float:
@@ -271,12 +263,7 @@ def API520_N(P1: float) -> float:
     ----------
     .. [1] API Standard 520, Part 1 - Sizing and Selection.
     """
-    P1 = P1*1e-3 # Pa to kPa
-    if P1 <= 10339.0:
-        KN = 1.0
-    else:
-        KN = (0.02764*P1 - 1000.)/(0.03324*P1 - 1061.0)
-    return KN
+    pass
 
 
 
@@ -483,23 +470,7 @@ def API520_SH(T1, P1, edition=TENTH_EDITION):
     ----------
     .. [1] API Standard 520, Part 1 - Sizing and Selection.
     """
-    if T1 > 922.15:
-        raise ValueError("Superheat cannot be above 649 degrees Celcius")
-    if edition == SEVENTH_EDITION:
-        if P1 > 20780325.0: # 20679E3+atm
-            raise ValueError("For P above 20679 kPag, use the gas flow model")
-        if T1 < 422.15:
-            return 1. # No superheat under 15 psig
-        return float(bisplev(T1, P1, API520_KSH_tck_7E))
-    elif edition == TENTH_EDITION:
-        if T1 < 478.15:
-            # Avoid extrapolating above 1.0
-            return 1.0
-        if P1 > 22063223.338138755:
-            raise ValueError("For P1 above 22.06 MPa, use the gas flow model")
-        return float(bisplev(T1, P1, API520_KSH_tck_10E))
-    else:
-        raise ValueError("Acceptable editions are '7E', '10E'")
+    pass
 
 
 
@@ -569,20 +540,7 @@ def API520_B(Pset: float, Pback: float, overpressure: float=0.1) -> float:
     ----------
     .. [1] API Standard 520, Part 1 - Sizing and Selection.
     """
-    gauge_backpressure = (Pback-atm)/(Pset-atm)*100.0 # in percent
-    if overpressure not in (0.1, 0.16, 0.21):
-        raise ValueError("Only overpressure of 10%, 16%, or 21% are permitted")
-    if (overpressure == 0.1 and gauge_backpressure < 30.0) or (
-        overpressure == 0.16 and gauge_backpressure < 38.0) or (
-        overpressure == 0.21 and gauge_backpressure <= 50.0):
-        return 1.0
-    elif gauge_backpressure > 50.0:
-        raise ValueError("Gauge pressure must be < 50%")
-    if overpressure == 0.16:
-        Kb = interp(gauge_backpressure, Kb_16_over_x, Kb_16_over_y)
-    elif overpressure == 0.1:
-        Kb = interp(gauge_backpressure, Kb_10_over_x, Kb_10_over_y)
-    return Kb
+    pass
 
 
 def API520_A_g(m: float, T: float, Z: float, MW: float, k: float, P1: float, P2: float=101325, Kd: float=0.975, Kb: float=1, Kc: float=1) -> float:
@@ -660,15 +618,7 @@ def API520_A_g(m: float, T: float, Z: float, MW: float, k: float, P1: float, P2:
     ----------
     .. [1] API Standard 520, Part 1 - Sizing and Selection.
     """
-    P1, P2 = P1*1e-3, P2*1e-3 # Pa to Kpa in the standard
-    m = m*3600. # kg/s to kg/hr
-    if is_critical_flow(P1, P2, k):
-        C = API520_C(k)
-        A = m/(C*Kd*Kb*Kc*P1)*sqrt(T*Z/MW)
-    else:
-        F2 = API520_F2(k, P1, P2)
-        A = 17.9*m/(F2*Kd*Kc)*sqrt(T*Z/(MW*P1*(P1-P2)))
-    return A*1e-6# convert mm^2 to m^2
+    pass
 
 
 def API520_A_steam(m, T, P1, Kd=0.975, Kb=1, Kc=1, edition=TENTH_EDITION):
@@ -729,12 +679,7 @@ def API520_A_steam(m, T, P1, Kd=0.975, Kb=1, Kc=1, edition=TENTH_EDITION):
     ----------
     .. [1] API Standard 520, Part 1 - Sizing and Selection.
     """
-    KN = API520_N(P1)
-    KSH = API520_SH(T, P1, edition)
-    P1 = P1*1e-3 # Pa to kPa
-    m = m*3600. # kg/s to kg/hr
-    A = 190.5*m/(P1*Kd*Kb*Kc*KN*KSH)
-    return A*1e-6# convert mm^2 to m^2
+    pass
 
 ### Liquids
 
@@ -824,15 +769,7 @@ def API520_Kv(Re, edition=TENTH_EDITION):
     .. [3] CCPS. Guidelines for Pressure Relief and Effluent Handling Systems.
        2nd edition. New York, NY: Wiley-AIChE, 2017.
     """
-    if edition == SEVENTH_EDITION:
-        factor = 1.0/(0.9935 + 2.878/sqrt(Re) + 342.75/(Re*sqrt(Re)))
-        if factor > 1.0:
-            factor = 1.0
-        return factor
-    elif edition == TENTH_EDITION:
-        return 1.0/sqrt(170.0/Re + 1.0)
-    else:
-        raise ValueError("Acceptable editions are '7E', '10E'")
+    pass
 
 
 
@@ -895,10 +832,7 @@ def API520_W(Pset: float, Pback: float) -> float:
     .. [1] API Standard 520, Part 1 - Sizing and Selection. 7E
     .. [2] API Standard 520, Part 1 - Sizing and Selection. 10E
     """
-    gauge_backpressure = (Pback-atm)/(Pset-atm)*100.0 # in percent
-    if gauge_backpressure < 15.0:
-        return 1.0
-    return interp(gauge_backpressure, Kw_x, Kw_y)
+    pass
 
 
 
@@ -1070,25 +1004,7 @@ def API520_A_l(m, rho, P1, P2, overpressure, Kd=0.65, Kc=1.0,
     ----------
     .. [1] API Standard 520, Part 1 - Sizing and Selection.
     """
-    G1 = rho/rho0
-    Q = m/rho # m^3/s
-    Q *= 60000.0 # m^3/s to L/min in the original equation
-
-    P_set_guage = (P1 - atm)/(1.0 + overpressure)
-    P_set = P_set_guage + atm
-    if Kw is None:
-        Kw = API520_W(P_set, P2)
-    if Kv is None and mu is not None:
-        A0 = API520_A_l(m=m, rho=rho, P1=P1, P2=P2, overpressure=overpressure, Kd=Kd, Kc=Kc, Kv=1.0, Kw=Kw)
-        D = sqrt(A0*4.0/pi)
-        v = (Q/60000.0)/A0
-        Re = rho*v*D/mu
-        Kv = API520_Kv(Re, edition)
-    P1 = P1*1e-3 # Pa to kPa
-    P2 = P2*1e-3 # Pa to kPa
-    A = 11.78*Q*sqrt(G1/(P1-P2))/(Kd*Kw*Kc*Kv)
-    A = A*1e-6# convert mm^2 to m^2
-    return A
+    pass
 
 def API521_noise_graph(P_ratio):
     r"""Calculate the `L` parameter used in the API 521
@@ -1115,20 +1031,7 @@ def API521_noise_graph(P_ratio):
     ----------
     .. [1] API Standard 521.
     """
-    if P_ratio < 1.0:
-        P_ratio = 1.0
-    lgX = log10(P_ratio)
-    # Small curve fit
-    lower_value = 87.9084*lgX + 12.7647
-    higher_value = 4.8239*lgX + 51.6217
-    if P_ratio < 2.92:
-        value = lower_value
-    elif P_ratio < 2.93:
-        # interpolate between the two curves to keep the function continuous
-        value = interp(P_ratio, [2.92, 2.93], [lower_value, higher_value])
-    else:
-        value = higher_value
-    return value
+    pass
 
 def API521_noise(m, P1, P2, c, r):
     r"""Calculate the the noise coming from a flare tip at a
@@ -1176,11 +1079,7 @@ def API521_noise(m, P1, P2, c, r):
     ----------
     .. [1] API Standard 521.
     """
-    P_ratio = P1/P2
-    L = API521_noise_graph(P_ratio) # from chart, hardcoded for now
-    L30 = L + 10.0*log10(0.5*m*c*c)
-    Lp = L30 - 20.0*log10(r*(1.0/30.0))
-    return Lp
+    pass
 
 
 def VDI_3732_noise_ground_flare(m):
@@ -1217,8 +1116,7 @@ def VDI_3732_noise_ground_flare(m):
        https://www.wkcgroup.com/tools-room/flare-noise-calculator/.
 
     """
-    m *= 360.0
-    return 100.0 + 15.0*log10(m)
+    pass
 
 def VDI_3732_noise_elevated_flare(m):
     r"""Calculate the the noise at the flare tip of an elevated flare stack
@@ -1253,5 +1151,4 @@ def VDI_3732_noise_elevated_flare(m):
     .. [2] AdminFlare Noise Calculator. WKC Group (blog).
        https://www.wkcgroup.com/tools-room/flare-noise-calculator/.
     """
-    m *= 360.0
-    return 112.0 + 17.0*log10(m)
+    pass

@@ -214,26 +214,11 @@ __all__: list[str] = [
 
 
 fuzzy_match_fun = None
-def fuzzy_match(name: str, strings: set[str]) -> str:
-    global fuzzy_match_fun
-    if fuzzy_match_fun is not None:
-        return fuzzy_match_fun(name, strings)
-
-    try:
-        from thefuzz import process  # type: ignore[import-untyped]
-        fuzzy_match_fun = lambda name, strings: process.extract(name, strings, limit=10)[0][0]
-        # from thefuzz import process, fuzz
-        # extractOne is faster but less reliable
-        #fuzzy_match_fun = lambda name, strings: process.extractOne(name, strings, scorer=fuzz.partial_ratio)[0]
-    except ImportError: # pragma: no cover
-        import difflib
-        fuzzy_match_fun = lambda name, strings: difflib.get_close_matches(name, strings, n=1, cutoff=0)[0]
-    return fuzzy_match_fun(name, strings)
 
 LAMINAR_TRANSITION_PIPE = 2040.
 """Believed to be the most accurate result to date. Accurate to +/- 10.
 Avila, Kerstin, David Moxey, Alberto de Lozar, Marc Avila, Dwight Barkley, and
-Björn Hof. "The Onset of Turbulence in Pipe Flow." Science 333, no. 6039
+BjÃ¶rn Hof. "The Onset of Turbulence in Pipe Flow." Science 333, no. 6039
 (July 8, 2011): 192-196. doi:10.1126/science.1203223.
 """
 
@@ -262,6 +247,9 @@ presented in McKEON, B. J., C. J. SWANSON, M. V. ZAGAROLA, R. J. DONNELLY, and
 A. J. SMITS. "Friction Factors for Smooth Pipe Flow." Journal of Fluid
 Mechanics 511 (July 1, 2004): 41-44. doi:10.1017/S0022112004009796.
 """
+
+def fuzzy_match(name: str, strings: set[str]) -> str:
+    pass
 
 def friction_laminar(Re: float) -> float:
     r"""Calculates Darcy friction factor for laminar flow, as shown in [1]_ or
@@ -300,7 +288,7 @@ def friction_laminar(Re: float) -> float:
        A. J. SMITS. "Friction Factors for Smooth Pipe Flow." Journal of Fluid
        Mechanics 511 (July 1, 2004): 41-44. doi:10.1017/S0022112004009796.
     """
-    return 64./Re
+    pass
 
 
 def Blasius(Re: float) -> float:
@@ -331,15 +319,15 @@ def Blasius(Re: float) -> float:
 
     References
     ----------
-    .. [1] Blasius, H."Das Aehnlichkeitsgesetz bei Reibungsvorgängen in
-       Flüssigkeiten." In Mitteilungen über Forschungsarbeiten auf dem Gebiete
+    .. [1] Blasius, H."Das Aehnlichkeitsgesetz bei ReibungsvorgÃ¤ngen in
+       FlÃ¼ssigkeiten." In Mitteilungen Ã¼ber Forschungsarbeiten auf dem Gebiete
        des Ingenieurwesens, edited by Verein deutscher Ingenieure, 1-41.
        Berlin, Heidelberg: Springer Berlin Heidelberg, 1913.
        http://rd.springer.com/chapter/10.1007/978-3-662-02239-9_1.
     .. [2] Hager, W. H. "Blasius: A Life in Research and Education." In
        Experiments in Fluids, 566-571, 2003.
     """
-    return 0.3164/sqrt(sqrt(Re))
+    pass
 
 
 def Colebrook(Re: float, eD: float, tol: float | None=None) -> float:
@@ -419,65 +407,7 @@ def Colebrook(Re: float, eD: float, tol: float | None=None) -> float:
        Journal of the ICE 11, no. 4 (February 1, 1939): 133-156.
        doi:10.1680/ijoti.1939.13150.
     """
-    if tol == -1:
-        if Re > 10.0:
-            return Clamond(Re, eD, False)
-        else:
-            tol = None
-    elif tol == 0:
-#        from sympy import LambertW, Rational, log, sqrt
-#        Re = Rational(Re)
-#        eD_Re = Rational(eD)*Re
-#        sub = 1/Rational('6.3001')*10**(1/Rational('9.287')*eD_Re)*Re*Re
-#        lambert_term = LambertW(log(sqrt(10))*sqrt(sub))
-#        den = log(10)*eD_Re - 18.574*lambert_term
-#        return float(log(10)**2*Rational('3.7')**2*Rational('2.51')**2/(den*den))
-        try:
-            from mpmath import lambertw as mp_lambertw
-            from mpmath import log, mp, mpf
-            from mpmath import sqrt as sqrtmp
-        except ImportError:
-            raise ImportError("For exact solutions, the `mpmath` library is "
-                              "required")
-        mp.dps = 50
-        Re = mpf(Re)
-        eD_Re = mpf(eD)*Re
-        sub = 1/mpf("6.3001")*10**(1/mpf("9.287")*eD_Re)*Re*Re
-        lambert_term = mp_lambertw(log(sqrtmp(10))*sqrtmp(sub))
-        den = log(10)*eD_Re - 18.574*lambert_term
-        return float(log(10)**2*mpf("3.7")**2*mpf("2.51")**2/(den*den))
-    if tol is None:
-        try:
-            eD_Re = eD*Re
-            # 9.287 = 2.51*3.7; 6.3001 = 2.51**2
-            # xn = 1/6.3001 = 0.15872763924382155
-            # 1/9.287 = 0.10767739851405189
-            sub = 0.15872763924382155*10.0**(0.10767739851405189*eD_Re)*Re*Re
-            if isinf(sub):
-                #  Can't continue, need numerical approach
-                raise OverflowError
-            # 1.15129... = log(sqrt(10))
-            lambert_term = float(lambertw(1.151292546497022950546806896454654633998870849609375*sqrt(sub)).real)
-            # log(10) = 2.302585...; 2*2.51*3.7 = 18.574
-            # 457.28... = log(10)**2*3.7**2*2.51**2
-            den = 2.30258509299404590109361379290930926799774169921875*eD_Re - 18.574*lambert_term
-            return 457.28006463294371997108100913465023040771484375/(den*den)
-        except OverflowError:
-            pass
-    # Either user-specified tolerance, or an error in the analytical solution
-    if tol is None:
-        tol = 1e-12
-    try:
-        fd_guess = Clamond(Re, eD)
-    except ValueError:
-        fd_guess = Blasius(Re)
-    def err(x):
-        # Convert the newton search domain to always positive
-        f_12_inv = 1.0/sqrt(abs(x))
-        # 0.27027027027027023 = 1/3.7
-        return f_12_inv + 2.0*log10(eD*0.27027027027027023 + 2.51/Re*f_12_inv)
-    fd = abs(secant(err, fd_guess, xtol=tol))
-    return fd
+    pass
 
 
 def Clamond(Re: float, eD: float, fast: bool=False) -> float:
@@ -533,25 +463,7 @@ def Clamond(Re: float, eD: float, fast: bool=False) -> float:
        3665-71. doi:10.1021/ie801626g.
        http://math.unice.fr/%7Edidierc/DidPublis/ICR_2009.pdf
     """
-    X1 = eD*Re*0.1239681863354175460160858261654858382699 # (log(10)/18.574).evalf(40)
-    X2 = log(Re) - 0.7793974884556819406441139701653776731705 # log(log(10)/5.02).evalf(40)
-    F = X2 - 0.2
-    X1F = X1 + F
-    X1F1 = 1. + X1F
-
-    E = (log(X1F) - 0.2)/(X1F1)
-    F = F - (X1F1 + 0.5*E)*E*(X1F)/(X1F1 + E*(1. + (1.0/3.0)*E))
-
-    if not fast:
-        X1F = X1 + F
-        X1F1 = 1. + X1F
-        E = (log(X1F) + F - X2)/(X1F1)
-
-        b = (X1F1 + E*(1. + 1.0/3.0*E))
-        F = b/(b*F - ((X1F1 + 0.5*E)*E*(X1F)))
-        return 1.325474527619599502640416597148504422899*(F*F) # ((0.5*log(10))**2).evalf(40)
-
-    return 1.325474527619599502640416597148504422899/(F*F) # ((0.5*log(10))**2).evalf(40)
+    pass
 
 
 def Moody(Re: float, eD: float) -> float:
@@ -592,7 +504,7 @@ def Moody(Re: float, eD: float) -> float:
     .. [2] Moody, L.F.: An approximate formula for pipe friction factors.
        Trans. Am. Soc. Mech. Eng. 69,1005-1006 (1947)
     """
-    return 4.0*(1.375E-3*(1.0 + cbrt(2E4*eD + 1E6/Re)))
+    pass
 
 
 def Alshul_1952(Re: float, eD: float) -> float:
@@ -630,7 +542,7 @@ def Alshul_1952(Re: float, eD: float) -> float:
        and Combustion 90, no. 1 (January 1, 2013): 1-27.
        doi:10.1007/s10494-012-9419-7
     """
-    return 0.11*sqrt(sqrt(68.0/Re + eD))
+    pass
 
 
 def Wood_1966(Re: float, eD: float) -> float:
@@ -674,8 +586,7 @@ def Wood_1966(Re: float, eD: float) -> float:
     .. [2] Wood, D.J.: An Explicit Friction Factor Relationship, vol. 60.
        Civil Engineering American Society of Civil Engineers (1966)
     """
-    A1 = 1.62*eD**0.134
-    return 0.094*eD**0.225 + 0.53*eD + 88.0*eD**0.4*Re**-A1
+    pass
 
 
 def Churchill_1973(Re: float, eD: float) -> float:
@@ -717,8 +628,7 @@ def Churchill_1973(Re: float, eD: float) -> float:
        Stress in Turbulent Flow in Commercial Pipe." AIChE Journal 19, no. 2
        (March 1, 1973): 375-76. doi:10.1002/aic.690190228.
     """
-    term = (-2.0*log10(eD*(1.0/3.7) + (7./Re)**0.9))
-    return 1.0/(term*term)
+    pass
 
 
 def Eck_1973(Re: float, eD: float) -> float:
@@ -756,10 +666,9 @@ def Eck_1973(Re: float, eD: float) -> float:
        Computational Efficiency for Turbulent Flow in Pipes." Flow, Turbulence
        and Combustion 90, no. 1 (January 1, 2013): 1-27.
        doi:10.1007/s10494-012-9419-7
-    .. [2] Eck, B.: Technische Strömungslehre. Springer, New York (1973)
+    .. [2] Eck, B.: Technische StrÃ¶mungslehre. Springer, New York (1973)
     """
-    term = (-2.0*log10(eD*(1.0/3.715) + 15.0/Re))
-    return 1.0/(term*term)
+    pass
 
 
 def Jain_1976(Re: float, eD: float) -> float:
@@ -800,8 +709,7 @@ def Jain_1976(Re: float, eD: float) -> float:
     .. [2] Jain, Akalank K. "Accurate Explicit Equation for Friction Factor."
        Journal of the Hydraulics Division 102, no. 5 (May 1976): 674-77.
     """
-    term = (2.28-4.0*log10(eD+(29.843/Re)**0.9))
-    return 4.0/(term*term)
+    pass
 
 
 def Swamee_Jain_1976(Re: float, eD: float) -> float:
@@ -843,8 +751,7 @@ def Swamee_Jain_1976(Re: float, eD: float) -> float:
        Pipe-Flow Problems." Journal of the Hydraulics Division 102, no. 5
        (May 1976): 657-664.
     """
-    term = (-4.0*log10((6.97/Re)**0.9 + eD*(1.0/3.7)))
-    return 4.0/(term*term)
+    pass
 
 
 def Churchill_1977(Re: float, eD: float) -> float:
@@ -891,10 +798,7 @@ def Churchill_1977(Re: float, eD: float) -> float:
     .. [2] Churchill, S.W.: Friction factor equation spans all fluid flow
        regimes. Chem. Eng. J. 91, 91-92 (1977)
     """
-    A3 = (37530/Re)**16
-    A2 = (2.457*log((7./Re)**0.9 + 0.27*eD))**16
-    ff = 2.0*((8.0/Re)**12 + 1.0/(A2+A3)**1.5)**(1.0/12.)
-    return 4.0*ff
+    pass
 
 
 def Chen_1979(Re: float, eD: float) -> float:
@@ -940,9 +844,7 @@ def Chen_1979(Re: float, eD: float) -> float:
        Pipe." Industrial & Engineering Chemistry Fundamentals 18, no. 3
        (August 1, 1979): 296-97. doi:10.1021/i160071a019.
     """
-    A4 = eD**1.1098*(1.0/2.8257) + (7.149/Re)**0.8981
-    term = (-4.0*log10(eD*(1.0/3.7065) - 5.0452/Re*log10(A4)))
-    return 4.0/(term*term)
+    pass
 
 
 def Round_1980(Re: float, eD: float) -> float:
@@ -985,8 +887,7 @@ def Round_1980(Re: float, eD: float) -> float:
        Canadian Journal of Chemical Engineering 58, no. 1 (February 1, 1980):
        122-23. doi:10.1002/cjce.5450580119.
     """
-    term = (-3.6*log10(Re/(0.135*Re*eD+6.5)))
-    return 4.0/(term*term)
+    pass
 
 
 def Shacham_1980(Re: float, eD: float) -> float:
@@ -1029,8 +930,7 @@ def Shacham_1980(Re: float, eD: float) -> float:
        Factor in Pipe.'" Industrial & Engineering Chemistry Fundamentals 19,
        no. 2 (May 1, 1980): 228-228. doi:10.1021/i160074a019.
     """
-    term = (-4.0*log10(eD*(1.0/3.7) - 5.02/Re*log10(eD*(1.0/3.7) + 14.5/Re)))
-    return 4.0/(term*term)
+    pass
 
 
 def Barr_1981(Re: float, eD: float) -> float:
@@ -1074,8 +974,7 @@ def Barr_1981(Re: float, eD: float) -> float:
        ICE Proceedings 71, no. 2 (January 6, 1981): 529-35.
        doi:10.1680/iicep.1981.1895.
     """
-    term = (-2.0*log10(eD*(1.0/3.7) + 4.518*log10(Re*(1.0/7.))/(Re*(1.0+Re**0.52*(1.0/29.0)*eD**0.7))))
-    return 1.0/(term*term)
+    pass
 
 
 def Zigrang_Sylvester_1(Re: float, eD: float) -> float:
@@ -1119,9 +1018,7 @@ def Zigrang_Sylvester_1(Re: float, eD: float) -> float:
        Solution of Colebrook's Friction Factor Equation." AIChE Journal 28,
        no. 3 (May 1, 1982): 514-15. doi:10.1002/aic.690280323.
     """
-    A5 = eD*(1.0/3.7) + 13.0/Re
-    term = (-4.0*log10(eD*(1.0/3.7) - 5.02/Re*log10(A5)))
-    return 4.0/(term*term)
+    pass
 
 
 def Zigrang_Sylvester_2(Re: float, eD: float) -> float:
@@ -1169,10 +1066,7 @@ def Zigrang_Sylvester_2(Re: float, eD: float) -> float:
        Solution of Colebrook's Friction Factor Equation." AIChE Journal 28,
        no. 3 (May 1, 1982): 514-15. doi:10.1002/aic.690280323.
     """
-    A5 = eD*(1.0/3.7) + 13.0/Re
-    A6 = eD*(1.0/3.7) - 5.02/Re*log10(A5)
-    term = (-4.0*log10(eD*(1.0/3.7) - 5.02/Re*log10(A6)))
-    return 4.0/(term*term)
+    pass
 
 
 def Haaland(Re: float, eD: float) -> float:
@@ -1214,8 +1108,7 @@ def Haaland(Re: float, eD: float) -> float:
        in Turbulent Pipe Flow." Journal of Fluids Engineering 105, no. 1
        (March 1, 1983): 89-90. doi:10.1115/1.3240948.
     """
-    term = (-3.6*log10(6.9/Re +(eD*(1.0/3.7))**1.11))
-    return 4.0/(term*term)
+    pass
 
 
 def Serghides_1(Re: float, eD: float) -> float:
@@ -1264,12 +1157,7 @@ def Serghides_1(Re: float, eD: float) -> float:
     .. [2] Serghides, T. K. (1984). "Estimate friction factor accurately"
        Chemical Engineering, Vol. 91(5), pp. 63-64.
     """
-    A = -2.0*log10(eD*(1.0/3.7) + 12.0/Re)
-    B = -2.0*log10(eD*(1.0/3.7) + 2.51*A/Re)
-    C = -2.0*log10(eD*(1.0/3.7) + 2.51*B/Re)
-    B_minus_A = B - A
-    term = (A - B_minus_A*B_minus_A/(C-2.0*B + A))
-    return 1.0/(term*term)
+    pass
 
 
 def Serghides_2(Re: float, eD: float) -> float:
@@ -1317,11 +1205,7 @@ def Serghides_2(Re: float, eD: float) -> float:
     .. [2] Serghides, T. K. (1984). "Estimate friction factor accurately"
        Chemical Engineering, Vol. 91(5), pp. 63-64.
     """
-    A = -2.0*log10(eD*(1.0/3.7) + 12.0/Re)
-    B = -2.0*log10(eD*(1.0/3.7) + 2.51*A/Re)
-    x1 = A - 4.781
-    term = (4.781 - x1*x1/(B - 2.0*A + 4.781))
-    return 1.0/(term*term)
+    pass
 
 
 def Tsal_1989(Re: float, eD: float) -> float:
@@ -1365,11 +1249,7 @@ def Tsal_1989(Re: float, eD: float) -> float:
     .. [2] Tsal, R.J.: Altshul-Tsal friction factor equation.
        Heat-Piping-Air Cond. 8, 30-45 (1989)
     """
-    A = 0.11*sqrt(sqrt(68.0/Re + eD))
-    if A >= 0.018:
-        return A
-    else:
-        return 0.0028 + 0.85*A
+    pass
 
 
 def Manadilli_1997(Re: float, eD: float) -> float:
@@ -1410,8 +1290,7 @@ def Manadilli_1997(Re: float, eD: float) -> float:
     .. [2] Manadilli, G.: Replace implicit equations with signomial functions.
        Chem. Eng. 104, 129 (1997)
     """
-    term = (-2.0*log10(eD*(1.0/3.7) + 95.0*Re**-0.983 - 96.82/Re))
-    return 1.0/(term*term)
+    pass
 
 
 def Romeo_2002(Re: float, eD: float) -> float:
@@ -1456,8 +1335,7 @@ def Romeo_2002(Re: float, eD: float) -> float:
        Pipes." Chemical Engineering Journal 86, no. 3 (April 28, 2002): 369-74.
        doi:10.1016/S1385-8947(01)00254-6.
     """
-    term = (-2.0*log10(eD*(1.0/3.7065)-5.0272/Re*log10(eD*(1.0/3.827)-4.567/Re*log10((eD*(1.0/7.7918))**0.9924+(5.3326/(208.815+Re))**0.9345))))
-    return 1.0/(term*term)
+    pass
 
 
 def Sonnad_Goudar_2006(Re: float, eD: float) -> float:
@@ -1501,9 +1379,7 @@ def Sonnad_Goudar_2006(Re: float, eD: float) -> float:
        Correlation for Turbulent Flow in Smooth Pipes." Industrial & Engineering
        Chemistry Research 42, no. 12 (2003): 2878-80. https://doi.org/10.1021/ie0300676.
     """
-    S = 0.124*eD*Re + log(0.4587*Re)
-    term = (.8686*log(.4587*Re/S**(S/(S+1.0))))
-    return 1.0/(term*term)
+    pass
 
 
 def Rao_Kumar_2007(Re: float, eD: float) -> float:
@@ -1551,10 +1427,7 @@ def Rao_Kumar_2007(Re: float, eD: float) -> float:
        Division of Mechanical Sciences, Civil Engineering Indian Institute of
        Science Bangalore, India ID Code 9587 (2007)
     """
-    term = log(Re*(1.0/6.5))
-    beta = 1.0 - 0.55*exp(-0.33*term*term)
-    term = (2.0*log10(1.0/((2.0*eD*beta)*((0.444+0.135*Re)/Re))))
-    return 1.0/(term*term)
+    pass
 
 
 def Buzzelli_2008(Re: float, eD: float) -> float:
@@ -1601,10 +1474,7 @@ def Buzzelli_2008(Re: float, eD: float) -> float:
     .. [2] Buzzelli, D.: Calculating friction in one step.
        Mach. Des. 80, 54-55 (2008)
     """
-    B1 = (.774*log(Re)-1.41)/(1.0 + 1.32*sqrt(eD))
-    B2 = eD*(1.0/3.7)*Re + 2.51*B1
-    term = (B1 - (B1 + 2.0*log10(B2/Re))/(1.0 + 2.18/B2))
-    return 1.0/(term*term)
+    pass
 
 
 def Avci_Karagoz_2009(Re: float, eD: float) -> float:
@@ -1647,7 +1517,7 @@ def Avci_Karagoz_2009(Re: float, eD: float) -> float:
        Friction Factor in Smooth and Rough Pipes." Journal of Fluids
        Engineering 131, no. 6 (2009): 061203. doi:10.1115/1.3129132.
     """
-    return 6.4*(log(Re) - log(1.0 + 0.01*Re*eD*(1.0+10.0*sqrt(eD))))**-2.4
+    pass
 
 
 def Papaevangelo_2010(Re: float, eD: float) -> float:
@@ -1691,9 +1561,7 @@ def Papaevangelo_2010(Re: float, eD: float) -> float:
        Corfu, Greece: University of Ioannina Greece and Stevens Institute of
        Technology New Jersey (2010)
     """
-    x1 = (7.0-log(Re))
-    term = (log10(eD*(1.0/3.615) + 7.366*Re**-0.9142))
-    return (0.2479-0.0000947*x1*x1*x1*x1)/(term*term)
+    pass
 
 
 def Brkic_2011_1(Re: float, eD: float) -> float:
@@ -1738,9 +1606,7 @@ def Brkic_2011_1(Re: float, eD: float) -> float:
        Engineering 77, no. 1 (April 2011): 34-48.
        doi:10.1016/j.petrol.2011.02.006.
     """
-    beta = log(Re/(1.816*log(1.1*Re/log(1.0+1.1*Re))))
-    term = (-2.0*log10(10.0**(-0.4343*beta)+eD*(1.0/3.71)))
-    return 1.0/(term*term)
+    pass
 
 
 def Brkic_2011_2(Re: float, eD: float) -> float:
@@ -1785,9 +1651,7 @@ def Brkic_2011_2(Re: float, eD: float) -> float:
        Engineering 77, no. 1 (April 2011): 34-48.
        doi:10.1016/j.petrol.2011.02.006.
     """
-    beta = log(Re/(1.816*log(1.1*Re/log(1.0+1.1*Re))))
-    term = (-2.0*log10(2.18*beta/Re + eD*(1.0/3.71)))
-    return 1.0/(term*term)
+    pass
 
 
 def Fang_2011(Re: float, eD: float) -> float:
@@ -1833,8 +1697,7 @@ def Fang_2011(Re: float, eD: float) -> float:
        Reactor Technology (SMiRT19) Special Section, 241, no. 3 (March 2011):
        897-902. doi:10.1016/j.nucengdes.2010.12.019.
     """
-    term = log(0.234*eD**1.1007 - 60.525*Re**-1.1105 + 56.291*Re**-1.0712)
-    return 1.613/(term*term)
+    pass
 
 def von_Karman(eD: float) -> float:
     r"""Calculates Darcy friction factor for rough pipes at infinite Reynolds
@@ -1872,8 +1735,7 @@ def von_Karman(eD: float) -> float:
     .. [2] McGovern, Jim. "Technical Note: Friction Factor Diagrams for Pipe
        Flow." Paper, October 3, 2011. http://arrow.dit.ie/engschmecart/28.
     """
-    x = log10(eD*(1.0/3.7))
-    return 0.25/(x*x)
+    pass
 
 
 def Prandtl_von_Karman_Nikuradse(Re: float) -> float:
@@ -1921,10 +1783,7 @@ def Prandtl_von_Karman_Nikuradse(Re: float) -> float:
     .. [2] McGovern, Jim. "Technical Note: Friction Factor Diagrams for Pipe
        Flow." Paper, October 3, 2011. http://arrow.dit.ie/engschmecart/28.
     """
-    # Good 1E150 to 1E-150
-    c1 = 1.151292546497022842008995727342182103801 # log(10)/2
-    c2 = 1.325474527619599502640416597148504422899 # log(10)**2/4
-    return c2/float(lambertw((c1*Re)/2.51).real)**2
+    pass
 
 
 # Values still in table at least to 2013
@@ -2011,10 +1870,7 @@ def ft_Crane(D: float) -> float:
     .. [1] Crane Co. Flow of Fluids Through Valves, Fittings, and Pipe. Crane,
        2009.
     """
-    fast = True
-    if D < 1E-2:
-        fast = False
-    return Clamond(7.5E6*D, 3.4126825352925e-5*D**-1.0112, fast)
+    pass
 
 
 fmethods = {"Moody": (4000.0, 100000000.0, 0.0, 0.01),
@@ -2074,23 +1930,7 @@ def friction_factor_methods(Re: float, eD: float=0.0, check_ranges: bool=True) -
         List of methods which claim to be valid for the range of `Re` and `eD`
         given, [-]
     """
-    if check_ranges:
-        if Re < LAMINAR_TRANSITION_PIPE:
-            return ["laminar"]
-        methods = []
-        for n, (Re_min, Re_max, eD_min, eD_max) in fmethods.items():
-            if Re_min is not None and Re < Re_min:
-                continue
-            if Re_max is not None and Re > Re_max:
-                continue
-            if eD_min is not None and eD < eD_min:
-                continue
-            if eD_max is not None and eD > eD_max:
-                continue
-            methods.append(n)
-        return methods
-    else:
-        return list(fmethods.keys()) + ["laminar"]
+    pass
 
 
 def friction_factor(Re: float, eD: float=0.0, Method: str | None="Clamond", Darcy: bool=True) -> float:
@@ -2206,79 +2046,10 @@ def friction_factor(Re: float, eD: float=0.0, Method: str | None="Clamond", Darc
     References
     ----------
     .. [1] Avila, Kerstin, David Moxey, Alberto de Lozar, Marc Avila, Dwight
-       Barkley, and Björn Hof. "The Onset of Turbulence in Pipe Flow." Science
+       Barkley, and BjÃ¶rn Hof. "The Onset of Turbulence in Pipe Flow." Science
        333, no. 6039 (July 8, 2011): 192-96. doi:10.1126/science.1203223.
     """
-    if Method is None:
-        Method = "Clamond"
-
-    if Re < LAMINAR_TRANSITION_PIPE or Method == "laminar":
-        f = friction_laminar(Re)
-    elif Method == "Clamond":
-        f = Clamond(Re, eD, False)
-    elif Method == "Colebrook":
-        f = Colebrook(Re, eD)
-    elif Method == "Moody":
-        f = Moody(Re, eD)
-    elif Method == "Alshul_1952":
-        f = Alshul_1952(Re, eD)
-    elif Method == "Wood_1966":
-        f = Wood_1966(Re, eD)
-    elif Method == "Churchill_1973":
-        f = Churchill_1973(Re, eD)
-    elif Method == "Eck_1973":
-        f = Eck_1973(Re, eD)
-    elif Method == "Jain_1976":
-        f = Jain_1976(Re, eD)
-    elif Method == "Swamee_Jain_1976":
-        f = Swamee_Jain_1976(Re, eD)
-    elif Method == "Churchill_1977":
-        f = Churchill_1977(Re, eD)
-    elif Method == "Chen_1979":
-        f = Chen_1979(Re, eD)
-    elif Method == "Round_1980":
-        f = Round_1980(Re, eD)
-    elif Method == "Shacham_1980":
-        f = Shacham_1980(Re, eD)
-    elif Method == "Barr_1981":
-        f = Barr_1981(Re, eD)
-    elif Method == "Zigrang_Sylvester_1":
-        f = Zigrang_Sylvester_1(Re, eD)
-    elif Method == "Zigrang_Sylvester_2":
-        f = Zigrang_Sylvester_2(Re, eD)
-    elif Method == "Haaland":
-        f = Haaland(Re, eD)
-    elif Method == "Serghides_1":
-        f = Serghides_1(Re, eD)
-    elif Method == "Serghides_2":
-        f = Serghides_2(Re, eD)
-    elif Method == "Tsal_1989":
-        f = Tsal_1989(Re, eD)
-    elif Method == "Manadilli_1997":
-        f = Manadilli_1997(Re, eD)
-    elif Method == "Romeo_2002":
-        f = Romeo_2002(Re, eD)
-    elif Method == "Sonnad_Goudar_2006":
-        f = Sonnad_Goudar_2006(Re, eD)
-    elif Method == "Rao_Kumar_2007":
-        f = Rao_Kumar_2007(Re, eD)
-    elif Method == "Buzzelli_2008":
-        f = Buzzelli_2008(Re, eD)
-    elif Method == "Avci_Karagoz_2009":
-        f = Avci_Karagoz_2009(Re, eD)
-    elif Method == "Papaevangelo_2010":
-        f = Papaevangelo_2010(Re, eD)
-    elif Method == "Brkic_2011_1":
-        f = Brkic_2011_1(Re, eD)
-    elif Method == "Brkic_2011_2":
-        f = Brkic_2011_2(Re, eD)
-    elif Method == "Fang_2011":
-        f = Fang_2011(Re, eD)
-    else:
-        raise ValueError("Method not recognized")
-    if not Darcy:
-        f *= 0.25
-    return f
+    pass
 
 
 def helical_laminar_fd_White(Re: float, Di: float, Dc: float) -> float:
@@ -2334,11 +2105,7 @@ def helical_laminar_fd_White(Re: float, Di: float, Dc: float) -> float:
     .. [3] Blevins, Robert D. Applied Fluid Dynamics Handbook. New York, N.Y.:
        Van Nostrand Reinhold Co., 1984.
     """
-    De = Dean(Re=Re, Di=Di, D=Dc)
-    fd = friction_laminar(Re)
-    if De < 11.6:
-        return fd
-    return fd/(1. - (1. - (11.6/De)**0.45)**(1./0.45)) # 1/.45 sometimes said to be 2.2
+    pass
 
 
 def helical_laminar_fd_Mori_Nakayama(Re: float, Di: float, Dc: float) -> float:
@@ -2393,11 +2160,7 @@ def helical_laminar_fd_Mori_Nakayama(Re: float, Di: float, Dc: float) -> float:
        Helical Coil." Experimental Thermal and Fluid Science 36 (January 2012):
        194-204. doi:10.1016/j.expthermflusci.2011.09.013.
     """
-    De = Dean(Re=Re, Di=Di, D=Dc)
-    fd = friction_laminar(Re)
-    if De < 42.328036:
-        return fd*1.405296
-    return fd*(0.108*sqrt(De))/(1. - 3.253/sqrt(De))
+    pass
 
 
 def helical_laminar_fd_Schmidt(Re: float, Di: float, Dc: float) -> float:
@@ -2440,7 +2203,7 @@ def helical_laminar_fd_Schmidt(Re: float, Di: float, Dc: float) -> float:
 
     References
     ----------
-    .. [1] Schmidt, Eckehard F. "Wärmeübergang Und Druckverlust in
+    .. [1] Schmidt, Eckehard F. "WÃ¤rmeÃ¼bergang Und Druckverlust in
        Rohrschlangen." Chemie Ingenieur Technik 39, no. 13 (July 10, 1967):
        781-89. doi:10.1002/cite.330391302.
     .. [2] El-Genk, Mohamed S., and Timothy M. Schriener. "A Review and
@@ -2452,9 +2215,7 @@ def helical_laminar_fd_Schmidt(Re: float, Di: float, Dc: float) -> float:
        Helical Coil." Experimental Thermal and Fluid Science 36 (January 2012):
        194-204. doi:10.1016/j.expthermflusci.2011.09.013.
     """
-    fd = friction_laminar(Re)
-    D_ratio = Di/Dc
-    return fd*(1. + 0.14*D_ratio**0.97*Re**(1. - 0.644*D_ratio**0.312))
+    pass
 
 
 def helical_turbulent_fd_Srinivasan(Re: float, Di: float, Dc: float) -> float:
@@ -2504,8 +2265,7 @@ def helical_turbulent_fd_Srinivasan(Re: float, Di: float, Dc: float) -> float:
     .. [3] Rohsenow, Warren and James Hartnett and Young Cho. Handbook of Heat
        Transfer, 3E. New York: McGraw-Hill, 1998.
     """
-    De = Dean(Re=Re, Di=Di, D=Dc)
-    return 0.336*De**-0.2
+    pass
 
 
 def helical_turbulent_fd_Schmidt(Re: float, Di: float, Dc: float, roughness: float=0) -> float:
@@ -2555,7 +2315,7 @@ def helical_turbulent_fd_Schmidt(Re: float, Di: float, Dc: float, roughness: flo
 
     References
     ----------
-    .. [1] Schmidt, Eckehard F. "Wärmeübergang Und Druckverlust in
+    .. [1] Schmidt, Eckehard F. "WÃ¤rmeÃ¼bergang Und Druckverlust in
        Rohrschlangen." Chemie Ingenieur Technik 39, no. 13 (July 10, 1967):
        781-89. doi:10.1002/cite.330391302.
     .. [2] El-Genk, Mohamed S., and Timothy M. Schriener. "A Review and
@@ -2563,11 +2323,7 @@ def helical_turbulent_fd_Schmidt(Re: float, Di: float, Dc: float, roughness: flo
        Toroidal and Helically Coiled Tubes." Heat Transfer Engineering 0, no. 0
        (June 7, 2016): 1-28. doi:10.1080/01457632.2016.1194693.
     """
-    fd = friction_factor(Re=Re, eD=roughness/Di)
-    if Re < 2.2E4:
-        return fd*(1. + 2.88E4/Re*(Di/Dc)**0.62)
-    else:
-        return fd*(1. + 0.0823*(1. + Di/Dc)*(Di/Dc)**0.53*sqrt(sqrt(Re)))
+    pass
 
 
 def helical_turbulent_fd_Mori_Nakayama(Re: float, Di: float, Dc: float) -> float:
@@ -2621,9 +2377,7 @@ def helical_turbulent_fd_Mori_Nakayama(Re: float, Di: float, Dc: float) -> float
        Helical Coil Tubes." Fluid Dynamics Research 28, no. 4 (April 2001):
        295-310. doi:10.1016/S0169-5983(00)00034-4.
     """
-    Di_Dc = Di/Dc
-    term = (Re*Di_Dc*Di_Dc)**-0.2
-    return 0.3/sqrt(Dc/Di)*term*(1. + 0.112*term)
+    pass
 
 
 def helical_turbulent_fd_Prasad(Re: float, Di: float, Dc: float, roughness: float=0) -> float:
@@ -2675,9 +2429,7 @@ def helical_turbulent_fd_Prasad(Re: float, Di: float, Dc: float, roughness: floa
        Toroidal and Helically Coiled Tubes." Heat Transfer Engineering 0, no. 0
        (June 7, 2016): 1-28. doi:10.1080/01457632.2016.1194693.
     """
-    fd = friction_factor(Re=Re, eD=roughness/Di)
-    Di_Dc = Di/Dc
-    return fd*(1. + 0.18*sqrt(sqrt(Re*Di_Dc*Di_Dc)))
+    pass
 
 
 def helical_turbulent_fd_Czop(Re: float, Di: float, Dc: float) -> float:
@@ -2725,8 +2477,7 @@ def helical_turbulent_fd_Czop(Re: float, Di: float, Dc: float) -> float:
        Toroidal and Helically Coiled Tubes." Heat Transfer Engineering 0, no. 0
        (June 7, 2016): 1-28. doi:10.1080/01457632.2016.1194693.
     """
-    De = Dean(Re=Re, Di=Di, D=Dc)
-    return 0.096*De**-0.1517
+    pass
 
 
 def helical_turbulent_fd_Guo(Re: float, Di: float, Dc: float) -> float:
@@ -2774,7 +2525,7 @@ def helical_turbulent_fd_Guo(Re: float, Di: float, Dc: float) -> float:
        Toroidal and Helically Coiled Tubes." Heat Transfer Engineering 0, no. 0
        (June 7, 2016): 1-28. doi:10.1080/01457632.2016.1194693.
     """
-    return 0.638*Re**-0.15*(Di/Dc)**0.51
+    pass
 
 
 def helical_turbulent_fd_Ju(Re: float, Di: float, Dc: float, roughness: float=0.0) -> float:
@@ -2824,8 +2575,7 @@ def helical_turbulent_fd_Ju(Re: float, Di: float, Dc: float, roughness: float=0.
        Toroidal and Helically Coiled Tubes." Heat Transfer Engineering 0, no. 0
        (June 7, 2016): 1-28. doi:10.1080/01457632.2016.1194693.
     """
-    fd = friction_factor(Re=Re, eD=roughness/Di)
-    return fd*(1. + 0.11*Re**0.23*(Di/Dc)**0.14)
+    pass
 
 
 def helical_turbulent_fd_Mandal_Nigam(Re: float, Di: float, Dc: float, roughness: float=0) -> float:
@@ -2875,9 +2625,7 @@ def helical_turbulent_fd_Mandal_Nigam(Re: float, Di: float, Dc: float, roughness
        Toroidal and Helically Coiled Tubes." Heat Transfer Engineering 0, no. 0
        (June 7, 2016): 1-28. doi:10.1080/01457632.2016.1194693.
     """
-    De = Dean(Re=Re, Di=Di, D=Dc)
-    fd = friction_factor(Re=Re, eD=roughness/Di)
-    return fd*(1. + 0.03*De**0.27)
+    pass
 
 
 def helical_transition_Re_Seth_Stahel(Di: float, Dc: float) -> float:
@@ -2915,7 +2663,7 @@ def helical_transition_Re_Seth_Stahel(Di: float, Dc: float) -> float:
        IMMERSED IN AGITATED VESSELS." Industrial & Engineering Chemistry 61,
        no. 6 (June 1, 1969): 39-49. doi:10.1021/ie50714a007.
     """
-    return 1900.*(1. + 8.*sqrt(Di/Dc))
+    pass
 
 
 def helical_transition_Re_Ito(Di: float, Dc: float) -> float:
@@ -2962,7 +2710,7 @@ def helical_transition_Re_Ito(Di: float, Dc: float) -> float:
        Transfer 10, no. 5 (May 1, 1967): 681-95.
        doi:10.1016/0017-9310(67)90113-5.
     """
-    return 2E4*(Di/Dc)**0.32
+    pass
 
 
 def helical_transition_Re_Kubair_Kuloor(Di: float, Dc: float) -> float:
@@ -3007,7 +2755,7 @@ def helical_transition_Re_Kubair_Kuloor(Di: float, Dc: float) -> float:
        Toroidal and Helically Coiled Tubes." Heat Transfer Engineering 0, no. 0
        (June 7, 2016): 1-28. doi:10.1080/01457632.2016.1194693.
     """
-    return 1.273E4*(Di/Dc)**0.2
+    pass
 
 
 def helical_transition_Re_Kutateladze_Borishanskii(Di: float, Dc: float) -> float:
@@ -3043,14 +2791,14 @@ def helical_transition_Re_Kutateladze_Borishanskii(Di: float, Dc: float) -> floa
 
     References
     ----------
-    .. [1] Kutateladze, S. S, and V. M Borishanskiĭ. A Concise Encyclopedia of
+    .. [1] Kutateladze, S. S, and V. M BorishanskiÄ­. A Concise Encyclopedia of
        Heat Transfer. Oxford; New York: Pergamon Press, 1966.
     .. [2] El-Genk, Mohamed S., and Timothy M. Schriener. "A Review and
        Correlations for Convection Heat Transfer and Pressure Losses in
        Toroidal and Helically Coiled Tubes." Heat Transfer Engineering 0, no. 0
        (June 7, 2016): 1-28. doi:10.1080/01457632.2016.1194693.
     """
-    return 2300. + 1.05E4*(Di/Dc)**0.3
+    pass
 
 
 def helical_transition_Re_Schmidt(Di: float, Dc: float) -> float:
@@ -3086,7 +2834,7 @@ def helical_transition_Re_Schmidt(Di: float, Dc: float) -> float:
 
     References
     ----------
-    .. [1] Schmidt, Eckehard F. "Wärmeübergang Und Druckverlust in
+    .. [1] Schmidt, Eckehard F. "WÃ¤rmeÃ¼bergang Und Druckverlust in
        Rohrschlangen." Chemie Ingenieur Technik 39, no. 13 (July 10, 1967):
        781-89. doi:10.1002/cite.330391302.
     .. [2] El-Genk, Mohamed S., and Timothy M. Schriener. "A Review and
@@ -3097,7 +2845,7 @@ def helical_transition_Re_Schmidt(Di: float, Dc: float) -> float:
        Transfer. Heat Exchanger Design Handbook. Washington:
        Hemisphere Pub. Corp., 1983.
     """
-    return 2300.*(1. + 8.6*(Di/Dc)**0.45)
+    pass
 
 
 def helical_transition_Re_Srinivasan(Di: float, Dc: float) -> float:
@@ -3143,7 +2891,7 @@ def helical_transition_Re_Srinivasan(Di: float, Dc: float) -> float:
     .. [3] Rohsenow, Warren and James Hartnett and Young Cho. Handbook of Heat
        Transfer, 3E. New York: McGraw-Hill, 1998.
     """
-    return 2100.*(1. + 12.*sqrt(Di/Dc))
+    pass
 
 
 curved_friction_laminar_methods = {"White": helical_laminar_fd_White,
@@ -3221,21 +2969,7 @@ def helical_Re_crit(Di: float, Dc: float, Method: str="Schmidt") -> float:
        Transfer. Heat Exchanger Design Handbook. Washington:
        Hemisphere Pub. Corp., 1983.
     """
-    if Method == "Schmidt":
-        Re_crit = helical_transition_Re_Schmidt(Di, Dc)
-    elif Method == "Seth Stahel":
-        Re_crit = helical_transition_Re_Seth_Stahel(Di, Dc)
-    elif Method == "Ito":
-        Re_crit = helical_transition_Re_Ito(Di, Dc)
-    elif Method == "Kubair Kuloor":
-        Re_crit = helical_transition_Re_Kubair_Kuloor(Di, Dc)
-    elif Method == "Kutateladze Borishanskii":
-        Re_crit = helical_transition_Re_Kutateladze_Borishanskii(Di, Dc)
-    elif Method == "Srinivasan":
-        Re_crit = helical_transition_Re_Srinivasan(Di, Dc)
-    else:
-        raise ValueError(_bad_curved_transition_method)
-    return Re_crit
+    pass
 
 
 def friction_factor_curved_methods(Re: float, Di: float, Dc: float, roughness: float=0.0,
@@ -3270,15 +3004,7 @@ def friction_factor_curved_methods(Re: float, Di: float, Dc: float, roughness: f
         List of methods in the regime the specified `Re` is in at the given
         `Di` and `Dc`.
     """
-    Re_crit = helical_Re_crit(Di=Di, Dc=Dc, Method="Schmidt")
-    turbulent = not Re < Re_crit
-    if check_ranges:
-        if turbulent:
-            return list(curved_friction_turbulent_methods_list)
-        else:
-            return list(curved_friction_laminar_methods_list)
-    else:
-        return curved_friction_turbulent_methods_list + curved_friction_laminar_methods_list
+    pass
 
 
 def friction_factor_curved(Re: float, Di: float, Dc: float, roughness: float=0.0, Method: str | None=None,
@@ -3368,43 +3094,7 @@ def friction_factor_curved(Re: float, Di: float, Dc: float, roughness: float=0.0
        Transfer. Heat Exchanger Design Handbook. Washington:
        Hemisphere Pub. Corp., 1983.
     """
-    Re_crit = helical_Re_crit(Di=Di, Dc=Dc, Method=Rec_method)
-    turbulent = not Re < Re_crit
-
-    if Method is None:
-        Method2 = turbulent_method if turbulent else laminar_method
-    else:
-        Method2 = Method # Use second variable to keep numba types happy
-    # Laminar
-    if Method2 == "Schmidt laminar":
-        f = helical_laminar_fd_Schmidt(Re, Di, Dc)
-    elif Method2 == "White":
-        f = helical_laminar_fd_White(Re, Di, Dc)
-    elif Method2 == "Mori Nakayama laminar":
-        f = helical_laminar_fd_Mori_Nakayama(Re, Di, Dc)
-    # Turbulent with roughness support
-    elif Method2 == "Schmidt turbulent":
-        f = helical_turbulent_fd_Schmidt(Re, Di, Dc, roughness)
-    elif Method2 == "Prasad":
-        f = helical_turbulent_fd_Prasad(Re, Di, Dc, roughness)
-    elif Method2 == "Ju":
-        f = helical_turbulent_fd_Ju(Re, Di, Dc, roughness)
-    elif Method2 == "Mandal Nigam":
-        f = helical_turbulent_fd_Mandal_Nigam(Re, Di, Dc, roughness)
-    # Turbulent without roughness support
-    elif Method2 == "Mori Nakayama turbulent":
-        f = helical_turbulent_fd_Mori_Nakayama(Re, Di, Dc)
-    elif Method2 == "Czop":
-        f = helical_turbulent_fd_Czop(Re, Di, Dc)
-    elif Method2 == "Guo":
-        f = helical_turbulent_fd_Guo(Re, Di, Dc)
-    elif Method2 == "Srinivasan turbulent":
-        f = helical_turbulent_fd_Srinivasan(Re, Di, Dc)
-    else:
-        raise ValueError("Invalid method for friction factor calculation")
-    if not Darcy:
-        f *= 0.25
-    return f
+    pass
 
 ### Plate heat exchanger single phase
 
@@ -3480,19 +3170,7 @@ def friction_plate_Martin_1999(Re: float, chevron_angle: float) -> float:
     .. [3] Shah, Ramesh K., and Dusan P. Sekulic. Fundamentals of Heat
        Exchanger Design. 1st edition. Hoboken, NJ: Wiley, 2002.
     """
-    phi = radians(chevron_angle)
-
-    if Re < 2000.:
-        f0 = 16./Re
-        f1 = 149./Re + 0.9625
-    else:
-        f0 = (1.56*log(Re) - 3.0)**-2
-        f1 = 9.75*Re**-0.289
-
-    rhs = cos(phi)*1.0/sqrt(0.045*tan(phi) + 0.09*sin(phi) + f0/cos(phi))
-    rhs += (1. - cos(phi))*1.0/sqrt(3.8*f1)
-    ff = rhs**-2.
-    return ff*4.0
+    pass
 
 
 def friction_plate_Martin_VDI(Re: float, chevron_angle: float) -> float:
@@ -3565,20 +3243,7 @@ def friction_plate_Martin_VDI(Re: float, chevron_angle: float) -> float:
     .. [1] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd edition.
        Berlin; New York:: Springer, 2010.
     """
-    phi = radians(chevron_angle)
-
-    if Re < 2000.:
-        f0 = 64./Re
-        f1 = 597./Re + 3.85
-    else:
-        f0 = (1.8*log10(Re) - 1.5)**-2
-        f1 = 39.*Re**-0.289
-
-    a, b, c = 3.8, 0.18, 0.36
-
-    rhs = cos(phi)*1.0/sqrt(b*tan(phi) + c*sin(phi) + f0/cos(phi))
-    rhs += (1. - cos(phi))*1.0/sqrt(a*f1)
-    return rhs**-2.0
+    pass
 
 Kumar_beta_list = [30.0, 45.0, 50.0, 60.0, 65.0]
 
@@ -3669,26 +3334,7 @@ def friction_plate_Kumar(Re: float, chevron_angle: float) -> float:
        Heat Transfer Engineering 24, no. 5 (September 1, 2003): 3-16.
        doi:10.1080/01457630304056.
     """
-    beta_list_len = len(Kumar_beta_list)
-
-    for i in range(beta_list_len):
-        if chevron_angle <= Kumar_beta_list[i]:
-            C2_options, p_options, Re_ranges = Kumar_C2s[i], Kumar_Ps[i], Kumar_fd_Res[i]
-            break
-        elif i == beta_list_len-1:
-            C2_options, p_options, Re_ranges = Kumar_C2s[-1], Kumar_Ps[-1], Kumar_fd_Res[-1]
-
-    Re_len = len(Re_ranges)
-
-    for j in range(Re_len):
-        if Re <= Re_ranges[j]:
-            C2, p = C2_options[j], p_options[j]
-            break
-        elif j == Re_len-1:
-            C2, p = C2_options[-1], p_options[-1]
-
-    # Originally in Fanning friction factor basis
-    return 4.0*C2*Re**-p
+    pass
 
 
 def friction_plate_Muley_Manglik(Re: float, chevron_angle: float, plate_enlargement_factor: float) -> float:
@@ -3748,14 +3394,7 @@ def friction_plate_Muley_Manglik(Re: float, chevron_angle: float, plate_enlargem
        Heat Transfer Engineering 24, no. 5 (September 1, 2003): 3-16.
        doi:10.1080/01457630304056.
     """
-    beta, phi = chevron_angle, plate_enlargement_factor
-    # Beta is indeed chevron angle; with respect to angle of movement
-    # Still might be worth another check
-    t1 = (2.917 - 0.1277*beta + 2.016E-3*beta**2)
-    t2 = (5.474 - 19.02*phi + 18.93*phi**2 - 5.341*phi**3)
-    t3 = -(0.2 + 0.0577*sin(pi*beta/45. + 2.1))
-    # Equation returns fanning friction factor
-    return 4*t1*t2*Re**t3
+    pass
 
 
 # Data from the Handbook of Hydraulic Resistance, 4E, in format (min, max, avg)
@@ -3987,7 +3626,7 @@ _roughness = {"Brass": .00000152, "Lead": .00000152, "Glass": .00000152,
 
 """Holds a dict of tuples in format (min, max, average) roughness values in
 meters from the source
-Idelʹchik, I. E, and A. S Ginevskiĭ. Handbook of Hydraulic
+IdelÊ¹chik, I. E, and A. S GinevskiÄ­. Handbook of Hydraulic
 Resistance. Redding, CT: Begell House, 2007.
 """
 HHR_roughness = {}
@@ -4092,24 +3731,7 @@ def roughness_Farshad(ID: str | None=None, D: float | None=None, coeffs: tuple[f
        Values for Modern Pipes." SPE Drilling & Completion 21, no. 3 (September
        1, 2006): 212-215. doi:10.2118/89040-PA.
     """
-    # Case 1, coeffs given; only run if ID is not given.
-    if ID is None and coeffs is not None:
-        if D is None:
-            raise ValueError("D is required when using coeffs")
-        A, B = coeffs
-        return A*(D/inch)**(B + 1.0)*inch
-    # Case 2, lookup parameters
-    if ID in _Farshad_roughness: # numba: delete
-        dat = _Farshad_roughness[ID] # numba: delete
-#    try: # numba: uncomment
-#        dat = _Farshad_roughness_values[_Farshad_roughness_keys.index(ID)] # numba: uncomment
-#    except: # numba: uncomment
-#        raise KeyError('ID was not in _Farshad_roughness.') # numba: uncomment
-    if D is None:
-        return dat[0]
-    else:
-        A, B = dat[1], dat[2]
-        return A*(D/inch)**(B+1)*inch
+    pass
 
 
 roughness_clean_names = set(_roughness.keys())
@@ -4144,17 +3766,10 @@ def nearest_material_roughness(name: str, clean: bool | None=None) -> str:
 
     References
     ----------
-    .. [1] Idel`chik, I. E, and A. S Ginevskiĭ. Handbook of Hydraulic
+    .. [1] Idel`chik, I. E, and A. S GinevskiÄ­. Handbook of Hydraulic
        Resistance. Redding, CT: Begell House, 2007.
     """
-    if clean is None:
-        d = _all_roughness.keys()  # type: ignore[assignment]
-    else:
-        if clean:
-            d = roughness_clean_names  # type: ignore[assignment]
-        else:
-            d = HHR_roughness.keys()
-    return fuzzy_match(name, d)  # type: ignore[arg-type]
+    pass
 
 
 def material_roughness(ID: str, D: float | None=None, optimism: bool | None=None) -> float:
@@ -4188,27 +3803,13 @@ def material_roughness(ID: str, D: float | None=None, optimism: bool | None=None
 
     References
     ----------
-    .. [1] Idel`chik, I. E, and A. S Ginevskiĭ. Handbook of Hydraulic
+    .. [1] Idel`chik, I. E, and A. S GinevskiÄ­. Handbook of Hydraulic
        Resistance. Redding, CT: Begell House, 2007.
     .. [2] Farshad, Fred F., and Herman H. Rieke. "Surface Roughness Design
        Values for Modern Pipes." SPE Drilling & Completion 21, no. 3 (September
        1, 2006): 212-215. doi:10.2118/89040-PA.
     """
-    if ID in _Farshad_roughness:
-        return roughness_Farshad(ID, D)
-    elif ID in _roughness:
-        return _roughness[ID]
-    elif ID in HHR_roughness:
-        minimum, maximum, avg = HHR_roughness[ID]
-        if optimism is None:
-            return avg if avg else (maximum if maximum else minimum)
-        elif optimism is True:
-            return minimum if minimum else (avg if avg else maximum)
-        else:
-            return maximum if maximum else (avg if avg else minimum)
-    else:
-        return material_roughness(nearest_material_roughness(ID, clean=False),
-                                  D=D, optimism=optimism)
+    pass
 
 def transmission_factor(fd: float | None=None, F: float | None=None) -> float:
     r"""Calculates either transmission factor from Darcy friction factor,
@@ -4248,12 +3849,7 @@ def transmission_factor(fd: float | None=None, F: float | None=None) -> float:
     .. [1] Menon, E. Shashi. Gas Pipeline Hydraulics. 1st edition. Boca Raton,
        FL: CRC Press, 2005.
     """
-    if fd is not None:
-        return 2./sqrt(fd)
-    elif F is not None:
-        return 4./(F*F)
-    else:
-        raise ValueError("Either Darcy friction factor or transmission factor is needed")
+    pass
 
 
 def one_phase_dP(m: float, rho: float, mu: float, D: float, roughness: float=0.0, L: float=1.0, Method: None=None) -> float:
@@ -4295,12 +3891,7 @@ def one_phase_dP(m: float, rho: float, mu: float, D: float, roughness: float=0.0
     .. [1] Crane Co. Flow of Fluids Through Valves, Fittings, and Pipe. Crane,
        2009.
     """
-    D2 = D*D
-    V = m/(0.25*pi*D2*rho)
-    Re = Reynolds(V=V, rho=rho, mu=mu, D=D)
-    fd = friction_factor(Re=Re, eD=roughness/D, Method=Method)
-    dP = fd*L/D*(0.5*rho*V*V)
-    return dP
+    pass
 
 
 def one_phase_dP_acceleration(m, D, rho_o, rho_i, D_i=None):
@@ -4342,20 +3933,7 @@ def one_phase_dP_acceleration(m, D, rho_o, rho_i, D_i=None):
     >>> one_phase_dP_acceleration(m=1, D=0.1, rho_o=827.1, rho_i=830, D_i=.05)
     -146.1640615999393
     """
-    if D_i is None:
-        D_i = D
-    A_i = 0.25*pi*D_i*D_i
-    A_o = 0.25*pi*D*D
-
-    Q_i = m/rho_i
-    v_i = Q_i/A_i
-
-    Q_o = m/rho_o
-    v_o = Q_o/A_o
-
-    rho_avg = 0.5*(rho_o + rho_i)
-
-    return 0.5*rho_avg*(v_o*v_o - v_i*v_i)
+    pass
     # return 0.5*rho_o*v_o**2 - 0.5*rho_i*v_i**2
     # G = m/(pi*D*D)
     # G_i = m/(pi*D_i*D_i)
@@ -4415,9 +3993,7 @@ def one_phase_dP_dz_acceleration(m: float, D: float, rho: float, dv_dP: float, d
        Pipes. Pap/Cdr edition. Richardson, TX: Society of Petroleum Engineers,
        2006.
     """
-    A = 0.25*pi*D*D
-    G = m/A
-    return -G*G*(dP_dL*dv_dP - dA_dL/(rho*A))
+    pass
 
 
 def one_phase_dP_gravitational(angle: float, rho: float, L: float=1.0, g: float=g) -> float:
@@ -4459,5 +4035,4 @@ def one_phase_dP_gravitational(angle: float, rho: float, L: float=1.0, g: float=
     >>> one_phase_dP_gravitational(angle=90, rho=2.6, L=4)
     101.98916
     """
-    angle = radians(angle)
-    return L*g*sin(angle)*rho
+    pass

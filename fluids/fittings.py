@@ -256,9 +256,7 @@ def change_K_basis(K1: float, D1: float, D2: float) -> float:
     .. [1] Rennels, Donald C., and Hobart M. Hudson. Pipe Flow: A Practical
        and Comprehensive Guide. 1st edition. Hoboken, N.J: Wiley, 2012.
     """
-    r = D2/D1
-    r *= r
-    return K1*r*r
+    pass
 
 
 ### Entrances
@@ -315,17 +313,7 @@ def entrance_sharp(method: str="Rennels") -> float:
     .. [6] Swamee, Prabhata K., and Ashok K. Sharma. Design of Water Supply
        Pipe Networks. John Wiley & Sons, 2008.
     """
-    if method is None:
-        method = "Rennels"
-    if method in ("Swamee", "Blevins", "Crane", "Idelchik"):
-        return 0.50
-    elif method == "Miller":
-        # From entrance_rounded(Di=0.9, rc=0.0, method='Miller'); Not saying it's right
-        return 0.5092676683721356
-    elif method == "Rennels":
-        return 0.57
-    else:
-        raise ValueError(entrance_sharp_method_missing)
+    pass
 
 entrance_distance_Miller_coeffs = [3.5979871366071166, -2.735407311020481, -14.08678246875138,
                                    10.637236472292983, 21.99568490754116, -16.38501138746954,
@@ -477,39 +465,7 @@ def entrance_distance(Di: float, t: float | None=None, l: float | None=None, met
     .. [6] Crane Co. Flow of Fluids Through Valves, Fittings, and Pipe. Crane,
        2009.
     """
-    if method is None:
-        method = "Rennels"
-    if method in ("Rennels", "Miller", "Idelchik", "Harris"):
-        if t is None:
-            raise ValueError(f"t is required for {method} method")
-        t2 = t
-    if method == "Rennels":
-        t_Di = t2/Di
-        if t_Di > 0.05:
-            t_Di = 0.05
-        return 1.12 + t_Di*(t_Di*(80.0*t_Di + 216.0) - 22.0)
-    elif method == "Miller":
-        t_Di = t2/Di
-        if t_Di > 0.3:
-            t_Di = 0.3
-        return horner(entrance_distance_Miller_coeffs, 20.0/3.0*(t_Di - 0.15))
-    elif method == "Idelchik":
-        if l is None:
-            l = Di
-        t_Di = min(t2/Di, 1.0)
-        l_Di = min(l/Di, 10.0)
-        K = float(entrance_distance_Idelchik_obj(l_Di, t_Di))
-        if K < 0.0:
-            K = 0.0
-        return K
-    elif method == "Harris":
-        ratio = min(t2/Di, 0.289145) # max value for interpolation - extrapolation looks bad
-        K = float(entrance_distance_Harris_obj(ratio))
-        return K
-    elif method == "Crane":
-        return 0.78
-    else:
-        raise ValueError(entrance_distance_unrecognized_msg)
+    pass
 
 
 entrance_distance_45_Miller_coeffs = [1.866792110435199, -2.8873199398381075, -4.814715029513536,
@@ -556,11 +512,7 @@ def entrance_distance_45_Miller(Di: float, Di0: float) -> float:
     .. [1] Miller, Donald S. Internal Flow Systems: Design and Performance
        Prediction. Gulf Publishing Company, 1990.
     """
-    t = 0.5*(Di0 - Di)
-    t_Di = t/Di
-    if t_Di > 0.3:
-        t_Di = 0.3
-    return horner(entrance_distance_45_Miller_coeffs, 6.66666666666666696*(t_Di-0.15))
+    pass
 
 
 entrance_angled_methods = ["Idelchik"]
@@ -581,7 +533,7 @@ def entrance_angled(angle: float, method: str="Idelchik") -> float:
     Parameters
     ----------
     angle : float
-        Angle of inclination (90° = straight, 0° = parallel to pipe wall),
+        Angle of inclination (90Â° = straight, 0Â° = parallel to pipe wall),
         [degrees]
     method : str, optional
         The method to use; only 'Idelchik' is supported
@@ -612,11 +564,7 @@ def entrance_angled(angle: float, method: str="Idelchik") -> float:
     .. [3] Blevins, Robert D. Applied Fluid Dynamics Handbook. New York, N.Y.:
        Van Nostrand Reinhold Co., 1984.
     """
-    if method == "Idelchik" or method is None:
-        cos_term = cos(deg2rad*angle)
-        return 0.57 + cos_term*(0.2*cos_term + 0.3)
-    else:
-        raise ValueError(entrance_angled_methods_missing)
+    pass
 
 
 entrance_rounded_Miller_coeffs = [1.3127209945178038, 0.19963046592715727, -6.49081916725612,
@@ -752,41 +700,7 @@ def entrance_rounded(Di: float, rc: float, method: str="Rennels") -> float:
        Soprotivleniyam, Koeffitsienty Mestnykh Soprotivlenii i Soprotivleniya
        Treniya). National technical information Service, 1966.
     """
-    if method is None:
-        method = "Rennels"
-    ratio = rc/Di
-    if method == "Rennels":
-        if ratio > 1.0:
-            return 0.03
-
-        lbd = (1.0 - 0.30*sqrt(ratio) - 0.70*ratio)
-        lbd *= lbd
-        lbd = 1.0 + 0.622*lbd*lbd
-        return 0.0696*(1.0 - 0.569*ratio)*lbd*lbd + (lbd - 1.0)*(lbd - 1.0)
-    elif method == "Swamee":
-        return 0.5/(1.0 + 36.0*(ratio)**1.2)
-    elif method == "Crane":
-        if ratio < 0:
-            return 0.5
-        elif ratio > 0.15:
-            return 0.04
-        else:
-            return interp(ratio, entrance_rounded_ratios_Crane,
-                          entrance_rounded_Ks_Crane)
-    elif method == "Miller":
-        if ratio > 0.3:
-            ratio = 0.3
-        return horner(entrance_rounded_Miller_coeffs, (20.0/3.0)*(ratio - 0.15))
-    elif method == "Harris":
-        if ratio > .16:
-            return 0.0
-        return float(splev(ratio, entrance_rounded_Harris_tck))
-    elif method == "Idelchik":
-        if ratio > .2:
-            return entrance_rounded_Ks_Idelchik[-1]
-        return float(splev(ratio, entrance_rounded_Idelchik_tck))
-    else:
-        raise ValueError(entrance_rounded_methods_error)
+    pass
 
 
 entrance_beveled_methods = ["Rennels", "Idelchik"]
@@ -880,16 +794,7 @@ def entrance_beveled(Di: float, l: float, angle: float, method: str="Rennels") -
        Soprotivleniyam, Koeffitsienty Mestnykh Soprotivlenii i Soprotivleniya
        Treniya). National technical information Service, 1966.
     """
-    if method is None:
-        method = "Rennels"
-    if method == "Rennels":
-        Cb = (1-angle/90.)*(angle/90.)**(1./(1 + l/Di ))
-        lbd = 1 + 0.622*(1 - 1.5*Cb*(l/Di)**((1 - sqrt(sqrt(l/Di)))/2.))
-        return 0.0696*(1 - Cb*l/Di)*lbd**2 + (lbd - 1.)**2
-    elif method == "Idelchik":
-        return float(bisplev(angle*2.0, l/Di, entrance_beveled_Idelchik_tck))
-    else:
-        raise ValueError(entrance_beveled_methods_unknown_msg)
+    pass
 
 
 def entrance_beveled_orifice(Di: float, Do: float, l: float, angle: float) -> float:
@@ -938,9 +843,7 @@ def entrance_beveled_orifice(Di: float, Do: float, l: float, angle: float) -> fl
     .. [1] Rennels, Donald C., and Hobart M. Hudson. Pipe Flow: A Practical
        and Comprehensive Guide. 1st edition. Hoboken, N.J: Wiley, 2012.
     """
-    Cb = (1-angle/90.)*(angle/90.)**(1./(1 + l/Do ))
-    lbd = 1 + 0.622*(1 - Cb*(l/Do)**((1 - sqrt(sqrt(l/Do)))/2.))
-    return 0.0696*(1 - Cb*l/Do)*lbd**2 + (lbd - (Do/Di)**2)**2
+    pass
 
 
 ### Exits
@@ -976,7 +879,7 @@ def exit_normal() -> float:
     .. [1] Rennels, Donald C., and Hobart M. Hudson. Pipe Flow: A Practical
        and Comprehensive Guide. 1st edition. Hoboken, N.J: Wiley, 2012.
     """
-    return 1.0
+    pass
 
 
 ### Bends
@@ -1091,19 +994,13 @@ bend_rounded_Miller_C_o_limits = [30.260656153593906, 26.28093462852014, 22.1060
 bend_rounded_Miller_C_o_limit_0_01 = [0.6169055099514943, 0.8663244713199465, 1.2029584898712695, 2.7143438886138744, 2.7115417734646114]
 
 
+
+
 def Miller_bend_roughness_correction(Re: float, Di: float, roughness: float) -> float:
     # Section 9.2.4 - Roughness correction
     # Re limited to under 1E6 in friction factor calculations
     # Use a cached smooth fd value if Re too high
-    Re_fd_min = min(1E6, Re)
-    if Re_fd_min < 1E6:
-        fd_smooth = friction_factor(Re=Re_fd_min, eD=0.0)
-    else:
-        fd_smooth = 0.011645040997991626
-    fd_rough = friction_factor(Re=Re_fd_min, eD=roughness/Di)
-    C_roughness = fd_rough/fd_smooth
-    return C_roughness
-
+    pass
 
 def Miller_bend_unimpeded_correction(Kb: float, Di: float, L_unimpeded: float) -> float:
     """Limitations as follows:
@@ -1117,35 +1014,7 @@ def Miller_bend_unimpeded_correction(Kb: float, Di: float, L_unimpeded: float) -
     * When between two Kb curves, interpolate linearly after evaluating both
       splines appropriately
     """
-    if Kb < 0.1:
-        Kb_C_o = 0.1
-    elif Kb > 1:
-        Kb_C_o = 1.0
-    else:
-        Kb_C_o = Kb
-
-    L_unimpeded_ratio = L_unimpeded/Di
-    if L_unimpeded_ratio > 30:
-        L_unimpeded_ratio = 30.0
-
-    for i in range(len(bend_rounded_Miller_C_o_Kbs)):
-        Kb_low, Kb_high = bend_rounded_Miller_C_o_Kbs[i], bend_rounded_Miller_C_o_Kbs[i+1]
-        if Kb_low <= Kb_C_o <= Kb_high:
-            if L_unimpeded_ratio >= bend_rounded_Miller_C_o_limits[i]:
-                Co_low = 1.0
-            elif L_unimpeded_ratio <= 0.01:
-                Co_low = bend_rounded_Miller_C_o_limit_0_01[i]
-            else:
-                Co_low = float(splev(L_unimpeded_ratio, tck_bend_rounded_Miller_C_os[i]))
-            if L_unimpeded_ratio >= bend_rounded_Miller_C_o_limits[i+1]:
-                Co_high = 1.0
-            elif L_unimpeded_ratio <= 0.01:
-                Co_high = bend_rounded_Miller_C_o_limit_0_01[i+1]
-            else:
-                Co_high = float(splev(L_unimpeded_ratio, tck_bend_rounded_Miller_C_os[i+1]))
-            C_o = Co_low + (Kb_C_o - Kb_low)*(Co_high - Co_low)/(Kb_high - Kb_low)
-            return C_o
-    raise ValueError(f"No matching Kb range found for Kb={Kb}")
+    pass
 
 
 def bend_rounded_Miller(Di: float, angle: float, Re: float, rc: float | None=None, bend_diameters: float | None=None,
@@ -1210,67 +1079,7 @@ def bend_rounded_Miller(Di: float, angle: float, Re: float, rc: float | None=Non
     .. [1] Miller, Donald S. Internal Flow Systems: Design and Performance
        Prediction. Gulf Publishing Company, 1990.
     """
-    if rc is None:
-        if bend_diameters is None:
-            bend_diameters = 5.0
-        rc = Di*bend_diameters
-
-    radius_ratio = rc/Di
-
-    if L_unimpeded is None:
-        # Assumption - smooth outlet
-        L_unimpeded = 20.0*Di
-
-    # Graph is defined for angles 10 to 180 degrees, ratios 0.5 to 10
-    if radius_ratio < 0.5:
-        radius_ratio = 0.5
-    if radius_ratio > 10.0:
-        radius_ratio = 10.0
-    if angle < 10.0:
-        angle = 10.0
-
-    # Curve fit in terms of degrees
-    # Caching could work here - angle, radius ratio does not change often
-    Kb = bend_rounded_Miller_Kb(radius_ratio, angle)
-
-    C_roughness = Miller_bend_roughness_correction(Re=Re, Di=Di,
-                                                   roughness=roughness)
-    """Section 9.2.2 - Reynolds Number Correction
-    Allow some extrapolation up to 1E8 (1E7 max in graph but the trend looks good)
-    """
-    Re_C_Re = min(max(Re, 1E4), 1E8)
-    if radius_ratio >= 2.0:
-        if Re_C_Re == 1E8:
-            C_Re = 0.4196741237602154 # bend_rounded_Miller_C_Re(1e8, 2.0)
-        elif Re_C_Re == 1E4:
-            C_Re = 2.1775876405173977 # bend_rounded_Miller_C_Re(1e4, 2.0)
-        else:
-            C_Re = bend_rounded_Miller_C_Re(Re_C_Re, 2.0)
-    elif radius_ratio <= 1.0:
-        # newton(lambda x: bend_rounded_Miller_C_Re(x, 1.0)-1, 2e5) to get the boundary value
-        C_Re_1 = bend_rounded_Miller_C_Re(Re_C_Re, 1.0) if Re_C_Re < 207956.58904584477 else 1.0
-        if radius_ratio > 0.7 or Kb < 0.4:
-            C_Re = C_Re_1
-        else:
-            C_Re = Kb/(Kb - 0.2*C_Re_1 + 0.2)
-            if C_Re > 2.2 or C_Re < 0:
-                C_Re = 2.2
-    else:
-        # regardless of ratio - 1
-        if Re_C_Re > 1048884.4656835075:
-            C_Re = 1.0
-        elif Re_C_Re > horner(bend_rounded_Miller_C_Re_limit_1, radius_ratio):
-            C_Re = 1.0
-#            ps = np.linspace(1, 2)
-#            qs = [secant(lambda x: bend_rounded_Miller_C_Re(x, i)-1, 2e5) for i in ps]
-#            np.polyfit(ps, qs, 4).tolist()
-            # Line of C_Re=1 as a function of r_d between 0 and 1
-        else:
-            C_Re = bend_rounded_Miller_C_Re(Re_C_Re, radius_ratio)
-    C_o =  Miller_bend_unimpeded_correction(Kb=Kb, Di=Di, L_unimpeded=L_unimpeded)
-
-#    print('Kb=%g, C Re=%g, C rough =%g, Co=%g' %(Kb, C_Re, C_roughness, C_o))
-    return Kb*C_Re*C_roughness*C_o
+    pass
 
 
 bend_rounded_Crane_ratios = [1.0, 1.5, 2.0, 3.0, 4.0, 6.0, 8.0, 10.0, 12.0,
@@ -1334,24 +1143,7 @@ def bend_rounded_Crane(Di: float, angle: float, rc: float | None=None, bend_diam
     .. [1] Crane Co. Flow of Fluids Through Valves, Fittings, and Pipe. Crane,
        2009.
     """
-    if (rc is not None and bend_diameters is not None): # numba: delete
-        if abs(Di*bend_diameters/rc - 1.0) > 1e-12: # numba: delete
-            raise ValueError("Cannot specify both `rc` and `bend_diameters`") # numba: delete
-    if rc is None:
-        if bend_diameters is None:
-            bend_diameters = 5.0
-        rc = Di*bend_diameters
-    fd = ft_Crane(Di)
-
-    radius_ratio = rc/Di
-    if radius_ratio < 1.0:
-        radius_ratio = 1.0
-    elif radius_ratio > 20.0:
-        radius_ratio = 20.0
-    factor = horner(bend_rounded_Crane_coeffs, 0.105263157894736836*(radius_ratio - 10.5))
-    K = fd*factor
-    K = (angle/90.0 - 1.0)*(0.25*pi*fd*radius_ratio + 0.5*K) + K
-    return K
+    pass
 
 
 _Ito_angles = [45.0, 90.0, 180.0]
@@ -1362,33 +1154,7 @@ def bend_rounded_Ito(Di: float, angle: float, Re: float, rc: float | None=None, 
     Curved friction factor as given in Blevins, with minor tweaks to be more
     accurate to the original methods.
     """
-    if not rc:
-        if bend_diameters is None:
-            bend_diameters = 5.0
-        rc = Di*bend_diameters
-
-    radius_ratio = rc/Di
-    angle_rad = radians(angle)
-    De2 = Re*(Di/rc)**2.0
-    if rc > 50.0*Di:
-        alpha = 1.0
-    else:
-        # Alpha is up to 6, as ratio gets higher, can go down to 1
-        alpha_45 = 1.0 + 5.13*(Di/rc)**1.47
-        alpha_90 = 0.95 + 4.42*(Di/rc)**1.96 if rc/Di < 9.85 else 1.0
-        alpha_180 = 1.0 + 5.06*(Di/rc)**4.52
-        alpha = interp(angle, _Ito_angles, [alpha_45, alpha_90, alpha_180])
-
-    if De2 <= 360.0:
-        fc = friction_factor_curved(Re=Re, Di=Di, Dc=2.0*rc,
-                                    roughness=roughness,
-                                    Rec_method="Srinivasan",
-                                    laminar_method="White",
-                                    turbulent_method="Srinivasan turbulent")
-        K = 0.0175*alpha*fc*angle*rc/Di
-    else:
-        K = 0.00431*alpha*angle*Re**-0.17*(rc/Di)**0.84
-    return K
+    pass
 
 crane_standard_bend_angles = [45.0, 90.0, 180.0]
 crane_standard_bend_losses = [16.0, 30.0, 50.0]
@@ -1496,54 +1262,12 @@ def bend_rounded(Di: float, angle: float, fd: float | None=None, rc: float | Non
        2009.
     .. [4] Swamee, Prabhata K., and Ashok K. Sharma. Design of Water Supply
        Pipe Networks. John Wiley & Sons, 2008.
-    .. [5] Itō, H."Pressure Losses in Smooth Pipe Bends." Journal of Fluids
+    .. [5] ItoÌ„, H."Pressure Losses in Smooth Pipe Bends." Journal of Fluids
        Engineering 82, no. 1 (March 1, 1960): 131-40. doi:10.1115/1.3662501
     .. [6] Blevins, Robert D. Applied Fluid Dynamics Handbook. New York, N.Y.:
        Van Nostrand Reinhold Co., 1984.
     """
-    if method is None:
-        method = "Rennels"
-    if bend_diameters is None and rc is None:
-        bend_diameters = 5.0
-    if rc is None:
-        if bend_diameters is None:
-            bend_diameters = 5.0  # already handled by earlier check
-        bend_diameters2 = bend_diameters
-        rc = Di*bend_diameters2
-    else:
-        bend_diameters2 = bend_diameters if bend_diameters is not None else 5.0
-
-    if method == "Rennels":
-        angle = radians(angle)
-        if fd is None:
-            if Re is None:
-                raise ValueError("The `Rennels` method requires either a "
-                                 "specified friction factor or `Re`")
-            fd = Clamond(Re=Re, eD=roughness/Di, fast=False)
-        sin_term = sin(0.5*angle)
-        return (fd*angle*rc/Di + (0.10 + 2.4*fd)*sin_term
-        + 6.6*fd*(sqrt(sin_term) + sin_term)/(rc/Di)**(4.*angle/pi))
-    elif method == "Miller":
-        if Re is None:
-            raise ValueError("Miller method requires Reynolds number")
-        return bend_rounded_Miller(Di=Di, angle=angle, Re=Re, rc=rc,
-                                   bend_diameters=bend_diameters2,
-                                   roughness=roughness,
-                                   L_unimpeded=L_unimpeded)
-    elif method == "Crane":
-        return bend_rounded_Crane(Di=Di, angle=angle, rc=rc,
-                                  bend_diameters=bend_diameters2)
-    elif method == "Crane standard":
-        return ft_Crane(Di)*interp(angle, crane_standard_bend_angles, crane_standard_bend_losses, extrapolate=True)
-    elif method == "Ito":
-        if Re is None:
-            raise ValueError("The `Ito` method requires `Re`")
-        return bend_rounded_Ito(Di=Di, angle=angle, Re=Re, rc=rc, bend_diameters=bend_diameters2,
-                     roughness=roughness)
-    elif method == "Swamee":
-        return (0.0733 + 0.923*(Di/rc)**3.5)*sqrt(radians(angle))
-    else:
-        raise ValueError(bend_rounded_method_unknown)
+    pass
 
 
 bend_miter_Miller_coeffs = [-12.050299402650126, -4.472433689233185, 50.51478860493546, 18.246302079077196,
@@ -1596,22 +1320,7 @@ def bend_miter_Miller(Di: float, angle: float, Re: float, roughness: float=0.0, 
     .. [1] Miller, Donald S. Internal Flow Systems: Design and Performance
        Prediction. Gulf Publishing Company, 1990.
     """
-    if L_unimpeded is None:
-        L_unimpeded = 20.0*Di
-    if angle > 120.0:
-        angle = 120.0
-
-    Kb = horner(bend_miter_Miller_coeffs, 1.0/60.0*(angle-60.0))
-
-    C_o =  Miller_bend_unimpeded_correction(Kb=Kb, Di=Di, L_unimpeded=L_unimpeded)
-    C_roughness = Miller_bend_roughness_correction(Re=Re, Di=Di,
-                                                   roughness=roughness)
-    Re_C_Re = min(max(Re, 1E4), 1E8)
-    C_Re_1 = bend_rounded_Miller_C_Re(Re_C_Re, 1.0) if Re_C_Re < 207956.58904584477 else 1.0
-    C_Re = Kb/(Kb - 0.2*C_Re_1 + 0.2)
-    if C_Re > 2.2 or C_Re < 0:
-        C_Re = 2.2
-    return Kb*C_Re*C_roughness*C_o
+    pass
 
 
 bend_miter_Crane_angles = [0.0, 15.0, 30.0, 45.0, 60.0, 75.0, 90.0]
@@ -1702,32 +1411,7 @@ def bend_miter(angle: float, Di: float | None=None, Re: float | None=None, rough
     .. [4] Blevins, Robert D. Applied Fluid Dynamics Handbook. New York, N.Y.:
        Van Nostrand Reinhold Co., 1984.
     """
-    if method is None:
-        method = "Rennels"
-    if method == "Rennels":
-        angle_rad = radians(angle)
-        sin_half_angle = sin(angle_rad*0.5)
-        return 0.42*sin_half_angle + 2.56*sin_half_angle*sin_half_angle*sin_half_angle
-    elif method == "Crane":
-        if Di is None:
-            raise ValueError("Crane method requires Di")
-        factor = interp(angle, bend_miter_Crane_angles, bend_miter_Crane_fds)
-        return ft_Crane(Di)*factor
-    elif method == "Miller":
-        if Di is None:
-            raise ValueError("Miller method requires Di")
-        if Re is None:
-            raise ValueError("Miller method requires Re")
-        return bend_miter_Miller(Di=Di, angle=angle, Re=Re, roughness=roughness, L_unimpeded=L_unimpeded)
-    elif method == "Blevins":
-        if Re is None:
-            raise ValueError("Blevins method requires Re")
-        # data from Idelchik, Miller, an earlier ASME publication
-        # For 90-120 degrees, a polynomial/spline would be better than a linear fit
-        K_base = interp(angle, bend_miter_Blevins_angles, bend_miter_Blevins_Ks)
-        return K_base*(2E5/Re)**0.2
-    else:
-        raise ValueError(bend_miter_method_unknown_msg)
+    pass
 
 
 def helix(Di: float, rs: float, pitch: float, N: int, fd: float) -> float:
@@ -1772,7 +1456,7 @@ def helix(Di: float, rs: float, pitch: float, N: int, fd: float) -> float:
     .. [1] Rennels, Donald C., and Hobart M. Hudson. Pipe Flow: A Practical
        and Comprehensive Guide. 1st edition. Hoboken, N.J: Wiley, 2012.
     """
-    return N*(fd*sqrt((2*pi*rs)**2 + pitch**2)/Di + 0.20 + 4.8*fd)
+    pass
 
 
 def spiral(Di: float, rmax: float, rmin: float, pitch: float, fd: float) -> float:
@@ -1816,7 +1500,7 @@ def spiral(Di: float, rmax: float, rmin: float, pitch: float, fd: float) -> floa
     .. [1] Rennels, Donald C., and Hobart M. Hudson. Pipe Flow: A Practical
        and Comprehensive Guide. 1st edition. Hoboken, N.J: Wiley, 2012.
     """
-    return (rmax-rmin)/pitch*(fd*pi*(rmax+rmin)/Di + 0.20 + 4.8*fd) + 13.2*fd/(rmin/Di)**2
+    pass
 
 ### Contractions
 
@@ -1868,15 +1552,7 @@ def contraction_round_Miller(Di1: float, Di2: float, rc: float) -> float:
     .. [1] Miller, Donald S. Internal Flow Systems: Design and Performance
        Prediction. Gulf Publishing Company, 1990.
     """
-    A_ratio = Di2*Di2/(Di1*Di1)
-    radius_ratio = rc/Di2
-    if radius_ratio > 0.1:
-        radius_ratio = 0.1
-    Ks = float(bisplev(A_ratio, radius_ratio, tck_contraction_abrupt_Miller))
-    # For some near-1 ratios, can get negative Ks due to the spline.
-    if Ks < 0.0:
-        Ks = 0.0
-    return Ks
+    pass
 
 
 contraction_sharp_methods = ["Rennels", "Hooper", "Crane"]
@@ -1978,29 +1654,7 @@ def contraction_sharp(Di1: float, Di2: float, fd: float | None=None, Re: float |
     .. [2] Hooper, William B. "Calculate Head Loss Caused by Change in Pipe
        Size." Chemical Engineering 95, no. 16 (November 7, 1988): 89.
     """
-    if method == "Rennels":
-        beta = Di2/Di1
-        beta2 = beta*beta
-        beta5 = beta2*beta2*beta
-        lbd = 1.0 + 0.622*(1.0 - 0.215*beta2 - 0.785*beta5)
-        return 0.0696*(1.0 - beta5)*lbd*lbd + (lbd - 1.0)*(lbd - 1.0)
-    elif method == "Hooper":
-        if Re is None:
-            raise ValueError("Hooper method requires `Re`")
-        D1_D2 = Di1/Di2
-        D1_D2_2 = D1_D2*D1_D2
-        if Re <= 2500.0:
-            K = (1.2 + 160.0/Re)*(D1_D2_2*D1_D2_2 - 1.0)
-        else:
-            if fd is None:
-                fd = Clamond(Re=Re, eD=roughness/Di1)
-            K = (0.6 + 0.48*fd)*D1_D2_2*(D1_D2_2 - 1.0)
-        K = change_K_basis(K, Di1, Di2)
-        return K
-    elif method == "Crane":
-        return contraction_conical_Crane(Di1, Di2, l=0.0)
-    else:
-        raise ValueError(contraction_sharp_method_unknown)
+    pass
 
 contraction_round_Idelchik_ratios = [0.0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06,
                                      0.08, 0.12, 0.16, 0.2]
@@ -2078,21 +1732,7 @@ def contraction_round(Di1: float, Di2: float, rc: float, method: str="Rennels") 
        Soprotivleniyam, Koeffitsienty Mestnykh Soprotivlenii i Soprotivleniya
        Treniya). National technical information Service, 1966.
     """
-    beta = Di2/Di1
-    if method is None:
-        method = "Rennels"
-    if method == "Rennels":
-        lbd = 1.0 + 0.622*(1.0 - 0.30*sqrt(rc/Di2) - 0.70*rc/Di2)**4*(1.0 - 0.215*beta**2 - 0.785*beta**5)
-        return 0.0696*(1.0 - 0.569*rc/Di2)*(1.0 - sqrt(rc/Di2)*beta)*(1.0 - beta**5)*lbd*lbd + (lbd - 1.0)**2
-    elif method == "Miller":
-        return contraction_round_Miller(Di1=Di1, Di2=Di2, rc=rc)
-    elif method == "Idelchik":
-        # Di2, ratio defined in terms over diameter
-        K0 = interp(rc/Di2, contraction_round_Idelchik_ratios,
-                    contraction_round_Idelchik_factors)
-        return K0*(1.0 - beta*beta)
-    else:
-        raise ValueError(contraction_round_unknown_method)
+    pass
 
 
 def contraction_conical_Crane(Di1: float, Di2: float, l: float | None=None, angle: float | None=None) -> float:
@@ -2145,25 +1785,7 @@ def contraction_conical_Crane(Di1: float, Di2: float, l: float | None=None, angl
     .. [1] Crane Co. Flow of Fluids Through Valves, Fittings, and Pipe. Crane,
        2009.
     """
-    if l is not None:
-        if l == 0.0:
-            angle_rad = pi
-        else:
-            angle_rad = 2.0*atan((Di1-Di2)/(2.0*l))
-    elif angle is not None:
-        angle_rad = deg2rad*angle
-        #l = (Di1 - Di2)/(2.0*tan(0.5*angle)) # L is not needed in this calculation
-    else:
-        raise ValueError("One of `l` or `angle` must be specified")
-    beta = Di2/Di1
-    beta2 = beta*beta
-    if angle_rad < 0.25*pi:
-        # Formula 1
-        K2 = 0.8*sin(0.5*angle_rad)*(1.0 - beta2)
-    else:
-        # Formula 2
-        K2 = 0.5*(sqrt(sin(0.5*angle_rad))*(1.0 - beta2))
-    return K2
+    pass
 
 
 contraction_conical_angles_Idelchik = [2, 3, 6, 8, 10, 12, 14, 16, 20]
@@ -2380,100 +2002,7 @@ def contraction_conical(Di1: float, Di2: float, fd: float | None=None, l: float 
     .. [7] Hooper, William B. "Calculate Head Loss Caused by Change in Pipe
        Size." Chemical Engineering 95, no. 16 (November 7, 1988): 89.
     """
-    beta = Di2/Di1
-    if angle is not None:
-        angle_rad = angle*deg2rad
-        l = (Di1 - Di2)/(2.0*tan(0.5*angle_rad))
-    elif l is not None:
-        if l != 0.0:
-            angle_rad = 2.0*atan((Di1-Di2)/(2.0*l))
-        else:
-            angle_rad = pi
-    else:
-        raise ValueError("Either l or angle is required")
-    if method == "Rennels":
-        if fd is None:
-            if Re is None:
-                raise ValueError("The `Rennels` method requires either a "
-                                 "specified friction factor or `Re`")
-            fd = Clamond(Re=Re, eD=roughness/Di2, fast=False)
-
-        beta2 = beta*beta
-        beta4 = beta2*beta2
-        beta5 = beta4*beta
-        lbd = 1.0 + 0.622*(angle_rad/pi)**0.8*(1.0 - 0.215*beta2 - 0.785*beta5)
-        sin_half_angle = sin(0.5*angle_rad)
-        K_fr2 = fd*(1.0 - beta4)/(8.0*sin_half_angle)
-        K_conv2 = 0.0696*sin_half_angle*(1.0 - beta5)*lbd*lbd + (lbd - 1.0)**2
-        return K_fr2 + K_conv2
-    elif method == "Crane":
-        return contraction_conical_Crane(Di1=Di1, Di2=Di2, l=l, angle=angle_rad*rad2deg)
-    elif method == "Swamee":
-        return 0.315*angle_rad**(1.0/3.0)
-    elif method == "Idelchik":
-        # Diagram 3-6; already digitized for beveled entrance
-        K0 = float(bisplev(angle_rad*rad2deg, l/Di2, entrance_beveled_Idelchik_tck))
-
-        # Angles 0 to 20, ratios 0.05 to 0.06
-        if angle_rad > 20.0*deg2rad:
-            angle_fric = 20.0
-        elif angle_rad < 2.0*deg2rad:
-            angle_fric = 2.0
-        else:
-            angle_fric = angle_rad*rad2deg
-
-        A_ratio = A_ratio_fric = Di2*Di2/(Di1*Di1)
-        if A_ratio_fric < 0.05:
-            A_ratio_fric = 0.05
-        elif A_ratio_fric > 0.6:
-            A_ratio_fric = 0.6
-
-        K_fr = float(contraction_conical_friction_Idelchik_obj(angle_fric, A_ratio_fric))
-        return K0*(1.0 - A_ratio) + K_fr
-    elif method == "Blevins":
-        A_ratio = Di1*Di1/(Di2*Di2)
-        if A_ratio < 1.2:
-            A_ratio = 1.2
-        elif A_ratio > 10.0:
-            A_ratio = 10.0
-
-        l_ratio = l/Di2
-        if l_ratio > 0.6:
-            l_ratio = 0.6
-        return float(contraction_conical_Blevins_obj(l_ratio, A_ratio))
-    elif method == "Miller":
-        A_ratio = Di1*Di1/(Di2*Di2)
-        if A_ratio > 4.0:
-            A_ratio = 4.0
-        elif A_ratio < 1.1:
-            A_ratio = 1.1
-        l_ratio = l/(Di2*0.5)
-        if l_ratio < 0.1:
-            l_ratio = 0.1
-        elif l_ratio > 10.0:
-            l_ratio = 10.0
-        # Turning on or off the limits - little difference in plot
-        return contraction_conical_Miller_obj(l_ratio, A_ratio)
-    elif method == "Hooper":
-        if Re is None:
-            raise ValueError("Hooper method requires `Re`")
-        D1_D2 = Di1/Di2
-        D1_D2_2 = D1_D2*D1_D2
-        if Re <= 2500.0:
-            K = (1.2 + 160.0/Re)*(D1_D2_2*D1_D2_2 - 1.0)
-        else:
-            if fd is None:
-                fd = Clamond(Re=Re, eD=roughness/Di1)
-            K = (0.6 + 0.48*fd)*D1_D2_2*(D1_D2_2 - 1.0)
-
-        if angle_rad > 0.25*pi:
-            K *= sqrt(sin(0.5*angle_rad))
-        else:
-            K *= 1.6*sin(0.5*angle_rad)
-        K = change_K_basis(K, Di1, Di2)
-        return K
-    else:
-        raise ValueError(contraction_conical_method_unknown)
+    pass
 
 
 def contraction_beveled(Di1: float, Di2: float, l: float, angle: float) -> float:
@@ -2526,13 +2055,7 @@ def contraction_beveled(Di1: float, Di2: float, l: float, angle: float) -> float
     .. [1] Rennels, Donald C., and Hobart M. Hudson. Pipe Flow: A Practical
        and Comprehensive Guide. 1st edition. Hoboken, N.J: Wiley, 2012.
     """
-    angle = radians(angle)
-    beta = Di2/Di1
-    CB = l/Di2*2.0*beta*tan(0.5*angle)/(1.0 - beta)
-    beta2 = beta*beta
-    beta5 = beta2*beta2*beta
-    lbd = 1.0 + 0.622*(1.0 + CB*((angle/pi)**0.8 - 1.0))*(1.0 - 0.215*beta2 - 0.785*beta5)
-    return 0.0696*(1.0 + CB*(sin(0.5*angle) - 1.0))*(1.0 - beta5)*lbd*lbd + (lbd-1.0)**2
+    pass
 
 ### Expansions (diffusers)
 
@@ -2603,47 +2126,9 @@ def diffuser_sharp(Di1: float, Di2: float, Re: float | None=None, fd: float | No
     .. [2] Hooper, William B. "Calculate Head Loss Caused by Change in Pipe
        Size." Chemical Engineering 95, no. 16 (November 7, 1988): 89.
     """
-    beta = Di1/Di2
-    if method == "Rennels":
-        r = 1.0 - beta*beta
-        return r*r
-    elif method == "Hooper":
-        if Re is None:
-            raise ValueError("Method `Hooper` requires Reynolds number")
-        if Re < 4000.0:
-            return 2.0*(1.0 - beta*beta*beta*beta) # Not the same formula as Rennels
-        if fd is None:
-            fd = Clamond(Re=Re, eD=roughness/Di1)
-        x = 1.0 - beta*beta
-        return (1.0 + 0.8*fd)*x*x
-    else:
-        raise ValueError(diffuser_sharp_method_unknown)
+    pass
 
 
-def diffuser_conical_Crane(Di1, Di2, l=None, angle=None):
-    beta = Di1/Di2
-    beta2 = beta*beta
-    if angle is not None:
-        angle_rad = radians(angle)
-        angle_deg = angle
-    elif l is not None:
-        if l != 0.0:
-            angle_rad = 2.0*atan((Di1-Di2)/(2.0*l))
-            angle_deg = degrees(angle_rad)
-        else:
-            angle_rad = pi
-            angle_deg = 180.0
-    else:
-        raise ValueError("Either `l` or `angle` must be specified")
-
-    if angle_deg < 45.0:
-        # Formula 3
-        K2 = 2.6*sin(0.5*angle_rad)*(1.0 - beta2)**2/(beta2*beta2)
-    else:
-        K2 = (1.0 - beta2)**2/(beta2*beta2)
-        # formula 4
-    K1 = K2*beta2*beta2 # Standard has become using upstream diameter
-    return K1
 
 
 tck_diffuser_conical_Miller = implementation_optimize_tck([
@@ -2745,6 +2230,9 @@ diffuser_conical_Idelchik_obj = lambda x, y : float(bisplev(x, y, diffuser_conic
 
 diffuser_conical_methods = ["Rennels", "Crane", "Miller", "Swamee", "Idelchik", "Hooper"]
 diffuser_conical_method_unknown = f"Specified method not recognized; methods are {diffuser_conical_methods}"
+
+def diffuser_conical_Crane(Di1, Di2, l=None, angle=None):
+    pass
 
 def diffuser_conical(Di1: float, Di2: float, l: float | None=None, angle: float | None=None, fd: float | None=None, Re: float | None=None,
                      roughness: float=0.0, method: str="Rennels") -> float:
@@ -2873,101 +2361,7 @@ def diffuser_conical(Di1: float, Di2: float, l: float | None=None, angle: float 
     .. [6] Hooper, William B. "Calculate Head Loss Caused by Change in Pipe
        Size." Chemical Engineering 95, no. 16 (November 7, 1988): 89.
     """
-    beta = Di1/Di2
-    beta2 = beta*beta
-    if l is not None:
-        angle_rad = 2.0*atan(0.5*(Di2-Di1)/l)
-        angle_deg = angle_rad*rad2deg
-        l_calc = l
-    elif angle is not None:
-        angle_rad = angle*deg2rad
-        angle_deg = angle
-        l_calc = (Di2 - Di1)/(2.0*tan(0.5*angle_rad))
-    else:
-        raise ValueError("Either `l` or `angle` must be specified")
-    if method is None:
-        method = "Rennels"
-    if method == "Rennels":
-        if fd is None:
-            if Re is None:
-                raise ValueError("The `Rennels` method requires either a "
-                                 "specified friction factor or `Re`")
-            fd = Clamond(Re=Re, eD=roughness/Di2, fast=False)
-
-        if 0.0 < angle_deg <= 20.0:
-            K = 8.30*tan(0.5*angle_rad)**1.75*(1.0 - beta2)**2 + 0.125*fd*(1.0 - beta2*beta2)/sin(0.5*angle_rad)
-        elif 20.0 < angle_deg <= 60.0 and 0.0 <= beta < 0.5:
-            K = (1.366*sqrt(sin(2.0*pi*(angle_deg - 15.0)/180.)) - 0.170
-            - 3.28*(0.0625-beta**4)*sqrt(0.025*(angle_deg-20.0)))*(1.0 - beta2)**2 + 0.125*fd*(1.0 - beta2*beta2)/sin(0.5*angle_rad)
-        elif 20.0 < angle_deg <= 60.0 and beta >= 0.5:
-            K = (1.366*sqrt(sin(2.0*pi*(angle_deg - 15.0)/180.0)) - 0.170)*(1.0 - beta2)**2 + 0.125*fd*(1.0 - beta2*beta2)/sin(0.5*angle_rad)
-        elif 60.0 < angle_deg <= 180.0 and 0.0 <= beta < 0.5:
-            beta4 = beta2*beta2
-            K = (1.205 - 3.28*(0.0625 - beta4) - 12.8*beta4*beta2*sqrt((angle_deg - 60.0)/120.))*(1.0 - beta2)**2
-        elif 60.0 < angle_deg <= 180.0 and beta >= 0.5:
-            K = (1.205 - 0.20*sqrt((angle_deg - 60.0)/120.))*(1.0 - beta**2)**2
-        else:
-            raise ValueError("Conical diffuser inputs incorrect")
-        return K
-    elif method == "Crane":
-        return diffuser_conical_Crane(Di1=Di1, Di2=Di2, l=l_calc, angle=angle_deg)
-    elif method == "Miller":
-        A_ratio = 1.0/beta2
-        if A_ratio > 4.0:
-            A_ratio = 4.0
-        elif A_ratio < 1.1:
-            A_ratio = 1.1
-
-        l_R1_ratio = l_calc/(0.5*Di1)
-        if l_R1_ratio < 0.1:
-            l_R1_ratio = 0.1
-        elif l_R1_ratio > 20.0:
-            l_R1_ratio = 20.0
-        Kd = max(float(bisplev(log(l_R1_ratio), log(A_ratio), tck_diffuser_conical_Miller)), 0)
-        return Kd
-    elif method == "Idelchik":
-        A_ratio = beta2
-        # Angles 0 to 20, ratios 0.05 to 0.06
-        if angle_deg > 20.0:
-            angle_fric = 20.0
-        elif angle_deg < 2.0:
-            angle_fric = 2.0
-        else:
-            angle_fric = angle_deg
-
-        A_ratio_fric = A_ratio
-        if A_ratio_fric < 0.05:
-            A_ratio_fric = 0.05
-        elif A_ratio_fric > 0.6:
-            A_ratio_fric = 0.6
-
-        K_fr = float(contraction_conical_friction_Idelchik_obj(angle_fric, A_ratio_fric))
-        K_exp = float(diffuser_conical_Idelchik_obj(min(0.6, A_ratio), max(3.0, angle_deg)))
-        return K_fr + K_exp
-
-    elif method == "Swamee":
-        # Really starting to think Swamee uses a different definition of loss coefficient!
-        r = Di2/Di1
-        K = 1.0/sqrt(0.25*angle_rad**-3*(1.0 + 0.6*r**(-1.67)*(pi-angle_rad)/angle_rad)**(0.533*r - 2.6))
-        return K
-    elif method == "Hooper":
-        if Re is None:
-            raise ValueError("Method `Hooper` requires Reynolds number")
-        if Re < 4000.0:
-            K_sharp = 2.0*(1.0 - beta*beta*beta*beta) # Not the same formula as Rennels
-            if angle_rad > 0.25*pi:
-                return K_sharp
-            return K_sharp*2.6*sin(0.5*angle_rad)
-
-        if fd is None:
-            fd = Clamond(Re=Re, eD=roughness/Di1)
-        x = 1.0 - beta*beta
-        K_sharp = (1.0 + 0.8*fd)*x*x
-        if angle_rad > 0.25*pi:
-            return K_sharp
-        return K_sharp*2.6*sin(0.5*angle_rad)
-    else:
-        raise ValueError(diffuser_conical_method_unknown)
+    pass
 
 
 def diffuser_conical_staged(Di1: float, Di2: float, DEs: list[float], ls: list[float], fd: float | None=None, method: str="Rennels") -> float:
@@ -3015,12 +2409,7 @@ def diffuser_conical_staged(Di1: float, Di2: float, DEs: list[float], ls: list[f
     .. [1] Rennels, Donald C., and Hobart M. Hudson. Pipe Flow: A Practical
        and Comprehensive Guide. 1st edition. Hoboken, N.J: Wiley, 2012.
     """
-    K = 0.0
-    K += diffuser_conical(Di1=Di1, Di2=DEs[0], l=ls[0], fd=fd, method=method)
-    K += diffuser_conical(Di1=DEs[-1], Di2=Di2, l=ls[-1], fd=fd, method=method)
-    for i in range(len(DEs)-1):
-        K += diffuser_conical(Di1=DEs[i], Di2=DEs[i+1], l=ls[i+1], fd=fd, method=method)
-    return K
+    pass
 
 
 def diffuser_curved(Di1: float, Di2: float, l: float) -> float:
@@ -3068,9 +2457,7 @@ def diffuser_curved(Di1: float, Di2: float, l: float) -> float:
     .. [1] Rennels, Donald C., and Hobart M. Hudson. Pipe Flow: A Practical
        and Comprehensive Guide. 1st edition. Hoboken, N.J: Wiley, 2012.
     """
-    beta = Di1/Di2
-    phi = 1.01 - 0.624*l/Di1 + 0.30*(l/Di1)**2 - 0.074*(l/Di1)**3 + 0.0070*(l/Di1)**4
-    return phi*(1.43 - 1.3*beta**2)*(1 - beta**2)**2
+    pass
 
 
 def diffuser_pipe_reducer(Di1: float, Di2: float, l: float, fd1: float, fd2: float | None=None) -> float:
@@ -3120,23 +2507,18 @@ def diffuser_pipe_reducer(Di1: float, Di2: float, l: float, fd1: float, fd2: flo
     .. [1] Rennels, Donald C., and Hobart M. Hudson. Pipe Flow: A Practical
        and Comprehensive Guide. 1st edition. Hoboken, N.J: Wiley, 2012.
     """
-    if fd2 is None:
-        fd2 = fd1
-    beta = Di1/Di2
-    angle = -2*atan((Di1-Di2)/1.20/l)
-    K = fd1*0.20*l/Di1 + fd1*(1-beta)/8./sin(angle/2) + fd2*0.20*l/Di2*beta**4
-    return K
+    pass
 
 ### TODO: Tees
 
-DARBY_ANGLE_45DEG_FULL_VALVE = "Valve, Angle valve, 45°, full line size, β = 1"
-DARBY_ANGLE_90DEG_FULL_VALVE = "Valve, Angle valve, 90°, full line size, β = 1"
-DARBY_GLOBE_FULL_VALVE = "Valve, Globe valve, standard, β = 1"
+DARBY_ANGLE_45DEG_FULL_VALVE = "Valve, Angle valve, 45Â°, full line size, Î² = 1"
+DARBY_ANGLE_90DEG_FULL_VALVE = "Valve, Angle valve, 90Â°, full line size, Î² = 1"
+DARBY_GLOBE_FULL_VALVE = "Valve, Globe valve, standard, Î² = 1"
 DARBY_PLUG_VALVE_BRANCH_FLOW = "Valve, Plug valve, branch flow"
 DARBY_PLUG_VALVE_STRAIGHT_THROUGH = "Valve, Plug valve, straight through"
 DARBY_PLUG_VALVE_THREE_WAY_FLOW_THROUGH = "Valve, Plug valve, three-way (flow through)"
-DARBY_GATE_VALVE = "Valve, Gate valve, standard, β = 1"
-DARBY_BALL_VALVE = "Valve, Ball valve, standard, β = 1"
+DARBY_GATE_VALVE = "Valve, Gate valve, standard, Î² = 1"
+DARBY_BALL_VALVE = "Valve, Ball valve, standard, Î² = 1"
 DARBY_DIAPHRAGM_DAM_VALVE = "Valve, Diaphragm, dam type"
 DARBY_SWING_CHECK_VALVE = "Valve, Swing check"
 DARBY_LIFT_CHECK_VALVE = "Valve, Lift check"
@@ -3152,22 +2534,22 @@ Darby = {}
 """Dictionary of coefficients for Darby's 3K fitting pressure drop method;
 the tuple contains :math:`K_1` and :math:`K_i` and :math:`K_d` in that order.
 """
-Darby["Elbow, 90°, threaded, standard, (r/D = 1)"] = (800.0, 0.14, 4.0)
-Darby["Elbow, 90°, threaded, long radius, (r/D = 1.5)"] = (800.0, 0.071, 4.2)
-Darby["Elbow, 90°, flanged, welded, bends, (r/D = 1)"] = (800.0, 0.091, 4.0)
-Darby["Elbow, 90°, (r/D = 2)"] = (800.0, 0.056, 3.9)
-Darby["Elbow, 90°, (r/D = 4)"] = (800.0, 0.066, 3.9)
-Darby["Elbow, 90°, (r/D = 6)"] = (800.0, 0.075, 4.2)
-Darby["Elbow, 90°, mitered, 1 weld, (90°)"] = (1000.00, 0.27, 4.0)
-Darby["Elbow, 90°, 2 welds, (45°)"] = (800.0, 0.068, 4.1)
-Darby["Elbow, 90°, 3 welds, (30°)"] = (800.0, 0.035, 4.2)
-Darby["Elbow, 45°, threaded standard, (r/D = 1)"] = (500.0, 0.071, 4.2)
-Darby["Elbow, 45°, long radius, (r/D = 1.5)"] = (500.0, 0.052, 4.0)
-Darby["Elbow, 45°, mitered, 1 weld, (45°)"] = (500.0, 0.086, 4.0)
-Darby["Elbow, 45°, mitered, 2 welds, (22.5°)"] = (500.0, 0.052, 4.0)
-Darby["Elbow, 180°, threaded, close-return bend, (r/D = 1)"] = (1000.00, 0.23, 4.0)
-Darby["Elbow, 180°, flanged, (r/D = 1)"] = (1000.00, 0.12, 4.0)
-Darby["Elbow, 180°, all, (r/D = 1.5)"] = (1000.00, 0.1, 4.0)
+Darby["Elbow, 90Â°, threaded, standard, (r/D = 1)"] = (800.0, 0.14, 4.0)
+Darby["Elbow, 90Â°, threaded, long radius, (r/D = 1.5)"] = (800.0, 0.071, 4.2)
+Darby["Elbow, 90Â°, flanged, welded, bends, (r/D = 1)"] = (800.0, 0.091, 4.0)
+Darby["Elbow, 90Â°, (r/D = 2)"] = (800.0, 0.056, 3.9)
+Darby["Elbow, 90Â°, (r/D = 4)"] = (800.0, 0.066, 3.9)
+Darby["Elbow, 90Â°, (r/D = 6)"] = (800.0, 0.075, 4.2)
+Darby["Elbow, 90Â°, mitered, 1 weld, (90Â°)"] = (1000.00, 0.27, 4.0)
+Darby["Elbow, 90Â°, 2 welds, (45Â°)"] = (800.0, 0.068, 4.1)
+Darby["Elbow, 90Â°, 3 welds, (30Â°)"] = (800.0, 0.035, 4.2)
+Darby["Elbow, 45Â°, threaded standard, (r/D = 1)"] = (500.0, 0.071, 4.2)
+Darby["Elbow, 45Â°, long radius, (r/D = 1.5)"] = (500.0, 0.052, 4.0)
+Darby["Elbow, 45Â°, mitered, 1 weld, (45Â°)"] = (500.0, 0.086, 4.0)
+Darby["Elbow, 45Â°, mitered, 2 welds, (22.5Â°)"] = (500.0, 0.052, 4.0)
+Darby["Elbow, 180Â°, threaded, close-return bend, (r/D = 1)"] = (1000.00, 0.23, 4.0)
+Darby["Elbow, 180Â°, flanged, (r/D = 1)"] = (1000.00, 0.12, 4.0)
+Darby["Elbow, 180Â°, all, (r/D = 1.5)"] = (1000.00, 0.1, 4.0)
 
 
 Darby["Tee, Through-branch, (as elbow), threaded, (r/D = 1)"] = (500.0, 0.274, 4.0)
@@ -3241,9 +2623,9 @@ def Darby3K(NPS: float | None=None, Re: float | None=None, name: str | None=None
 
     Examples
     --------
-    >>> Darby3K(NPS=2., Re=10000., name='Valve, Angle valve, 45°, full line size, β = 1')
+    >>> Darby3K(NPS=2., Re=10000., name='Valve, Angle valve, 45Â°, full line size, Î² = 1')
     1.1572523963562356
-    >>> Darby3K(Di=.05248, Re=10000., name='Valve, Angle valve, 45°, full line size, β = 1')
+    >>> Darby3K(Di=.05248, Re=10000., name='Valve, Angle valve, 45Â°, full line size, Î² = 1')
     1.1572523963562356
     >>> Darby3K(NPS=12., Re=10000., K1=950,  Ki=0.25,  Kd=4)
     0.819510280626355
@@ -3256,24 +2638,7 @@ def Darby3K(NPS: float | None=None, Re: float | None=None, name: str | None=None
     .. [2] Silverberg, Peter. "Correlate Pressure Drops Through Fittings."
        Chemical Engineering 108, no. 4 (April 2001): 127,129-130.
     """
-    if Di is not None:
-        NPS = interp(Di*1000.0, S40i, NPS40, extrapolate=True)
-    if name is not None:
-        K1 = None
-        if name in Darby: # NUMBA: DELETE
-            K1, Ki, Kd = Darby[name] # NUMBA: DELETE
-        if K1 is None:
-            try:
-                K1, Ki, Kd = Darby_values[Darby_keys.index(name)]
-            except:
-                raise ValueError("Name of fitting is not in database")
-    elif K1 is not None and Ki is not None and Kd is not None:
-        pass
-    else:
-        raise ValueError("Name of fitting or constants are required")
-    if NPS is None or Re is None or K1 is None or Ki is None or Kd is None:
-        raise ValueError("NPS, Re, and K constants must be set")
-    return K1/Re + Ki*(1. + Kd*NPS**-0.3)
+    pass
 
 
 ### 2K Hooper Method
@@ -3298,21 +2663,21 @@ Hooper = {}
 r"""Dictionary of coefficients for Hooper's 2K fitting pressure drop method;
 the tuple contains :math:`K_1` and :math:`K_\infty` in that order.
 """
-Hooper["Elbow, 90°, Standard (R/D = 1), Screwed"] = (800.0, 0.4)
-Hooper["Elbow, 90°, Standard (R/D = 1), Flanged/welded"] = (800.0, 0.25)
-Hooper["Elbow, 90°, Long-radius (R/D = 1.5), All types"] = (800.0, 0.2)
-Hooper["Elbow, 90°, Mitered (R/D = 1.5), 1 weld (90° angle)"] = (1000.0, 1.15)
-Hooper["Elbow, 90°, Mitered (R/D = 1.5), 2 weld (45° angle)"] = (800.0, 0.35)
-Hooper["Elbow, 90°, Mitered (R/D = 1.5), 3 weld (30° angle)"] = (800.0, 0.3)
-Hooper["Elbow, 90°, Mitered (R/D = 1.5), 4 weld (22.5° angle)"] = (800.0, 0.27)
-Hooper["Elbow, 90°, Mitered (R/D = 1.5), 5 weld (18° angle)"] = (800.0, 0.25)
-Hooper["Elbow, 45°, Standard (R/D = 1), All types"] = (500.0, 0.2)
-Hooper["Elbow, 45°, Long-radius (R/D 1.5), All types"] = (500.0, 0.15)
-Hooper["Elbow, 45°, Mitered (R/D=1.5), 1 weld (45° angle)"] = (500.0, 0.25)
-Hooper["Elbow, 45°, Mitered (R/D=1.5), 2 weld (22.5° angle)"] = (500.0, 0.15)
-Hooper["Elbow, 45°, Standard (R/D = 1), Screwed"] = (1000.0, 0.7)
-Hooper["Elbow, 180°, Standard (R/D = 1), Flanged/welded"] = (1000.0, 0.35)
-Hooper["Elbow, 180°, Long-radius (R/D = 1.5), All types"] = (1000.0, 0.3)
+Hooper["Elbow, 90Â°, Standard (R/D = 1), Screwed"] = (800.0, 0.4)
+Hooper["Elbow, 90Â°, Standard (R/D = 1), Flanged/welded"] = (800.0, 0.25)
+Hooper["Elbow, 90Â°, Long-radius (R/D = 1.5), All types"] = (800.0, 0.2)
+Hooper["Elbow, 90Â°, Mitered (R/D = 1.5), 1 weld (90Â° angle)"] = (1000.0, 1.15)
+Hooper["Elbow, 90Â°, Mitered (R/D = 1.5), 2 weld (45Â° angle)"] = (800.0, 0.35)
+Hooper["Elbow, 90Â°, Mitered (R/D = 1.5), 3 weld (30Â° angle)"] = (800.0, 0.3)
+Hooper["Elbow, 90Â°, Mitered (R/D = 1.5), 4 weld (22.5Â° angle)"] = (800.0, 0.27)
+Hooper["Elbow, 90Â°, Mitered (R/D = 1.5), 5 weld (18Â° angle)"] = (800.0, 0.25)
+Hooper["Elbow, 45Â°, Standard (R/D = 1), All types"] = (500.0, 0.2)
+Hooper["Elbow, 45Â°, Long-radius (R/D 1.5), All types"] = (500.0, 0.15)
+Hooper["Elbow, 45Â°, Mitered (R/D=1.5), 1 weld (45Â° angle)"] = (500.0, 0.25)
+Hooper["Elbow, 45Â°, Mitered (R/D=1.5), 2 weld (22.5Â° angle)"] = (500.0, 0.15)
+Hooper["Elbow, 45Â°, Standard (R/D = 1), Screwed"] = (1000.0, 0.7)
+Hooper["Elbow, 180Â°, Standard (R/D = 1), Flanged/welded"] = (1000.0, 0.35)
+Hooper["Elbow, 180Â°, Long-radius (R/D = 1.5), All types"] = (1000.0, 0.3)
 Hooper["Elbow, Used as, Standard, Screwed"] = (500.0, 0.7)
 Hooper["Elbow, Elbow, Long-radius, Screwed"] = (800.0, 0.4)
 Hooper["Elbow, Elbow, Standard, Flanged/welded"] = (800.0, 0.8)
@@ -3390,22 +2755,7 @@ def Hooper2K(Di: float, Re: float, name: str | None=None, K1: float | None=None,
        Petrochemical Plants. 4E. Amsterdam ; Boston: Gulf Professional
        Publishing, 2007.
     """
-    if name is not None:
-        K1 = None
-        if name in Hooper: # NUMBA: DELETE
-            K1, Kinfty = Hooper[name] # NUMBA: DELETE
-        if K1 is None:
-            try:
-                K1, Kinfty = Hooper_values[Hooper_keys.index(name)]
-            except:
-                raise ValueError("Name of fitting is not in database")
-    elif K1 is not None and Kinfty is not None:
-        pass
-    else:
-        raise ValueError("Name of fitting or constants are required")
-    if K1 is None or Kinfty is None:
-        raise ValueError("K1 and Kinfty must be set")
-    return K1/Re + Kinfty*(1. + 1./Di)
+    pass
 
 
 ### Valves
@@ -3451,7 +2801,7 @@ def Kv_to_Cv(Kv: float) -> float:
     ----------
     .. [1] ISA-75.01.01-2007 (60534-2-1 Mod) Draft
     """
-    return 1.1560992283536566*Kv
+    pass
 
 
 def Cv_to_Kv(Cv: float) -> float:
@@ -3493,7 +2843,7 @@ def Cv_to_Kv(Cv: float) -> float:
     ----------
     .. [1] ISA-75.01.01-2007 (60534-2-1 Mod) Draft
     """
-    return Cv/1.1560992283536566
+    pass
 
 
 def Kv_to_K(Kv: float, D: float) -> float:
@@ -3520,8 +2870,8 @@ def Kv_to_K(Kv: float, D: float) -> float:
     -----
     Crane TP 410 M (2009) gives the coefficient of 0.04 (with diameter in mm).
 
-    It also suggests the density of water should be found between 5-40°C.
-    Older versions specify the density should be found at 60 °F, which is
+    It also suggests the density of water should be found between 5-40Â°C.
+    Older versions specify the density should be found at 60 Â°F, which is
     used here, and the pressure for the appropriate density is back calculated.
 
     .. math::
@@ -3529,7 +2879,7 @@ def Kv_to_K(Kv: float, D: float) -> float:
 
         V = \frac{\frac{K_v\cdot \text{ hour}}{3600 \text{ second}}}{\frac{\pi}{4}D^2}
 
-        \rho = 999.29744568 \;\; kg/m^3  \text{ at } T=60° F, P = 703572 Pa
+        \rho = 999.29744568 \;\; kg/m^3  \text{ at } T=60Â° F, P = 703572 Pa
 
     The value of density is calculated with IAPWS-95; it is chosen as it makes
     the coefficient a very convenient round number. Others constants that have
@@ -3544,7 +2894,7 @@ def Kv_to_K(Kv: float, D: float) -> float:
     ----------
     .. [1] ISA-75.01.01-2007 (60534-2-1 Mod) Draft
     """
-    return 1.6E9*D**4*Kv**-2
+    pass
 
 
 def K_to_Kv(K: float, D: float) -> float:
@@ -3570,8 +2920,8 @@ def K_to_Kv(K: float, D: float) -> float:
     -----
     Crane TP 410 M (2009) gives the coefficient of 0.04 (with diameter in mm).
 
-    It also suggests the density of water should be found between 5-40°C.
-    Older versions specify the density should be found at 60 °F, which is
+    It also suggests the density of water should be found between 5-40Â°C.
+    Older versions specify the density should be found at 60 Â°F, which is
     used here, and the pressure for the appropriate density is back calculated.
 
     .. math::
@@ -3579,7 +2929,7 @@ def K_to_Kv(K: float, D: float) -> float:
 
         V = \frac{\frac{K_v\cdot \text{ hour}}{3600 \text{ second}}}{\frac{\pi}{4}D^2}
 
-        \rho = 999.29744568 \;\; kg/m^3 \text{ at } T=60° F, P = 703572 Pa
+        \rho = 999.29744568 \;\; kg/m^3 \text{ at } T=60Â° F, P = 703572 Pa
 
     The value of density is calculated with IAPWS-95; it is chosen as it makes
     the coefficient a very convenient round number. Others constants that have
@@ -3594,7 +2944,7 @@ def K_to_Kv(K: float, D: float) -> float:
     ----------
     .. [1] ISA-75.01.01-2007 (60534-2-1 Mod) Draft
     """
-    return D*D*sqrt(1.6E9/K)
+    pass
 
 
 def K_to_Cv(K: float, D: float) -> float:
@@ -3634,7 +2984,7 @@ def K_to_Cv(K: float, D: float) -> float:
     ----------
     .. [1] ISA-75.01.01-2007 (60534-2-1 Mod) Draft
     """
-    return 1.1560992283536566*D*D*sqrt(1.6E9/K)
+    pass
 
 
 def Cv_to_K(Cv: float, D: float) -> float:
@@ -3671,9 +3021,7 @@ def Cv_to_K(Cv: float, D: float) -> float:
     ----------
     .. [1] ISA-75.01.01-2007 (60534-2-1 Mod) Draft
     """
-    D2 = D*D
-    term = (Cv*(1.0/1.1560992283536566))
-    return 1.6E9*D2*D2/(term*term)
+    pass
 
 
 
@@ -3681,18 +3029,18 @@ def K_gate_valve_Crane(D1: float, D2: float, angle: float, fd: float | None=None
     r"""Returns loss coefficient for a gate valve of types wedge disc, double
     disc, or plug type, as shown in [1]_.
 
-    If β = 1 and θ = 0:
+    If Î² = 1 and Î¸ = 0:
 
     .. math::
         K = K_1 = K_2 = 8f_d
 
-    If β < 1 and θ <= 45°:
+    If Î² < 1 and Î¸ <= 45Â°:
 
     .. math::
         K_2 = \frac{K + \sin \frac{\theta}{2} \left[0.8(1-\beta^2)
         + 2.6(1-\beta^2)^2\right]}{\beta^4}
 
-    If β < 1 and θ > 45°:
+    If Î² < 1 and Î¸ > 45Â°:
 
     .. math::
         K_2 = \frac{K + 0.5\sqrt{\sin\frac{\theta}{2}}(1-\beta^2)
@@ -3744,28 +3092,14 @@ def K_gate_valve_Crane(D1: float, D2: float, angle: float, fd: float | None=None
        Equivalent Length and Resistance Coefficient." Katmar Software. Accessed
        July 28, 2017. http://www.katmarsoftware.com/articles/pipe-fitting-pressure-drop.htm.
     """
-    angle = radians(angle)
-    beta = D1/D2
-    if fd is None:
-        fd = ft_Crane(D2)
-    K1 = 8.0*fd # This does not refer to upstream loss per se
-    if beta == 1.0 or angle == 0.0:
-        return K1 # upstream and down
-    else:
-        beta2 = beta*beta
-        one_m_beta2 = 1.0 - beta2
-        if angle <= 0.7853981633974483:
-            K = (K1 + sin(0.5*angle)*(one_m_beta2*(0.8 + 2.6*one_m_beta2)))/(beta2*beta2)
-        else:
-            K = (K1 + one_m_beta2*(0.5*sqrt(sin(0.5*angle)) + one_m_beta2))/(beta2*beta2)
-    return K
+    pass
 
 
 def K_globe_valve_Crane(D1: float, D2: float, fd: float | None=None) -> float:
     r"""Returns the loss coefficient for all types of globe valve, (reduced
     seat or throttled) as shown in [1]_.
 
-    If β = 1:
+    If Î² = 1:
 
     .. math::
         K = K_1 = K_2 = 340 f_d
@@ -3807,25 +3141,14 @@ def K_globe_valve_Crane(D1: float, D2: float, fd: float | None=None) -> float:
     .. [1] Crane Co. Flow of Fluids Through Valves, Fittings, and Pipe. Crane,
        2009.
     """
-    beta = D1/D2
-    if fd is None:
-        fd = ft_Crane(D2)
-    K1 = 340.0*fd
-    if beta == 1.0:
-        return K1 # upstream and down
-    else:
-        beta2 = beta*beta
-        one_m_beta = 1.0 - beta
-        one_m_beta2 = 1.0 - beta2
-        return (K1 + beta*(0.5*one_m_beta*one_m_beta
-                           + one_m_beta2*one_m_beta2))/(beta2*beta2)
+    pass
 
 
 def K_angle_valve_Crane(D1: float, D2: float, fd: float | None=None, style: int=0) -> float:
     r"""Returns the loss coefficient for all types of angle valve, (reduced
     seat or throttled) as shown in [1]_.
 
-    If β = 1:
+    If Î² = 1:
 
     .. math::
         K = K_1 = K_2 = N\cdot f_d
@@ -3872,20 +3195,7 @@ def K_angle_valve_Crane(D1: float, D2: float, fd: float | None=None, style: int=
     .. [1] Crane Co. Flow of Fluids Through Valves, Fittings, and Pipe. Crane,
        2009.
     """
-    beta = D1/D2
-    if style not in (0, 1, 2):
-        raise ValueError("Valve style should be 0, 1, or 2")
-    if fd is None:
-        fd = ft_Crane(D2)
-
-    if style in (0, 2):
-        K1 = 55.0*fd
-    else:
-        K1 = 150.0*fd
-    if beta == 1:
-        return K1 # upstream and down
-    else:
-        return (K1 + beta*(0.5*(1-beta)**2 + (1-beta**2)**2))/beta**4
+    pass
 
 
 def K_swing_check_valve_Crane(D: float | None=None, fd: float | None=None, angled: bool=True) -> float:
@@ -3929,19 +3239,13 @@ def K_swing_check_valve_Crane(D: float | None=None, fd: float | None=None, angle
     .. [1] Crane Co. Flow of Fluids Through Valves, Fittings, and Pipe. Crane,
        2009.
     """
-    if fd is None:
-        if D is None:
-            raise ValueError("D must be specified if fd is not provided")
-        fd = ft_Crane(D)
-    if angled:
-        return 100.*fd
-    return 50.*fd
+    pass
 
 
 def K_lift_check_valve_Crane(D1: float, D2: float, fd: float | None=None, angled: bool=True) -> float:
     r"""Returns the loss coefficient for a lift check valve as shown in [1]_.
 
-    If β = 1:
+    If Î² = 1:
 
     .. math::
         K = K_1 = K_2 = N\cdot f_d
@@ -3988,21 +3292,7 @@ def K_lift_check_valve_Crane(D1: float, D2: float, fd: float | None=None, angled
     .. [1] Crane Co. Flow of Fluids Through Valves, Fittings, and Pipe. Crane,
        2009.
     """
-    beta = D1/D2
-    if fd is None:
-        fd = ft_Crane(D2)
-    if angled:
-        K1 = 55*fd
-        if beta == 1:
-            return K1
-        else:
-            return (K1 + beta*(0.5*(1 - beta**2) + (1 - beta**2)**2))/beta**4
-    else:
-        K1 = 600.*fd
-        if beta == 1:
-            return K1
-        else:
-            return (K1 + beta*(0.5*(1 - beta**2) + (1 - beta**2)**2))/beta**4
+    pass
 
 
 def K_tilting_disk_check_valve_Crane(D: float, angle: float, fd: float | None=None) -> float:
@@ -4018,7 +3308,7 @@ def K_tilting_disk_check_valve_Crane(D: float, angle: float, fd: float | None=No
     N is obtained from the following table:
 
     +--------+-------------+-------------+
-    |        | angle = 5 ° | angle = 15° |
+    |        | angle = 5 Â° | angle = 15Â° |
     +========+=============+=============+
     | 2-8"   | 40          | 120         |
     +--------+-------------+-------------+
@@ -4063,30 +3353,7 @@ def K_tilting_disk_check_valve_Crane(D: float, angle: float, fd: float | None=No
     .. [1] Crane Co. Flow of Fluids Through Valves, Fittings, and Pipe. Crane,
        2009.
     """
-    if fd is None:
-        fd = ft_Crane(D)
-    if angle < 10:
-        # 5 degree case
-        if D <= 0.2286:
-            # 2-8 inches, split at 9 inch
-            return 40*fd
-        elif D <= 0.381:
-            # 10-14 inches, split at 15 inch
-            return 30*fd
-        else:
-            # 16-18 inches
-            return 20*fd
-    else:
-        # 15 degree case
-        if D < 0.2286:
-            # 2-8 inches
-            return 120*fd
-        elif D < 0.381:
-            # 10-14 inches
-            return 90*fd
-        else:
-            # 16-18 inches
-            return 60*fd
+    pass
 
 
 globe_stop_check_valve_Crane_coeffs = {0: 400.0, 1: 300.0, 2: 55.0}
@@ -4096,7 +3363,7 @@ def K_globe_stop_check_valve_Crane(D1: float, D2: float, fd: float | None=None, 
     r"""Returns the loss coefficient for a globe stop check valve as shown in
     [1]_.
 
-    If β = 1:
+    If Î² = 1:
 
     .. math::
         K = K_1 = K_2 = N\cdot f_d
@@ -4146,21 +3413,7 @@ def K_globe_stop_check_valve_Crane(D1: float, D2: float, fd: float | None=None, 
     .. [1] Crane Co. Flow of Fluids Through Valves, Fittings, and Pipe. Crane,
        2009.
     """
-    if fd is None:
-        fd = ft_Crane(D2)
-    if style == 0:
-        K = 400.0*fd
-    elif style == 1:
-        K = 300.0*fd
-    elif style == 2:
-        K = 55.0*fd
-    else:
-        raise ValueError("Accepted valve styles are 0, 1, and 2 only")
-    beta = D1/D2
-    if beta == 1.0:
-        return K
-    else:
-        return (K + beta*(0.5*(1 - beta**2) + (1 - beta**2)**2))/beta**4
+    pass
 
 
 angle_stop_check_valve_Crane_coeffs = {0: 200.0, 1: 350.0, 2: 55.0}
@@ -4170,7 +3423,7 @@ def K_angle_stop_check_valve_Crane(D1: float, D2: float, fd: float | None=None, 
     r"""Returns the loss coefficient for a angle stop check valve as shown in
     [1]_.
 
-    If β = 1:
+    If Î² = 1:
 
     .. math::
         K = K_1 = K_2 = N\cdot f_d
@@ -4220,39 +3473,24 @@ def K_angle_stop_check_valve_Crane(D1: float, D2: float, fd: float | None=None, 
     .. [1] Crane Co. Flow of Fluids Through Valves, Fittings, and Pipe. Crane,
        2009.
     """
-    if fd is None:
-        fd = ft_Crane(D2)
-    if style == 0:
-        K = 200.0*fd
-    elif style == 1:
-        K = 350.0*fd
-    elif style == 2:
-        K = 55.0*fd
-    else:
-        raise ValueError("Accepted valve styles are 0, 1, and 2 only")
-
-    beta = D1/D2
-    if beta == 1:
-        return K
-    else:
-        return (K + beta*(0.5*(1.0 - beta**2) + (1.0 - beta**2)**2))/beta**4
+    pass
 
 
 def K_ball_valve_Crane(D1: float, D2: float, angle: float, fd: float | None=None) -> float:
     r"""Returns the loss coefficient for a ball valve as shown in [1]_.
 
-    If β = 1:
+    If Î² = 1:
 
     .. math::
         K = K_1 = K_2 = 3f_d
 
-    If β < 1 and θ <= 45°:
+    If Î² < 1 and Î¸ <= 45Â°:
 
     .. math::
         K_2 = \frac{K + \sin \frac{\theta}{2} \left[0.8(1-\beta^2)
         + 2.6(1-\beta^2)^2\right]} {\beta^4}
 
-    If β < 1 and θ > 45°:
+    If Î² < 1 and Î¸ > 45Â°:
 
     .. math::
         K_2 = \frac{K + 0.5\sqrt{\sin\frac{\theta}{2}}(1-\beta^2)
@@ -4293,18 +3531,7 @@ def K_ball_valve_Crane(D1: float, D2: float, angle: float, fd: float | None=None
     .. [1] Crane Co. Flow of Fluids Through Valves, Fittings, and Pipe. Crane,
        2009.
     """
-    if fd is None:
-        fd = ft_Crane(D2)
-    beta = D1/D2
-    K1 = 3*fd
-    angle = radians(angle)
-    if beta == 1:
-        return K1
-    else:
-        if angle <= pi/4:
-            return (K1 + sin(angle/2)*(0.8*(1-beta**2) + 2.6*(1-beta**2)**2))/beta**4
-        else:
-            return (K1 + 0.5*sqrt(sin(angle/2)) * (1 - beta**2) + (1-beta**2)**2)/beta**4
+    pass
 
 
 diaphragm_valve_Crane_coeffs = {0: 149.0, 1: 39.0}
@@ -4352,19 +3579,7 @@ def K_diaphragm_valve_Crane(D: float | None=None, fd: float | None=None, style: 
     .. [1] Crane Co. Flow of Fluids Through Valves, Fittings, and Pipe. Crane,
        2009.
     """
-    if D is None and fd is None:
-        raise ValueError("Either `D` or `fd` must be specified")
-    if fd is None:
-        if D is None:
-            raise ValueError("D must be specified if fd is not provided")
-        fd = ft_Crane(D)
-    if style == 0:
-        K = 149.0*fd
-    elif style == 1:
-        K = 39.0*fd
-    else:
-        raise ValueError("Accepted valve styles are 0 (weir) or 1 (straight through) only")
-    return K
+    pass
 
 
 foot_valve_Crane_coeffs = {0: 420.0, 1: 75.0}
@@ -4413,19 +3628,7 @@ def K_foot_valve_Crane(D: float | None=None, fd: float | None=None, style: int=0
     .. [1] Crane Co. Flow of Fluids Through Valves, Fittings, and Pipe. Crane,
        2009.
     """
-    if D is None and fd is None:
-        raise ValueError("Either `D` or `fd` must be specified")
-    if fd is None:
-        if D is None:
-            raise ValueError("D must be specified if fd is not provided")
-        fd = ft_Crane(D)
-    if style == 0:
-        K = 420.0*fd
-    elif style == 1:
-        K = 75.0*fd
-    else:
-        raise ValueError("Accepted valve styles are 0 (poppet disk) or 1 (hinged disk) only")
-    return K
+    pass
 
 
 butterfly_valve_Crane_coeffs = {0: (45.0, 35.0, 25.0), 1: (74.0, 52.0, 43.0),
@@ -4487,25 +3690,7 @@ def K_butterfly_valve_Crane(D: float, fd: float | None=None, style: int=0) -> fl
     .. [1] Crane Co. Flow of Fluids Through Valves, Fittings, and Pipe. Crane,
        2009.
     """
-    if fd is None:
-        fd = ft_Crane(D)
-    if style == 0:
-        c1, c2, c3 = 45.0, 35.0, 25.0
-    elif style == 1:
-        c1, c2, c3 = 74.0, 52.0, 43.0
-    elif style == 2:
-        c1, c2, c3 = 218.0, 96.0, 55.0
-    else:
-        raise ValueError("Accepted valve styles are 0 (centric), 1 (double offset), or 2 (triple offset) only.")
-    if D <= 0.2286:
-        # 2-8 inches, split at 9 inch
-        return c1*fd
-    elif D <= 0.381:
-        # 10-14 inches, split at 15 inch
-        return c2*fd
-    else:
-        # 16-18 inches
-        return c3*fd
+    pass
 
 
 plug_valve_Crane_coeffs = {0: 18.0, 1: 30.0, 2: 90.0}
@@ -4515,7 +3700,7 @@ def K_plug_valve_Crane(D1: float, D2: float, angle: float, fd: float | None=None
     r"""Returns the loss coefficient for a plug valve or cock valve as shown in
     [1]_.
 
-    If β = 1:
+    If Î² = 1:
 
     .. math::
         K = K_1 = K_2 = Nf_d
@@ -4528,7 +3713,7 @@ def K_plug_valve_Crane(D1: float, D2: float, angle: float, fd: float | None=None
 
     Three types of plug valves are supported. For straight-through plug valves
     (`style` = 0), N = 18. For 3-way, flow straight through (`style` = 1)
-    plug valves, N = 30. For 3-way, flow 90° valves (`style` = 2) N = 90.
+    plug valves, N = 30. For 3-way, flow 90Â° valves (`style` = 2) N = 90.
 
     Parameters
     ----------
@@ -4546,7 +3731,7 @@ def K_plug_valve_Crane(D1: float, D2: float, angle: float, fd: float | None=None
         [-]
     style : int, optional
         Either 0 (straight-through), 1 (3-way, flow straight-through), or 2
-        (3-way, flow 90°) [-]
+        (3-way, flow 90Â°) [-]
 
     Returns
     -------
@@ -4568,22 +3753,7 @@ def K_plug_valve_Crane(D1: float, D2: float, angle: float, fd: float | None=None
     .. [1] Crane Co. Flow of Fluids Through Valves, Fittings, and Pipe. Crane,
        2009.
     """
-    if fd is None:
-        fd = ft_Crane(D2)
-    beta = D1/D2
-    if style == 0:
-        K = 18.0*fd
-    elif style == 1:
-        K = 30.0*fd
-    elif style == 2:
-        K = 90.0*fd
-    else:
-        raise ValueError("Accepted valve styles are 0 (straight-through), 1 (3-way, flow straight-through), or 2 (3-way, flow 90°)")
-    angle = radians(angle)
-    if beta == 1:
-        return K
-    else:
-        return (K + 0.5*sqrt(sin(angle/2)) * (1 - beta**2) + (1-beta**2)**2)/beta**4
+    pass
 
 
 def v_lift_valve_Crane(rho: float, D1: float | None=None, D2: float | None=None, style: str="swing check angled") -> float:
@@ -4612,7 +3782,7 @@ def v_lift_valve_Crane(rho: float, D1: float | None=None, D2: float | None=None,
     style : str
         The type of valve; one of ['swing check angled', 'swing check straight',
         'swing check UL', 'lift check straight', 'lift check angled',
-        'tilting check 5°', 'tilting check 15°', 'stop check globe 1',
+        'tilting check 5Â°', 'tilting check 15Â°', 'stop check globe 1',
         'stop check angle 1', 'stop check globe 2',  'stop check angle 2',
         'stop check globe 3', 'stop check angle 3', 'foot valve poppet disc',
         'foot valve hinged disc'], [-]
@@ -4640,9 +3810,9 @@ def v_lift_valve_Crane(rho: float, D1: float | None=None, D2: float | None=None,
     +--------------------------+-----+------+
     | 'lift check angled'      | 170 | Yes  |
     +--------------------------+-----+------+
-    | 'tilting check 5°'       | 100 | No   |
+    | 'tilting check 5Â°'       | 100 | No   |
     +--------------------------+-----+------+
-    | 'tilting check 15°'      | 40  | No   |
+    | 'tilting check 15Â°'      | 40  | No   |
     +--------------------------+-----+------+
     | 'stop check globe 1'     | 70  | Yes  |
     +--------------------------+-----+------+
@@ -4671,38 +3841,7 @@ def v_lift_valve_Crane(rho: float, D1: float | None=None, D2: float | None=None,
     .. [1] Crane Co. Flow of Fluids Through Valves, Fittings, and Pipe. Crane,
        2009.
     """
-    specific_volume = 1./rho
-    if D1 is not None and D2 is not None:
-        beta = D1/D2
-        beta2 = beta*beta
-    if style == "swing check angled":
-        return 45.0*sqrt(specific_volume)
-    elif style == "swing check straight":
-        return 75.0*sqrt(specific_volume)
-    elif style == "swing check UL":
-        return 120.0*sqrt(specific_volume)
-    elif style == "lift check straight":
-        return 50.0*beta2*sqrt(specific_volume)
-    elif style == "lift check angled":
-        return 170.0*beta2*sqrt(specific_volume)
-    elif style == "tilting check 5°":
-        return 100.0*sqrt(specific_volume)
-    elif style == "tilting check 15°":
-        return 40.0*sqrt(specific_volume)
-    elif style == "stop check globe 1":
-        return 70.0*beta2*sqrt(specific_volume)
-    elif style == "stop check angle 1":
-        return 95.0*beta2*sqrt(specific_volume)
-    elif style in ("stop check globe 2", "stop check angle 2"):
-        return 75.0*beta2*sqrt(specific_volume)
-    elif style in ("stop check globe 3", "stop check angle 3"):
-        return 170.0*beta2*sqrt(specific_volume)
-    elif style == "foot valve poppet disc":
-        return 20.0*sqrt(specific_volume)
-    elif style == "foot valve hinged disc":
-        return 45.0*sqrt(specific_volume)
-    else:
-        raise ValueError(f"Unknown valve style: {style}")
+    pass
 
 CRANE_GATE_VALVE = "CRANE_GATE_VALVE"
 CRANE_GLOBE_VALVE = "CRANE_GLOBE_VALVE"
@@ -4795,64 +3934,7 @@ def Crane_loss_coefficient(D1, D2, angle, fitting, fd=None):
     .. [1] Crane Co. Flow of Fluids Through Valves, Fittings, and Pipe. Crane,
        2009.
     """
-    if fitting == CRANE_GATE_VALVE:
-        return K_gate_valve_Crane(D1, D2, angle, fd=fd)
-    elif fitting == CRANE_GLOBE_VALVE:
-        return K_globe_valve_Crane(D1, D2, fd)
-    elif fitting == CRANE_ANGLE_VALVE_0:
-        return K_angle_valve_Crane(D1, D2, fd, 0)
-    elif fitting == CRANE_ANGLE_VALVE_1:
-        return K_angle_valve_Crane(D1, D2, fd, 1)
-    elif fitting == CRANE_ANGLE_VALVE_2:
-        return K_angle_valve_Crane(D1, D2, fd, 2)
-    elif fitting == CRANE_SWING_CHECK_VALVE:
-        return K_swing_check_valve_Crane(D2, fd, False)
-    elif fitting == CRANE_SWING_CHECK_VALVE_ANGLED:
-        return K_swing_check_valve_Crane(D2, fd, True)
-    elif fitting == CRANE_LIFT_CHECK_VALVE:
-        return K_lift_check_valve_Crane(D1, D2, fd, False)
-    elif fitting == CRANE_LIFT_CHECK_VALVE_ANGLED:
-        return K_lift_check_valve_Crane(D1, D2, fd, True)
-    elif fitting == CRANE_TILTING_CHECK_VALVE_5DEG:
-        return K_tilting_disk_check_valve_Crane(D2, 5.0, fd)
-    elif fitting == CRANE_TILTING_CHECK_VALVE_15DEG:
-        return K_tilting_disk_check_valve_Crane(D2, 15.0, fd)
-    elif fitting == CRANE_GLOBE_STOP_CHECK_VALVE_0:
-        return K_globe_stop_check_valve_Crane(D1, D2, fd, 0)
-    elif fitting == CRANE_GLOBE_STOP_CHECK_VALVE_1:
-        return K_globe_stop_check_valve_Crane(D1, D2, fd, 1)
-    elif fitting == CRANE_GLOBE_STOP_CHECK_VALVE_2:
-        return K_globe_stop_check_valve_Crane(D1, D2, fd, 2)
-    elif fitting == CRANE_ANGLE_STOP_CHECK_VALVE_0:
-        return K_angle_stop_check_valve_Crane(D1, D2, fd, 0)
-    elif fitting == CRANE_ANGLE_STOP_CHECK_VALVE_1:
-        return K_angle_stop_check_valve_Crane(D1, D2, fd, 1)
-    elif fitting == CRANE_ANGLE_STOP_CHECK_VALVE_2:
-        return K_angle_stop_check_valve_Crane(D1, D2, fd, 2)
-    elif fitting == CRANE_BALL_VALVE:
-        return K_ball_valve_Crane(D1, D2, angle, fd)
-    elif fitting == CRANE_DIAPHRAGM_VALVE_WEIR:
-        return K_diaphragm_valve_Crane(D2, fd, 0)
-    elif fitting == CRANE_DIAPHRAGM_VALVE_STRAIGHT_THROUGH_WEIR:
-        return K_diaphragm_valve_Crane(D2, fd, 1)
-    elif fitting == CRANE_FOOT_VALVE_POPPET_DISK:
-        return K_foot_valve_Crane(D2, fd, 0)
-    elif fitting == CRANE_FOOT_VALVE_HINGED_DISK:
-        return K_foot_valve_Crane(D2, fd, 1)
-    elif fitting == CRANE_BUTTERFLY_VALVE_CENTRIC:
-        return K_butterfly_valve_Crane(D2, fd, 0)
-    elif fitting == CRANE_BUTTERFLY_VALVE_DOUBLE_OFFSET:
-        return K_butterfly_valve_Crane(D2, fd, 1)
-    elif fitting == CRANE_BUTTERFLY_VALVE_TRIPLE_OFFSET:
-        return K_butterfly_valve_Crane(D2, fd, 2)
-    elif fitting == CRANE_PLUG_VALVE_STRAIGHT_THROUGH:
-        return K_plug_valve_Crane(D1, D2, angle, fd, 0)
-    elif fitting == CRANE_PLUG_VALVE_3_WAY_STRAIGHT_THROUGH:
-        return K_plug_valve_Crane(D1, D2, angle, fd, 1)
-    elif fitting == CRANE_PLUG_VALVE_3_WAY_90_DEG:
-        return K_plug_valve_Crane(D1, D2, angle, fd, 2)
-    else:
-        raise ValueError("Unrecognized fitting")
+    pass
 
 
 branch_converging_Crane_Fs = [1.74, 1.41, 1.0, 0.0]
@@ -4904,7 +3986,7 @@ def K_branch_converging_Crane(D_run: float, D_branch: float, Q_run: float, Q_bra
     degrees.
 
     +-----------+------+
-    | Angle [°] |      |
+    | Angle [Â°] |      |
     +===========+======+
     | 30        | 1.74 |
     +-----------+------+
@@ -4932,7 +4014,7 @@ def K_branch_converging_Crane(D_run: float, D_branch: float, Q_run: float, Q_bra
     --------
     Example 7-35 of [1]_. A DN100 schedule 40 tee has 1135 liters/minute of
     water passing through the straight leg, and 380 liters/minute of water
-    converging with it through a 90° branch. Calculate the loss coefficient in
+    converging with it through a 90Â° branch. Calculate the loss coefficient in
     the branch. The calculated value there is -0.04026.
 
     >>> K_branch_converging_Crane(0.1023, 0.1023, 0.018917, 0.00633)
@@ -4943,20 +4025,7 @@ def K_branch_converging_Crane(D_run: float, D_branch: float, Q_run: float, Q_bra
     .. [1] Crane Co. Flow of Fluids Through Valves, Fittings, and Pipe. Crane,
        2009.
     """
-    beta = (D_branch/D_run)
-    beta2 = beta*beta
-    Q_comb = Q_run + Q_branch
-    Q_ratio = Q_branch/Q_comb
-    if beta2 <= 0.35:
-        C = 1.
-    elif Q_ratio <= 0.4:
-        C = 0.9*(1 - Q_ratio)
-    else:
-        C = 0.55
-    D, E = 1., 2.
-    F = interp(angle, branch_converging_Crane_angles, branch_converging_Crane_Fs)
-    K = C*(1. + D*(Q_ratio/beta2)**2 - E*(1. - Q_ratio)**2 - F/beta2*Q_ratio**2)
-    return K
+    pass
 
 
 run_converging_Crane_Fs = [1.74, 1.41, 1.0]
@@ -4976,7 +4045,7 @@ def K_run_converging_Crane(D_run: float, D_branch: float, Q_run: float, Q_branch
         \beta_{branch} = \frac{D_{branch}}{D_{comb}} = \frac{D_{branch}}{D_{run}}
 
     In the above equation, C=1, D=0, E=1. See the notes for definitions of F
-    and also the special case of 90°. The run and combined diameter are assumed
+    and also the special case of 90Â°. The run and combined diameter are assumed
     the same in this model.
 
     Parameters
@@ -5006,10 +4075,10 @@ def K_run_converging_Crane(D_run: float, D_branch: float, Q_run: float, Q_branch
     -----
     F is linearly interpolated from the table of angles below. There is no
     cutoff to prevent angles from being larger or smaller than 30 or 60
-    degrees. The switch to the special 90° happens at 75°.
+    degrees. The switch to the special 90Â° happens at 75Â°.
 
     +-----------+------+
-    | Angle [°] |      |
+    | Angle [Â°] |      |
     +===========+======+
     | 30        | 1.74 |
     +-----------+------+
@@ -5018,7 +4087,7 @@ def K_run_converging_Crane(D_run: float, D_branch: float, Q_run: float, Q_branch
     | 60        | 1    |
     +-----------+------+
 
-    For the special case of 90°, the formula used is as follows.
+    For the special case of 90Â°, the formula used is as follows.
 
     .. math::
         K_{run} = 1.55\left(\frac{Q_{branch}}{Q_{comb}} \right)
@@ -5028,7 +4097,7 @@ def K_run_converging_Crane(D_run: float, D_branch: float, Q_run: float, Q_branch
     --------
     Example 7-35 of [1]_. A DN100 schedule 40 tee has 1135 liters/minute of
     water passing through the straight leg, and 380 liters/minute of water
-    converging with it through a 90° branch. Calculate the loss coefficient in
+    converging with it through a 90Â° branch. Calculate the loss coefficient in
     the run. The calculated value there is 0.03258.
 
     >>> K_run_converging_Crane(0.1023, 0.1023, 0.018917, 0.00633)
@@ -5039,19 +4108,7 @@ def K_run_converging_Crane(D_run: float, D_branch: float, Q_run: float, Q_branch
     .. [1] Crane Co. Flow of Fluids Through Valves, Fittings, and Pipe. Crane,
        2009.
     """
-    beta = (D_branch/D_run)
-    beta2 = beta*beta
-    Q_comb = Q_run + Q_branch
-    Q_ratio = Q_branch/Q_comb
-    if angle < 75.0:
-        C = 1.0
-    else:
-        return 1.55*(Q_ratio) - Q_ratio*Q_ratio
-
-    D, E = 0.0, 1.0
-    F = interp(angle, run_converging_Crane_angles, run_converging_Crane_Fs)
-    K = C*(1. + D*(Q_ratio/beta2)**2 - E*(1. - Q_ratio)**2 - F/beta2*Q_ratio**2)
-    return K
+    pass
 
 
 def K_branch_diverging_Crane(D_run: float, D_branch: float, Q_run: float, Q_branch: float, angle: float=90) -> float:
@@ -5129,7 +4186,7 @@ def K_branch_diverging_Crane(D_run: float, D_branch: float, Q_run: float, Q_bran
     --------
     Example 7-36 of [1]_. A DN150 schedule 80 wye has 1515 liters/minute of
     water exiting the straight leg, and 950 liters/minute of water
-    exiting it through a 45° branch. Calculate the loss coefficient in
+    exiting it through a 45Â° branch. Calculate the loss coefficient in
     the branch. The calculated value there is 0.4640.
 
     >>> K_branch_diverging_Crane(0.146, 0.146, 0.02525, 0.01583, angle=45)
@@ -5140,36 +4197,7 @@ def K_branch_diverging_Crane(D_run: float, D_branch: float, Q_run: float, Q_bran
     .. [1] Crane Co. Flow of Fluids Through Valves, Fittings, and Pipe. Crane,
        2009.
     """
-    beta = (D_branch/D_run)
-    beta2 = beta*beta
-    Q_comb = Q_run + Q_branch
-    Q_ratio = Q_branch/Q_comb
-
-    if angle < 60 or beta <= 2/3.:
-        H, J = 1., 2.
-    else:
-        H, J = 0.3, 0
-    if angle < 75:
-        # 75 degree transition chosen instead of 60, splitting the difference
-        # between behavior at 60 and 90
-        if beta2 <= 0.35:
-            if Q_ratio <= 0.4:
-                G = 1.1 - 0.7*Q_ratio
-            else:
-                G = 0.85
-        else:
-            if Q_ratio <= 0.6:
-                G = 1.0 - 0.6*Q_ratio
-            else:
-                G = 0.6
-    else:
-        if beta2 <= 2/3.:
-            G = 1
-        else:
-            G = 1 + 0.3*Q_ratio*Q_ratio
-    angle_rad = radians(angle)
-    K_branch = G*(1 + H*(Q_ratio/beta2)**2 - J*(Q_ratio/beta2)*cos(angle_rad))
-    return K_branch
+    pass
 
 
 def K_run_diverging_Crane(D_run: float, D_branch: float, Q_run: float, Q_branch: float, angle: float=90) -> float:
@@ -5224,7 +4252,7 @@ def K_run_diverging_Crane(D_run: float, D_branch: float, Q_run: float, Q_branch:
     --------
     Example 7-36 of [1]_. A DN150 schedule 80 wye has 1515 liters/minute of
     water exiting the straight leg, and 950 liters/minute of water
-    exiting it through a 45° branch. Calculate the loss coefficient in
+    exiting it through a 45Â° branch. Calculate the loss coefficient in
     the branch. The calculated value there is -0.06809.
 
     >>> K_run_diverging_Crane(0.146, 0.146, 0.02525, 0.01583, angle=45)
@@ -5235,16 +4263,6 @@ def K_run_diverging_Crane(D_run: float, D_branch: float, Q_run: float, Q_branch:
     .. [1] Crane Co. Flow of Fluids Through Valves, Fittings, and Pipe. Crane,
        2009.
     """
-    beta = (D_branch/D_run)
-    beta2 = beta*beta
-    Q_comb = Q_run + Q_branch
-    Q_ratio = Q_branch/Q_comb
-    if beta2 <= 0.4:
-        M = 0.4
-    elif Q_ratio <= 0.5:
-        M = 2.*(2.*Q_ratio - 1.)
-    else:
-        M = 0.3*(2.*Q_ratio - 1.)
-    return M*Q_ratio*Q_ratio
+    pass
 
 

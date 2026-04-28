@@ -58,8 +58,7 @@ min_regime_constant_for_turbulent = 6370.
 
 def adjust_homogeneity(fraction: float) -> float:
     """Base: 95% homogeneity"""
-    multiplier = log(1-fraction)/log(0.05)
-    return multiplier
+    pass
 
 
 def agitator_time_homogeneous(N: float, P: float, T: float, H: float, mu: float, rho: float, D: float | None=None, homogeneity: float=.95) -> float:
@@ -129,18 +128,7 @@ def agitator_time_homogeneous(N: float, P: float, T: float, H: float, mu: float,
        Handbook of Industrial Mixing: Science and Practice.
        Hoboken, N.J.: Wiley-Interscience, 2004.
     """
-    if not D:
-        D = T*0.5
-    Np = P*g/rho/N**3/D**5
-    Re_imp = rho/mu*D**2*N
-    regime_constant = Np**(1/3.)*Re_imp
-    if regime_constant >= min_regime_constant_for_turbulent:
-        Fo = (5.2/regime_constant)
-    else:
-        Fo = (183./regime_constant)**2
-    time = rho*T**1.5*sqrt(H)/mu*Fo
-    multiplier = adjust_homogeneity(homogeneity)
-    return time*multiplier
+    pass
 
 
 def Kp_helical_ribbon_Rieger(D: float, h: float, nb: int, pitch: float, width: float, T: float) -> float:
@@ -191,8 +179,7 @@ def Kp_helical_ribbon_Rieger(D: float, h: float, nb: int, pitch: float, width: f
        geometrical shape on the power requirements of ribbon impellers,
        Int. Chem. Eng., 28, 376-383.
     """
-    c = 0.5*(T - D)
-    return 82.8*h/D*(c/D)**-.38*(pitch/D)**-0.35*(width/D)**0.2*nb**0.78
+    pass
 
 
 def time_helical_ribbon_Grenville(Kp: float, N: float) -> float:
@@ -234,7 +221,7 @@ def time_helical_ribbon_Grenville(Kp: float, N: float) -> float:
        Optimisation of helical ribbon geometry for blending in the laminar
        regime, presented at MIXING XVIII, NAMF.
     """
-    return 896E3*Kp**-1.69/N
+    pass
 
 
 ### Tee mixer
@@ -287,37 +274,7 @@ def size_tee(Q1: float, Q2: float, D: float, D2: float | None, n: int=1, pipe_di
        Design, Fluid Flow, 79, no. 5 (July 2001): 515-22.
        doi:10.1205/02638760152424280.
     """
-    V1 = Q1/(pi/4*D**2)
-    # Cv = Q2/(Q1 + Q2)
-    # COV0 = sqrt((1-Cv)/Cv)
-    if D2 is None:
-        D2 = (Q2/Q1)**(2/3.)*D
-    V2 = Q2/(pi/4*D2**2)
-    B = n**2*(D2/D)**2*(V2/V1)**2
-    if not n == 1 and not n == 2 and not n == 3 and not n ==4:
-        raise ValueError("Only 1 or 4 side streams investigated")
-    if n == 1:
-        if B < 0.7:
-            E = 1.33
-        else:
-            E = 1/33. + 0.95*log(B/0.7)
-    elif n == 2:
-        if B < 0.8:
-            E = 1.44
-        else:
-            E = 1.44 + 0.95*log(B/0.8)**1.5
-    elif n == 3:
-        if B < 0.8:
-            E = 1.75
-        else:
-            E = 1.75 + 0.95*log(B/0.8)**1.8
-    else:
-        if B < 2:
-            E = 1.97
-        else:
-            E = 1.97 + 0.95*log(B/2.)**2
-    COV = sqrt(0.32/B**0.86*(pipe_diameters)**-E)
-    return COV
+    pass
 
 ### Commercial motionless mixers
 """Data from:
@@ -372,11 +329,7 @@ def COV_motionless_mixer(Ki: float, Q1: float, Q2: float, pipe_diameters: float)
        application of motionless mixer technology, Proc. ISMIP3, Osaka,
        pp. 107-114.
     """
-    Cv = Q2/(Q1 + Q2)
-    COV0 = sqrt((1-Cv)/Cv)
-    COVr = Ki**(pipe_diameters)
-    COV = COV0*COVr
-    return COV
+    pass
 
 
 def K_motionless_mixer(K: float, L: float, D: float, fd: float) -> float:
@@ -421,5 +374,5 @@ def K_motionless_mixer(K: float, L: float, D: float, fd: float) -> float:
        application of motionless mixer technology, Proc. ISMIP3, Osaka,
        pp. 107-114.
     """
-    return L/D*fd*K
+    pass
 

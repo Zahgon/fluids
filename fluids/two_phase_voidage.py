@@ -196,7 +196,7 @@ def Thom(x: float, rhol: float, rhog: float, mul: float, mug: float) -> float:
        Communications in Heat and Mass Transfer 35, no. 8 (October 2008):
        921-27. doi:10.1016/j.icheatmasstransfer.2008.04.001.
     """
-    return 1.0/(1.0 + (1.0-x)/x * (rhog/rhol)**0.89 * (mul/mug)**0.18)
+    pass
 #    return x*((mug/mul)**(111/1000)*(rhol/rhog)**(111/200))**1.6/(x*(((mug/mul)**(111/1000)*(rhol/rhog)**(111/200))**1.6 - 1) + 1)
 
 
@@ -246,7 +246,7 @@ def Zivi(x: float, rhol: float, rhog: float) -> float:
        Communications in Heat and Mass Transfer 35, no. 8 (October 2008):
        921-27. doi:10.1016/j.icheatmasstransfer.2008.04.001.
     """
-    return 1.0/(1.0 + (1.0-x)/x * (rhog/rhol)**(2/3.))
+    pass
 
 
 def Smith(x: float, rhol: float, rhog: float) -> float:
@@ -301,11 +301,7 @@ def Smith(x: float, rhol: float, rhog: float) -> float:
        Communications in Heat and Mass Transfer 35, no. 8 (October 2008):
        921-27. doi:10.1016/j.icheatmasstransfer.2008.04.001.
     """
-    K = 0.4
-    x_ratio = (1.0-x)/x
-    root = sqrt((rhol/rhog + K*x_ratio) / (1.0 + K*x_ratio))
-    alpha = 1.0/(1.0 + (x_ratio) * (rhog/rhol) * (K + (1.0-K)*root))
-    return alpha
+    pass
 
 
 def Fauske(x: float, rhol: float, rhog: float) -> float:
@@ -354,7 +350,7 @@ def Fauske(x: float, rhol: float, rhog: float) -> float:
        Communications in Heat and Mass Transfer 35, no. 8 (October 2008):
        921-27. doi:10.1016/j.icheatmasstransfer.2008.04.001.
     """
-    return 1.0/(1.0 + (1.0-x)/x*sqrt(rhog/rhol))
+    pass
 
 
 def Chisholm_voidage(x: float, rhol: float, rhog: float) -> float:
@@ -405,9 +401,7 @@ def Chisholm_voidage(x: float, rhol: float, rhog: float) -> float:
        Communications in Heat and Mass Transfer 35, no. 8 (October 2008):
        921-27. doi:10.1016/j.icheatmasstransfer.2008.04.001.
     """
-    S = sqrt(1.0 - x*(1.0-rhol/rhog))
-    alpha = 1.0/(1.0 + (1.0-x)/x*rhog/rhol*S)
-    return alpha
+    pass
 
 
 def Turner_Wallis(x: float, rhol: float, rhog: float, mul: float, mug: float) -> float:
@@ -461,7 +455,7 @@ def Turner_Wallis(x: float, rhol: float, rhog: float, mul: float, mug: float) ->
        Communications in Heat and Mass Transfer 35, no. 8 (October 2008):
        921-27. doi:10.1016/j.icheatmasstransfer.2008.04.001.
     """
-    return 1.0/(1.0 + ((1.0-x)/x)**0.72 * (rhog/rhol)**0.4 * (mul/mug)**0.08)
+    pass
 
 
 ### Models using the Homogeneous flow model
@@ -511,11 +505,7 @@ def homogeneous(x: float, rhol: float, rhog: float) -> float:
        Upward Inclined Pipes." International Journal of Multiphase Flow 33,
        no. 4 (April 2007): 347-370. doi:10.1016/j.ijmultiphaseflow.2006.09.004.
     """
-    if x == 1.0:
-        return 1.0
-    elif x == 0.0:
-        return 0.0
-    return 1.0/(1.0 + (1.0 - x)/x*(rhog/rhol))
+    pass
 
 
 def Chisholm_Armand(x: float, rhol: float, rhog: float) -> float:
@@ -567,8 +557,7 @@ def Chisholm_Armand(x: float, rhol: float, rhog: float) -> float:
        Upward Inclined Pipes." International Journal of Multiphase Flow 33,
        no. 4 (April 2007): 347-370. doi:10.1016/j.ijmultiphaseflow.2006.09.004.
     """
-    alpha_h = homogeneous(x, rhol, rhog)
-    return alpha_h/(alpha_h + sqrt(1.0-alpha_h))
+    pass
 
 
 def Armand(x: float, rhol: float, rhog: float) -> float:
@@ -618,7 +607,7 @@ def Armand(x: float, rhol: float, rhog: float) -> float:
        Upward Inclined Pipes." International Journal of Multiphase Flow 33,
        no. 4 (April 2007): 347-370. doi:10.1016/j.ijmultiphaseflow.2006.09.004.
     """
-    return 0.833*homogeneous(x, rhol, rhog)
+    pass
 
 
 def Nishino_Yamazaki(x: float, rhol: float, rhog: float) -> float:
@@ -670,8 +659,7 @@ def Nishino_Yamazaki(x: float, rhol: float, rhog: float) -> float:
        Upward Inclined Pipes." International Journal of Multiphase Flow 33,
        no. 4 (April 2007): 347-370. doi:10.1016/j.ijmultiphaseflow.2006.09.004.
     """
-    alpha_h = homogeneous(x, rhol, rhog)
-    return 1.0 - sqrt((1.0-x)*rhog/(x*rhol))*sqrt(alpha_h)
+    pass
 
 
 def Guzhov(x: float, rhol: float, rhog: float, m: float, D: float) -> float:
@@ -713,9 +701,9 @@ def Guzhov(x: float, rhol: float, rhog: float, m: float, D: float) -> float:
 
     References
     ----------
-    .. [1] Guzhov, A. I, Vasiliĭ Andreevich Mamaev, and G. E Odisharii︠a︡. A
-       Study of Transportation in Gas-Liquid Systems. Une Étude Sur Le
-       Transport Des Systèmes Gaz-Liquides. Bruxelles: International Gas Union,
+    .. [1] Guzhov, A. I, VasiliÄ­ Andreevich Mamaev, and G. E Odishariiï¸ aï¸¡. A
+       Study of Transportation in Gas-Liquid Systems. Une Ã‰tude Sur Le
+       Transport Des SystÃ¨mes Gaz-Liquides. Bruxelles: International Gas Union,
        1967.
     .. [2] Xu, Yu, and Xiande Fang. "Correlations of Void Fraction for Two-
        Phase Refrigerant Flow in Pipes." Applied Thermal Engineering 64, no.
@@ -725,12 +713,7 @@ def Guzhov(x: float, rhol: float, rhog: float, m: float, D: float) -> float:
        Upward Inclined Pipes." International Journal of Multiphase Flow 33,
        no. 4 (April 2007): 347-370. doi:10.1016/j.ijmultiphaseflow.2006.09.004.
     """
-    rho_tp = 1.0/((1-x)/rhol + x/rhog)
-    G = m/(0.25*pi*D*D)
-    V_tp = G/rho_tp
-    Fr = Froude(V=V_tp, L=D, squared=True) # squaring is undone later; Fr**0.5
-    alpha_h = homogeneous(x, rhol, rhog)
-    return 0.81*(1 - exp(-2.2*sqrt(Fr)))*alpha_h
+    pass
 
 
 def Kawahara(x: float, rhol: float, rhog: float, D: float) -> float:
@@ -788,14 +771,7 @@ def Kawahara(x: float, rhol: float, rhog: float, D: float) -> float:
        Communications in Heat and Mass Transfer 35, no. 8 (October 2008):
        921-27. doi:10.1016/j.icheatmasstransfer.2008.04.001.
     """
-    if D > 250E-6:
-        return Armand(x, rhol, rhog)
-    elif D > 75E-6:
-        C1, C2 = 0.03, 0.97
-    else:
-        C1, C2 = 0.02, 0.98
-    alpha_h = homogeneous(x, rhol, rhog)
-    return C1*sqrt(alpha_h)/(1. - C2*sqrt(alpha_h))
+    pass
 
 ### Miscellaneous correlations
 
@@ -862,10 +838,7 @@ def Lockhart_Martinelli_Xtt(x: float, rhol: float, rhog: float, mul: float, mug:
        Upward Inclined Pipes." International Journal of Multiphase Flow 33,
        no. 4 (April 2007): 347-370. doi:10.1016/j.ijmultiphaseflow.2006.09.004.
     """
-    if n is not None:
-        pow_x = (2-n)/2.
-        pow_mu = n/2.
-    return ((1.0-x)/x)**pow_x * (rhog/rhol)**pow_rho * (mul/mug)**pow_mu
+    pass
 
 
 def Baroczy(x: float, rhol: float, rhog: float, mul: float, mug: float) -> float:
@@ -921,9 +894,7 @@ def Baroczy(x: float, rhol: float, rhog: float, mul: float, mug: float) -> float
        Upward Inclined Pipes." International Journal of Multiphase Flow 33,
        no. 4 (April 2007): 347-370. doi:10.1016/j.ijmultiphaseflow.2006.09.004.
     """
-    Xtt = Lockhart_Martinelli_Xtt(x, rhol, rhog, mul, mug,
-                                  pow_x=0.74, pow_rho=0.65, pow_mu=0.13)
-    return 1.0/(1 + Xtt)
+    pass
 
 
 def Tandon_Varma_Gupta(x: float, rhol: float, rhog: float, mul: float, mug: float, m: float, D: float) -> float:
@@ -1001,15 +972,7 @@ def Tandon_Varma_Gupta(x: float, rhol: float, rhog: float, mul: float, mug: floa
        Upward Inclined Pipes." International Journal of Multiphase Flow 33,
        no. 4 (April 2007): 347-370. doi:10.1016/j.ijmultiphaseflow.2006.09.004.
     """
-    G = m/(0.25*pi*D*D)
-    Rel = G*D/mul
-    Xtt = Lockhart_Martinelli_Xtt(x, rhol, rhog, mul, mug)
-    Fxtt = 0.15*(1.0/Xtt + 2.85*Xtt**-0.476)
-    if Rel < 1125.0:
-        alpha = 1.0 - 1.928*Rel**-0.315/Fxtt + 0.9293*Rel**-0.63/(Fxtt*Fxtt)
-    else:
-        alpha = 1.0 - 0.38*Rel**-0.088/Fxtt + 0.0361*Rel**-0.176/(Fxtt*Fxtt)
-    return alpha
+    pass
 
 
 def Harms(x: float, rhol: float, rhog: float, mul: float, mug: float, m: float, D: float) -> float:
@@ -1069,12 +1032,7 @@ def Harms(x: float, rhol: float, rhog: float, mul: float, mug: float, m: float, 
        Communications in Heat and Mass Transfer 35, no. 8 (October 2008):
        921-27. doi:10.1016/j.icheatmasstransfer.2008.04.001.
     """
-    G = m/(0.25*pi*D*D)
-    Rel = G*D*(1.0-x)/mul
-    Xtt = Lockhart_Martinelli_Xtt(x, rhol, rhog, mul, mug)
-    term = (1.74 + 0.104*sqrt(Rel))
-    return (1 - 10.06*Rel**-0.875*term*term
-            *1.0/sqrt(1.376 + 7.242*Xtt**-1.655))**2
+    pass
 
 
 def Domanski_Didion(x: float, rhol: float, rhog: float, mul: float, mug: float) -> float:
@@ -1137,11 +1095,7 @@ def Domanski_Didion(x: float, rhol: float, rhog: float, mul: float, mug: float) 
        Communications in Heat and Mass Transfer 35, no. 8 (October 2008):
        921-27. doi:10.1016/j.icheatmasstransfer.2008.04.001.
     """
-    Xtt = Lockhart_Martinelli_Xtt(x, rhol, rhog, mul, mug)
-    if Xtt < 10.0:
-        return (1.0 + Xtt**0.8)**-0.378
-    else:
-        return 0.823 - 0.157*log(Xtt)
+    pass
 
 
 def Graham(x: float, rhol: float, rhog: float, mul: float, mug: float, m: float, D: float, g: float=g) -> float:
@@ -1206,13 +1160,7 @@ def Graham(x: float, rhol: float, rhog: float, mul: float, mug: float, m: float,
        Communications in Heat and Mass Transfer 35, no. 8 (October 2008):
        921-27. doi:10.1016/j.icheatmasstransfer.2008.04.001.
     """
-    G = m/(0.25*pi*D*D)
-    Ft = sqrt(G*G*x*x*x/((1.0-x)*rhog*rhog*g*D))
-    if Ft < 0.01032:
-        return 0.0
-    else:
-        log_Ft = log(Ft)
-        return 1.0 - exp(-1.0 - 0.3*log_Ft - 0.0328*log_Ft*log_Ft)
+    pass
 
 
 def Yashar(x: float, rhol: float, rhog: float, mul: float, mug: float, m: float, D: float, g: float=g) -> float:
@@ -1273,10 +1221,7 @@ def Yashar(x: float, rhol: float, rhog: float, mul: float, mug: float, m: float,
        Communications in Heat and Mass Transfer 35, no. 8 (October 2008):
        921-27. doi:10.1016/j.icheatmasstransfer.2008.04.001.
     """
-    G = m/(0.25*pi*D*D)
-    Ft = sqrt(G*G*x*x*x/((1.0-x)*rhog*rhog*g*D))
-    Xtt = Lockhart_Martinelli_Xtt(x, rhol, rhog, mul, mug)
-    return (1 + 1./Ft + Xtt)**-0.321
+    pass
 
 
 def Huq_Loth(x: float, rhol: float, rhog: float) -> float:
@@ -1330,10 +1275,7 @@ def Huq_Loth(x: float, rhol: float, rhog: float) -> float:
        Upward Inclined Pipes." International Journal of Multiphase Flow 33,
        no. 4 (April 2007): 347-370. doi:10.1016/j.ijmultiphaseflow.2006.09.004.
     """
-    term = 1.0 - x
-    B = 2.0*x*term
-    D = sqrt(1.0 + 2.0*B*(rhol/rhog -1.0))
-    return 1.0 - 2.0*term*term/(1.0 - 2.0*x + D)
+    pass
 
 
 def Kopte_Newell_Chato(x, rhol, rhog, m, D, g=g):
@@ -1390,13 +1332,7 @@ def Kopte_Newell_Chato(x, rhol, rhog, m, D, g=g):
        Phase Refrigerant Flow in Pipes." Applied Thermal Engineering 64, no.
        1-2 (March 2014): 242-51. doi:10.1016/j.applthermaleng.2013.12.032.
     """
-    G = m/(0.25*pi*D*D)
-    Ft = sqrt(G*G*x*x*x/((1.0-x)*rhog*rhog*g*D))
-    if Ft < 0.044:
-        return homogeneous(x, rhol, rhog)
-    else:
-        log_Ft = log(Ft)
-        return 1.045 - exp(-1 - 0.342*log_Ft - 0.0268*log_Ft*log_Ft + 0.00597*log_Ft*log_Ft*log_Ft)
+    pass
 
 ### Drift flux models
 
@@ -1459,10 +1395,7 @@ def Steiner(x: float, rhol: float, rhog: float, sigma: float, m: float, D: float
        Communications in Heat and Mass Transfer 35, no. 8 (October 2008):
        921-27. doi:10.1016/j.icheatmasstransfer.2008.04.001.
     """
-    G = m/(0.25*pi*D*D)
-    C0 = 1.0 + 0.12*(1.0-x)
-    vgm = 1.18*(1.0-x)/sqrt(rhol)*sqrt(sqrt(g*sigma*(rhol-rhog)))
-    return x/(rhog*(C0*(x/rhog + (1.0-x)/rhol) + vgm/G))
+    pass
 
 
 def Rouhani_1(x: float, rhol: float, rhog: float, sigma: float, m: float, D: float, g: float=g) -> float:
@@ -1524,10 +1457,7 @@ def Rouhani_1(x: float, rhol: float, rhog: float, sigma: float, m: float, D: flo
        Upward Inclined Pipes." International Journal of Multiphase Flow 33,
        no. 4 (April 2007): 347-370. doi:10.1016/j.ijmultiphaseflow.2006.09.004.
     """
-    G = m/(0.25*pi*D*D)
-    C0 = 1.0 + 0.2*(1.0-x)
-    vgm = 1.18*(1.0-x)/sqrt(rhol)*sqrt(sqrt(g*sigma*(rhol-rhog)))
-    return x/(rhog*(C0*(x/rhog + (1.0-x)/rhol) + vgm/G))
+    pass
 
 
 def Rouhani_2(x: float, rhol: float, rhog: float, sigma: float, m: float, D: float, g: float=g) -> float:
@@ -1589,10 +1519,7 @@ def Rouhani_2(x: float, rhol: float, rhog: float, sigma: float, m: float, D: flo
        Upward Inclined Pipes." International Journal of Multiphase Flow 33,
        no. 4 (April 2007): 347-370. doi:10.1016/j.ijmultiphaseflow.2006.09.004.
     """
-    G = m/(0.25*pi*D*D)
-    C0 = 1.0 + 0.2*(1.0-x)*sqrt(sqrt(g*D))*sqrt(rhol/G)
-    vgm = 1.18*(1.0-x)/sqrt(rhol)*sqrt(sqrt(g*sigma*(rhol-rhog)))
-    return x/(rhog*(C0*(x/rhog + (1-x)/rhol) + vgm/G))
+    pass
 
 
 def Nicklin_Wilkes_Davidson(x: float, rhol: float, rhog: float, m: float, D: float, g: float=g) -> float:
@@ -1649,10 +1576,7 @@ def Nicklin_Wilkes_Davidson(x: float, rhol: float, rhog: float, m: float, D: flo
        Upward Inclined Pipes." International Journal of Multiphase Flow 33,
        no. 4 (April 2007): 347-370. doi:10.1016/j.ijmultiphaseflow.2006.09.004.
     """
-    G = m/(0.25*pi*D*D)
-    C0 = 1.2
-    vgm = 0.35*sqrt(g*D)
-    return x/(rhog*(C0*(x/rhog + (1.0-x)/rhol) + vgm/G))
+    pass
 
 
 def Gregory_Scott(x: float, rhol: float, rhog: float) -> float:
@@ -1705,8 +1629,7 @@ def Gregory_Scott(x: float, rhol: float, rhog: float) -> float:
        Upward Inclined Pipes." International Journal of Multiphase Flow 33,
        no. 4 (April 2007): 347-370. doi:10.1016/j.ijmultiphaseflow.2006.09.004.
     """
-    C0 = 1.19
-    return x/(rhog*(C0*(x/rhog + (1.0-x)/rhol)))
+    pass
 
 
 def Dix(x: float, rhol: float, rhog: float, sigma: float, m: float, D: float, g: float=g) -> float:
@@ -1774,13 +1697,7 @@ def Dix(x: float, rhol: float, rhog: float, sigma: float, m: float, D: float, g:
        Upward Inclined Pipes." International Journal of Multiphase Flow 33,
        no. 4 (April 2007): 347-370. doi:10.1016/j.ijmultiphaseflow.2006.09.004.
     """
-    A = 0.25*pi*D*D
-    vgs = m*x/(rhog*A)
-    vls = m*(1.0-x)/(rhol*A)
-    G = m/A
-    C0 = vgs/(vls+vgs)*(1.0 + (vls/vgs)**((rhog/rhol)**0.1))
-    vgm = 2.9*sqrt(sqrt(g*sigma*(rhol-rhog)/(rhol*rhol)))
-    return x/(rhog*(C0*(x/rhog + (1.0-x)/rhol) + vgm/G))
+    pass
 
 
 def Sun_Duffey_Peng(x: float, rhol: float, rhog: float, sigma: float, m: float, D: float, P: float, Pc: float, g: float=g) -> float:
@@ -1845,11 +1762,7 @@ def Sun_Duffey_Peng(x: float, rhol: float, rhog: float, sigma: float, m: float, 
        Upward Inclined Pipes." International Journal of Multiphase Flow 33,
        no. 4 (April 2007): 347-370. doi:10.1016/j.ijmultiphaseflow.2006.09.004.
     """
-    G = m/(0.25*pi*D*D)
-    Pr = P/Pc if Pc is not None else 0.5
-    C0 = 1.0/(0.82 + 0.18*Pr)
-    vgm = 1.41*sqrt(sqrt(g*sigma*(rhol-rhog)/(rhol*rhol)))
-    return x/(rhog*(C0*(x/rhog + (1.0-x)/rhol) + vgm/G))
+    pass
 
 
 # Correlations developed in reviews
@@ -1901,10 +1814,7 @@ def Xu_Fang_voidage(x: float, rhol: float, rhog: float, m: float, D: float, g: f
        Phase Refrigerant Flow in Pipes." Applied Thermal Engineering 64, no.
        1-2 (March 2014): 242-51. doi:10.1016/j.applthermaleng.2013.12.032.
     """
-    G = m/(0.25*pi*D*D)
-    alpha_h = homogeneous(x, rhol, rhog)
-    Frlo = G*G/(g*D*rhol*rhol)
-    return 1.0/(1.0 + (1.0 + 2.0*Frlo**-0.2*alpha_h**3.5)*((1.0-x)/x)*(rhog/rhol))
+    pass
 
 
 def Woldesemayat_Ghajar(x: float, rhol: float, rhog: float, sigma: float, m: float, D: float, P: float, angle: float=0, g: float=g) -> float:
@@ -1967,15 +1877,7 @@ def Woldesemayat_Ghajar(x: float, rhol: float, rhog: float, sigma: float, m: flo
        Upward Inclined Pipes." International Journal of Multiphase Flow 33,
        no. 4 (April 2007): 347-370. doi:10.1016/j.ijmultiphaseflow.2006.09.004.
     """
-    A = 0.25*pi*D*D
-    vgs = m*x/(rhog*A)
-    vls = m*(1.0-x)/(rhol*A)
-    first = vgs*(1.0 + (vls/vgs)**((rhog/rhol)**0.1))
-    second = 2.9*sqrt(sqrt((g*D*sigma*(1.0 + cos(radians(angle)))*(rhol-rhog))/(rhol*rhol)))
-    if P is None:
-        P = 101325.0
-    third = (1.22 + 1.22*sin(radians(angle)))**(101325./P)
-    return vgs/(first + second*third)
+    pass
 
 # x, rhol, rhog will be the minimum inputs
 
@@ -2062,15 +1964,7 @@ def liquid_gas_voidage_methods(x: float, rhol: float, rhog: float, D: float | No
     >>> len(liquid_gas_voidage_methods(m=0.6, x=0.1, rhol=915., rhog=2.67, mul=180E-6, mug=14E-6, sigma=0.0487, D=0.05))
     27
     """
-    vals = {"x": x, "rhol": rhol, "rhog": rhog, "D": D, "m": m, "mul": mul,
-            "mug": mug, "sigma": sigma, "P": P, "Pc": Pc, "angle": angle,
-            "g": g, "check_ranges": check_ranges}
-    usable_methods = []
-    for method, value in two_phase_voidage_correlations.items():
-        f, args = value
-        if all(vals[i] is not None for i in args):
-            usable_methods.append(method)
-    return usable_methods
+    pass
 
 
 # Uncomment to regenerate the frozensets when adding new methods:
@@ -2180,110 +2074,7 @@ def liquid_gas_voidage(x: float, rhol: float, rhog: float, D: float | None=None,
     ... sigma=0.0487, D=0.05)
     0.9744097632663492
     """
-    if Method is None:
-        Method2 = "homogeneous"
-    else:
-        Method2 = Method
-
-    # Type narrowing: validate required parameters based on selected method
-    # Initialize to dummy values for numba (will be overwritten before use)
-    D2 = 0.0
-    m2 = 0.0
-    mul2 = 0.0
-    mug2 = 0.0
-    sigma2 = 0.0
-    P2 = 0.0
-    Pc2 = 0.0
-
-    if Method2 in liquid_gas_voidage_methods_needing_D:
-        if D is None:
-            raise TypeError(f"{Method2} requires D")
-        D2 = D
-    if Method2 in liquid_gas_voidage_methods_needing_m:
-        if m is None:
-            raise TypeError(f"{Method2} requires m")
-        m2 = m
-    if Method2 in liquid_gas_voidage_methods_needing_mul:
-        if mul is None:
-            raise TypeError(f"{Method2} requires mul")
-        mul2 = mul
-    if Method2 in liquid_gas_voidage_methods_needing_mug:
-        if mug is None:
-            raise TypeError(f"{Method2} requires mug")
-        mug2 = mug
-    if Method2 in liquid_gas_voidage_methods_needing_sigma:
-        if sigma is None:
-            raise TypeError(f"{Method2} requires sigma")
-        sigma2 = sigma
-    if Method2 in liquid_gas_voidage_methods_needing_P:
-        if P is None:
-            raise TypeError(f"{Method2} requires P")
-        P2 = P
-    if Method2 in liquid_gas_voidage_methods_needing_Pc:
-        if Pc is None:
-            raise TypeError(f"{Method2} requires Pc")
-        Pc2 = Pc
-
-    if Method2 == "Thom":
-        return Thom(x=x, rhol=rhol, rhog=rhog, mul=mul2, mug=mug2)
-    elif Method2 == "Zivi":
-        return Zivi(x=x, rhol=rhol, rhog=rhog)
-    elif Method2 == "Smith":
-        return Smith(x=x, rhol=rhol, rhog=rhog)
-    elif Method2 == "Fauske":
-        return Fauske(x=x, rhol=rhol, rhog=rhog)
-    elif Method2 == "Chisholm_voidage":
-        return Chisholm_voidage(x=x, rhol=rhol, rhog=rhog)
-    elif Method2 == "Turner Wallis":
-        return Turner_Wallis(x=x, rhol=rhol, rhog=rhog, mul=mul2, mug=mug2)
-    elif Method2 == "homogeneous":
-        return homogeneous(x=x, rhol=rhol, rhog=rhog)
-    elif Method2 == "Chisholm Armand":
-        return Chisholm_Armand(x=x, rhol=rhol, rhog=rhog)
-    elif Method2 == "Armand":
-        return Armand(x=x, rhol=rhol, rhog=rhog)
-    elif Method2 == "Nishino Yamazaki":
-        return Nishino_Yamazaki(x=x, rhol=rhol, rhog=rhog)
-    elif Method2 == "Guzhov":
-        return Guzhov(x=x, rhol=rhol, rhog=rhog, m=m2, D=D2)
-    elif Method2 == "Kawahara":
-        return Kawahara(x=x, rhol=rhol, rhog=rhog, D=D2)
-    elif Method2 == "Baroczy":
-        return Baroczy(x=x, rhol=rhol, rhog=rhog, mul=mul2, mug=mug2)
-    elif Method2 == "Tandon Varma Gupta":
-        return Tandon_Varma_Gupta(x=x, rhol=rhol, rhog=rhog, mul=mul2, mug=mug2, m=m2, D=D2)
-    elif Method2 == "Harms":
-        return Harms(x=x, rhol=rhol, rhog=rhog, mul=mul2, mug=mug2, m=m2, D=D2)
-    elif Method2 == "Domanski Didion":
-        return Domanski_Didion(x=x, rhol=rhol, rhog=rhog, mul=mul2, mug=mug2)
-    elif Method2 == "Graham":
-        return Graham(x=x, rhol=rhol, rhog=rhog, mul=mul2, mug=mug2, m=m2, D=D2, g=g)
-    elif Method2 == "Yashar":
-        return Yashar(x=x, rhol=rhol, rhog=rhog, mul=mul2, mug=mug2, m=m2, D=D2, g=g)
-    elif Method2 == "Huq_Loth":
-        return Huq_Loth(x=x, rhol=rhol, rhog=rhog)
-    elif Method2 == "Kopte_Newell_Chato":
-        return Kopte_Newell_Chato(x=x, rhol=rhol, rhog=rhog, m=m2, D=D2, g=g)
-    elif Method2 == "Steiner":
-        return Steiner(x=x, rhol=rhol, rhog=rhog, sigma=sigma2, m=m2, D=D2, g=g)
-    elif Method2 == "Rouhani 1":
-        return Rouhani_1(x=x, rhol=rhol, rhog=rhog, sigma=sigma2, m=m2, D=D2, g=g)
-    elif Method2 == "Rouhani 2":
-        return Rouhani_2(x=x, rhol=rhol, rhog=rhog, sigma=sigma2, m=m2, D=D2, g=g)
-    elif Method2 == "Nicklin Wilkes Davidson":
-        return Nicklin_Wilkes_Davidson(x=x, rhol=rhol, rhog=rhog, m=m2, D=D2, g=g)
-    elif Method2 == "Gregory_Scott":
-        return Gregory_Scott(x=x, rhol=rhol, rhog=rhog)
-    elif Method2 == "Dix":
-        return Dix(x=x, rhol=rhol, rhog=rhog, sigma=sigma2, m=m2, D=D2, g=g)
-    elif Method2 == "Sun Duffey Peng":
-        return Sun_Duffey_Peng(x=x, rhol=rhol, rhog=rhog, sigma=sigma2, m=m2, D=D2, P=P2, Pc=Pc2, g=g)
-    elif Method2 == "Xu Fang voidage":
-        return Xu_Fang_voidage(x=x, rhol=rhol, rhog=rhog, m=m2, D=D2, g=g)
-    elif Method2 == "Woldesemayat Ghajar":
-        return Woldesemayat_Ghajar(x=x, rhol=rhol, rhog=rhog, sigma=sigma2, m=m2, D=D2, P=P2, angle=angle, g=g)
-    else:
-        raise ValueError(_unknown_two_phase_voidage_corr)
+    pass
 
 
 def density_two_phase(alpha: float, rhol: float, rhog: float) -> float:
@@ -2327,7 +2118,7 @@ def density_two_phase(alpha: float, rhol: float, rhog: float) -> float:
        Homogeneous Two-Phase Flows." Experimental Thermal and Fluid Science 33,
        no. 1 (October 1, 2008): 106-13.
     """
-    return alpha*rhog + (1. - alpha)*rhol
+    pass
 
 
 def two_phase_voidage_experimental(rho_lg: float, rhol: float, rhog: float) -> float:
@@ -2370,7 +2161,7 @@ def two_phase_voidage_experimental(rho_lg: float, rhol: float, rhog: float) -> f
        Homogeneous Two-Phase Flows." Experimental Thermal and Fluid Science 33,
        no. 1 (October 1, 2008): 106-13.
     """
-    return (rho_lg - rhol)/(rhog - rhol)
+    pass
 
 
 ### two-phase viscosity models
@@ -2432,8 +2223,7 @@ def Beattie_Whalley(x: float, mul: float, mug: float, rhol: float, rhog: float) 
        Mass Transfer 77 (October 2014): 74-97.
        doi:10.1016/j.ijheatmasstransfer.2014.04.035.
     """
-    alpha = homogeneous(x, rhol, rhog)
-    return mul*(1. - alpha)*(1. + 2.5*alpha) + mug*alpha
+    pass
 
 
 def McAdams(x: float, mul: float, mug: float) -> float:
@@ -2485,7 +2275,7 @@ def McAdams(x: float, mul: float, mug: float) -> float:
        Mass Transfer 77 (October 2014): 74-97.
        doi:10.1016/j.ijheatmasstransfer.2014.04.035.
     """
-    return 1./(x/mug + (1. - x)/mul)
+    pass
 
 
 def Cicchitti(x: float, mul: float, mug: float) -> float:
@@ -2536,7 +2326,7 @@ def Cicchitti(x: float, mul: float, mug: float) -> float:
        Mass Transfer 77 (October 2014): 74-97.
        doi:10.1016/j.ijheatmasstransfer.2014.04.035.
     """
-    return x*mug + (1. - x)*mul
+    pass
 
 
 def Lin_Kwok(x: float, mul: float, mug: float) -> float:
@@ -2582,7 +2372,7 @@ def Lin_Kwok(x: float, mul: float, mug: float) -> float:
        Homogeneous Two-Phase Flows." Experimental Thermal and Fluid Science 33,
        no. 1 (October 1, 2008): 106-13.
     """
-    return mul*mug/(mug + x**1.4*(mul - mug))
+    pass
 
 
 def Fourar_Bories(x: float, mul: float, mug: float, rhol: float, rhog: float) -> float:
@@ -2641,11 +2431,7 @@ def Fourar_Bories(x: float, mul: float, mug: float, rhol: float, rhog: float) ->
        the Prediction of Two-Phase Flow Pressure Drops." ASEAN Journal on
        Science and Technology for Development 29, no. 2 (2012).
     """
-    rhom = 1./(x/rhog + (1. - x)/rhol)
-    nul = mul/rhol # = nu_mu_converter(rho=rhol, mu=mul)
-    nug = mug/rhog # = nu_mu_converter(rho=rhog, mu=mug)
-    term = (sqrt(x*nug) + sqrt((1. - x)*nul))
-    return rhom*term*term
+    pass
 
 
 def Duckler(x: float, mul: float, mug: float, rhol: float, rhog: float) -> float:
@@ -2712,7 +2498,7 @@ def Duckler(x: float, mul: float, mug: float, rhol: float, rhog: float) -> float
        the Prediction of Two-Phase Flow Pressure Drops." ASEAN Journal on
        Science and Technology for Development 29, no. 2 (2012).
     """
-    return (x*mug/rhog + (1. - x)*mul/rhol)/(x/rhog + (1. - x)/rhol)
+    pass
 
 
 liquid_gas_viscosity_correlations = {"Beattie Whalley": (Beattie_Whalley, 1),
@@ -2751,10 +2537,7 @@ def gas_liquid_viscosity_methods(rhol: float | None=None, rhog: float | None=Non
     >>> gas_liquid_viscosity_methods(rhol=1000, rhog=2)
     ['Beattie Whalley', 'Fourar Bories', 'Duckler', 'McAdams', 'Cicchitti', 'Lin Kwok']
     """
-    methods = ["McAdams", "Cicchitti", "Lin Kwok"]
-    if rhol is not None and rhog is not None:
-        methods = liquid_gas_viscosity_correlations_list
-    return methods
+    pass
 _gas_liquid_viscosity_method_unknown = f"Method not recognized; available methods are {list(liquid_gas_viscosity_correlations.keys())}"
 
 # # Uncomment to regenerate the frozensets when adding new methods:
@@ -2836,34 +2619,4 @@ def gas_liquid_viscosity(x: float, mul: float, mug: float, rhol: float | None=No
     >>> gas_liquid_viscosity(x=0.4, mul=1E-3, mug=1E-5)
     2.4630541871921184e-05
     """
-    if Method is None:
-        Method = "McAdams"
-
-    # Type narrowing: validate required parameters based on selected method
-    # Initialize to dummy values for numba (will be overwritten before use)
-    rhol2 = 0.0
-    rhog2 = 0.0
-
-    if Method in gas_liquid_viscosity_methods_needing_rhol:
-        if rhol is None:
-            raise TypeError(f"{Method} requires rhol")
-        rhol2 = rhol
-    if Method in gas_liquid_viscosity_methods_needing_rhog:
-        if rhog is None:
-            raise TypeError(f"{Method} requires rhog")
-        rhog2 = rhog
-
-    if Method == "Beattie Whalley":
-        return Beattie_Whalley(x, mul, mug, rhol=rhol2, rhog=rhog2)
-    elif Method == "Fourar Bories":
-        return Fourar_Bories(x, mul, mug, rhol=rhol2, rhog=rhog2)
-    elif Method == "Duckler":
-        return Duckler(x, mul, mug, rhol=rhol2, rhog=rhog2)
-    elif Method == "McAdams":
-        return McAdams(x, mul, mug)
-    elif Method == "Cicchitti":
-        return Cicchitti(x, mul, mug)
-    elif Method == "Lin Kwok":
-        return Lin_Kwok(x, mul, mug)
-    else:
-        raise ValueError(_gas_liquid_viscosity_method_unknown)
+    pass

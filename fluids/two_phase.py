@@ -114,40 +114,9 @@ Beggs_Brill_dat = {"segregated": (0.98, 0.4846, 0.0868),
 "intermittent": (0.845, 0.5351, 0.0173),
 "distributed": (1.065, 0.5824, 0.0609)}
 
+
 def _Beggs_Brill_holdup(regime: int, lambda_L: float, Fr: float, angle: float, LV: float) -> float:
-    if regime == 0:
-        a, b, c = 0.98, 0.4846, 0.0868
-    elif regime == 2:
-        a, b, c = 0.845, 0.5351, 0.0173
-    elif regime == 3:
-        a, b, c = 1.065, 0.5824, 0.0609
-    HL0 = a*lambda_L**b*Fr**-c
-    if HL0 < lambda_L:
-        HL0 = lambda_L
-
-    if angle > 0.0: # uphill
-        # h used instead of g to avoid conflict with gravitational constant
-        if regime == 0:
-            d, e, f, h = 0.011, -3.768, 3.539, -1.614
-        elif regime == 2:
-            d, e, f, h = 2.96, 0.305, -0.4473, 0.0978
-        elif regime == 3:
-            # Dummy values for distributed - > psi = 1.
-            d, e, f, h = 2.96, 0.305, -0.4473, 0.0978
-    elif angle <= 0: # downhill
-        d, e, f, h = 4.70, -0.3692, 0.1244, -0.5056
-
-    C = (1.0 - lambda_L)*log(d*lambda_L**e*LV**f*Fr**h)
-    if C < 0.0:
-        C = 0.0
-
-    # Correction factor for inclination angle
-    x1 = sin(1.8*angle)
-    Psi = 1.0 + C*x1*(1.0 - (1.0/3.0)*x1*x1)
-    if (angle > 0 and regime == 3) or angle == 0:
-        Psi = 1.0
-    Hl = HL0*Psi
-    return Hl
+    pass
 
 def Beggs_Brill(m: float, x: float, rhol: float, rhog: float, mul: float, mug: float, sigma: float, P: float, D: float, angle: float, roughness: float=0.0,
                 L: float=1.0, g: float=g, acceleration: bool=True) -> float:
@@ -216,72 +185,7 @@ def Beggs_Brill(m: float, x: float, rhol: float, rhog: float, mul: float, mug: f
        Pipes. Pap/Cdr edition. Richardson, TX: Society of Petroleum Engineers,
        2006.
     """
-    # 0 - segregated; 1 - transition; 2 - intermittent; 3 - distributed
-    qg = x*m/rhog
-    ql = (1.0 - x)*m/rhol
-
-    A = 0.25*pi*D*D
-    Vsg = qg/A
-    Vsl = ql/A
-    Vm = Vsg + Vsl
-    Fr = Vm*Vm/(g*D)
-    lambda_L = Vsl/Vm # no slip liquid holdup
-
-    L1 = 316.0*lambda_L**0.302
-    L2 = 0.0009252*lambda_L**-2.4684
-    L3 = 0.1*lambda_L**-1.4516
-    L4 = 0.5*lambda_L**-6.738
-    if (lambda_L < 0.01 and Fr < L1) or (lambda_L >= 0.01 and Fr < L2):
-        regime = 0
-    elif (lambda_L >= 0.01 and L2 <= Fr <= L3):
-        regime = 1
-    elif (0.01 <= lambda_L < 0.4 and L3 < Fr <= L1) or (lambda_L >= 0.4 and L3 < Fr <= L4):
-        regime = 2
-    elif (lambda_L < 0.4 and Fr >= L1) or (lambda_L >= 0.4 and Fr > L4):
-        regime = 3
-    else:
-        raise ValueError("Outside regime ranges")
-
-    LV = Vsl*sqrt(sqrt(rhol/(g*sigma)))
-    if angle is None:
-        angle = 0.0
-    angle = deg2rad*angle
-
-    if regime != 1:
-        Hl = _Beggs_Brill_holdup(regime, lambda_L, Fr, angle, LV)
-    else:
-        A = (L3 - Fr)/(L3 - L2)
-        Hl = (A*_Beggs_Brill_holdup(0, lambda_L, Fr, angle, LV)
-             + (1.0 - A)*_Beggs_Brill_holdup(2, lambda_L, Fr, angle, LV))
-
-    rhos = rhol*Hl + rhog*(1.0 - Hl)
-    mum = mul*lambda_L +  mug*(1.0 - lambda_L)
-    rhom = rhol*lambda_L +  rhog*(1.0 - lambda_L)
-    Rem = rhom*D/mum*Vm
-    fn = friction_factor(Re=Rem, eD=roughness/D)
-    x = lambda_L/(Hl*Hl)
-
-
-    if 1.0 < x < 1.2:
-        S = log(2.2*x - 1.2)
-    else:
-        logx = log(x)
-        # from horner(-0.0523 + 3.182*log(x) - 0.8725*log(x)**2 + 0.01853*log(x)**4, x)
-        S = logx/(logx*(logx*(0.01853*logx*logx - 0.8725) + 3.182) - 0.0523)
-    if S > 7.0:
-        S = 7.0  # Truncate S to avoid exp(S) overflowing
-    ftp = fn*exp(S)
-    dP_ele = g*sin(angle)*rhos*L
-    dP_fric = ftp*L/D*0.5*rhom*Vm*Vm
-    # rhos here is pretty clearly rhos according to Shoham
-    if P is None:
-        P = 101325.0
-    if not acceleration:
-        dP = dP_ele + dP_fric
-    else:
-        Ek = Vsg*Vm*rhos/P  # Confirmed this expression is dimensionless
-        dP = (dP_ele + dP_fric)/(1.0 - Ek)
-    return dP
+    pass
 
 
 def Friedel(m: float, x: float, rhol: float, rhog: float, mul: float, mug: float, sigma: float, D: float, roughness: float=0.0, L: float=1.0) -> float:
@@ -369,7 +273,7 @@ def Friedel(m: float, x: float, rhol: float, rhog: float, mul: float, mug: float
        Oxford University Press, 1987.
     .. [3] Triplett, K. A., S. M. Ghiaasiaan, S. I. Abdel-Khalik, A. LeMouel,
        and B. N. McCord. "Gas-liquid Two-Phase Flow in Microchannels: Part II:
-       Void Fraction and Pressure Drop.” International Journal of Multiphase
+       Void Fraction and Pressure Drop.â€� International Journal of Multiphase
        Flow 25, no. 3 (April 1999): 395-410. doi:10.1016/S0301-9322(98)00055-X.
     .. [4] Mekisso, Henock Mateos. "Comparison of Frictional Pressure Drop
        Correlations for Isothermal Two-Phase Horizontal Flow." Thesis, Oklahoma
@@ -379,33 +283,7 @@ def Friedel(m: float, x: float, rhol: float, rhog: float, mul: float, mug: float
     .. [6] Ghiaasiaan, S. Mostafa. Two-Phase Flow, Boiling, and Condensation:
         In Conventional and Miniature Systems. Cambridge University Press, 2007.
     """
-    # Liquid-only properties, for calculation of E, dP_lo
-    A = 0.25*pi*D*D
-    v_lo = m/(A*rhol)
-    Re_lo = Reynolds(V=v_lo, rho=rhol, mu=mul, D=D)
-    fd_lo = friction_factor(Re=Re_lo, eD=roughness/D)
-    dP_lo = fd_lo*L/D*(0.5*rhol*v_lo*v_lo)
-
-    # Gas-only properties, for calculation of E
-    v_go = m/(rhog*A)
-    Re_go = Reynolds(V=v_go, rho=rhog, mu=mug, D=D)
-    fd_go = friction_factor(Re=Re_go, eD=roughness/D)
-
-    F = x**0.78*(1-x)**0.224
-    H = (rhol/rhog)**0.91*(mug/mul)**0.19*(1.0 - mug/mul)**0.7
-    E = (1.0-x)*(1.0-x) + x*x*(rhol*fd_go/(rhog*fd_lo))
-
-    # Homogeneous properties, for Froude/Weber numbers
-    voidage_h = homogeneous(x, rhol, rhog)
-    rho_h = rhol*(1.0-voidage_h) + rhog*voidage_h
-    Q_h = m/rho_h
-    v_h = Q_h/A
-
-    Fr = Froude(V=v_h, L=D, squared=True) # checked with (m/(pi/4*D**2))**2/g/D/rho_h**2
-    We = Weber(V=v_h, L=D, rho=rho_h, sigma=sigma) # checked with (m/(pi/4*D**2))**2*D/sigma/rho_h
-
-    phi_lo2 = E + 3.24*F*H/(Fr**0.0454*We**0.035)
-    return phi_lo2*dP_lo
+    pass
 
 
 def Gronnerud(m: float, x: float, rhol: float, rhog: float, mul: float, mug: float, D: float, roughness: float=0.0, L: float=1.0) -> float:
@@ -473,7 +351,7 @@ def Gronnerud(m: float, x: float, rhol: float, rhog: float, mul: float, mug: flo
     .. [1] Gronnerud, R. "Investigation of Liquid Hold-Up, Flow Resistance and
        Heat Transfer in Circulation Type Evaporators. 4. Two-Phase Flow
        Resistance in Boiling Refrigerants." Proc. Freudenstadt Meet., IIR/C.
-       R. Réun. Freudenstadt, IIF. 1972-1: 127-138. 1972.
+       R. RÃ©un. Freudenstadt, IIF. 1972-1: 127-138. 1972.
     .. [2] ASHRAE Handbook: Fundamentals. American Society of Heating,
        Refrigerating and Air-Conditioning Engineers, Incorporated, 2013.
     .. [3] Mekisso, Henock Mateos. "Comparison of Frictional Pressure Drop
@@ -482,23 +360,7 @@ def Gronnerud(m: float, x: float, rhol: float, rhog: float, mul: float, mug: flo
     .. [4] Thome, John R. "Engineering Data Book III." Wolverine Tube Inc
        (2004). http://www.wlv.com/heat-transfer-databook/
     """
-    G = m/(0.25*pi*D*D)
-    V = G/rhol
-    Frl = Froude(V=V, L=D, squared=True)
-    if Frl >= 1:
-        f_Fr = 1.0
-    else:
-        term = (log(1./Frl))
-        f_Fr = Frl**0.3 + 0.0055*term*term
-    dP_dL_Fr = f_Fr*(x + 4.0*(x**1.8 - x**10.0*sqrt(f_Fr)))
-    phi_gd = 1.0 + dP_dL_Fr*((rhol/rhog)/sqrt(sqrt(mul/mug)) - 1.0)
-
-    # Liquid-only properties, for calculation of E, dP_lo
-    v_lo = m/(rhol*(0.25*pi*D*D))
-    Re_lo = Reynolds(V=v_lo, rho=rhol, mu=mul, D=D)
-    fd_lo = friction_factor(Re=Re_lo, eD=roughness/D)
-    dP_lo = fd_lo*L/D*(0.5*rhol*v_lo*v_lo)
-    return phi_gd*dP_lo
+    pass
 
 
 def Chisholm(m: float, x: float, rhol: float, rhog: float, mul: float, mug: float, D: float, roughness: float=0.0, L: float=1.0,
@@ -609,45 +471,7 @@ def Chisholm(m: float, x: float, rhol: float, rhog: float, mul: float, mug: floa
        Engineering Science 20, no. 6 (December 1, 1978): 353-354.
        doi:10.1243/JMES_JOUR_1978_020_061_02.
     """
-    A = 0.25*pi*D*D
-    G_tp = m/A
-    n = 0.25 # Blasius friction factor exponent
-    # Liquid-only properties, for calculation of dP_lo
-    v_lo = m/(rhol*A)
-    Re_lo = Reynolds(V=v_lo, rho=rhol, mu=mul, D=D)
-    fd_lo = friction_factor(Re=Re_lo, eD=roughness/D)
-    dP_lo = fd_lo*L/D*(0.5*rhol*v_lo*v_lo)
-
-    # Gas-only properties, for calculation of dP_go
-    v_go = m/(rhog*A)
-    Re_go = Reynolds(V=v_go, rho=rhog, mu=mug, D=D)
-    fd_go = friction_factor(Re=Re_go, eD=roughness/D)
-    dP_go = fd_go*L/D*(0.5*rhog*v_go*v_go)
-
-    Gamma = sqrt(dP_go/dP_lo)
-    if Gamma <= 9.5:
-        if G_tp <= 500.0:
-            B = 4.8
-        elif G_tp < 1900.0:
-            B = 2400./G_tp
-        else:
-            B = 55.0/sqrt(G_tp)
-    elif Gamma <= 28.0:
-        if G_tp <= 600.0:
-            B = 520./sqrt(G_tp)/Gamma
-        else:
-            B = 21./Gamma
-    else:
-        B = 15000./(Gamma*Gamma*sqrt(G_tp))
-
-    if rough_correction:
-        n = log(fd_lo/fd_go)/log(Re_go/Re_lo)
-        mu_ratio = mug/mul
-        B_ratio = (0.5*(1.0 + mu_ratio*mu_ratio + 10**(-600.0*roughness/D)))**((0.25-n)*4.0)
-        B = B*B_ratio
-
-    phi2_ch = 1.0 + (Gamma*Gamma-1.0)*(B*x**((2-n)*0.5)*(1.0-x)**((2.0-n)*0.5) + x**(2.0-n))
-    return phi2_ch*dP_lo
+    pass
 
 
 def Baroczy_Chisholm(m: float, x: float, rhol: float, rhog: float, mul: float, mug: float, D: float, roughness: float=0.0, L: float=1.0) -> float:
@@ -730,30 +554,7 @@ def Baroczy_Chisholm(m: float, x: float, rhol: float, rhog: float, mul: float, m
        Correlations for Isothermal Two-Phase Horizontal Flow." Thesis, Oklahoma
        State University, 2013. https://shareok.org/handle/11244/11109.
     """
-    A = 0.25*pi*D*D
-    G_tp = m/A
-    n = 0.25 # Blasius friction factor exponent
-    # Liquid-only properties, for calculation of dP_lo
-    v_lo = m/(A*rhol)
-    Re_lo = Reynolds(V=v_lo, rho=rhol, mu=mul, D=D)
-    fd_lo = friction_factor(Re=Re_lo, eD=roughness/D)
-    dP_lo = fd_lo*L/D*(0.5*rhol*v_lo*v_lo)
-
-    # Gas-only properties, for calculation of dP_go
-    v_go = m/(A*rhog)
-    Re_go = Reynolds(V=v_go, rho=rhog, mu=mug, D=D)
-    fd_go = friction_factor(Re=Re_go, eD=roughness/D)
-    dP_go = fd_go*L/D*(0.5*rhog*v_go*v_go)
-
-    Gamma = sqrt(dP_go/dP_lo)
-    if Gamma <= 9.5:
-        B = 55.0/sqrt(G_tp)
-    elif Gamma <= 28:
-        B = 520./(sqrt(G_tp)*Gamma)
-    else:
-        B = 15000./(sqrt(G_tp)*(Gamma*Gamma))
-    phi2_ch = 1.0 + (Gamma*Gamma-1.0)*(B*x**((2.0-n)*0.5)*(1.0-x)**((2.0-n)*0.5) + x**(2.0-n))
-    return phi2_ch*dP_lo
+    pass
 
 
 def Muller_Steinhagen_Heck(m: float, x: float, rhol: float, rhog: float, mul: float, mug: float, D: float, roughness: float=0.0, L: float=1.0) -> float:
@@ -806,7 +607,7 @@ def Muller_Steinhagen_Heck(m: float, x: float, rhol: float, rhog: float, mul: fl
 
     References
     ----------
-    .. [1] Müller-Steinhagen, H, and K Heck. "A Simple Friction Pressure Drop
+    .. [1] MÃ¼ller-Steinhagen, H, and K Heck. "A Simple Friction Pressure Drop
        Correlation for Two-Phase Flow in Pipes." Chemical Engineering and
        Processing: Process Intensification 20, no. 6 (November 1, 1986):
        297-308. doi:10.1016/0255-2701(86)80008-3.
@@ -816,21 +617,7 @@ def Muller_Steinhagen_Heck(m: float, x: float, rhol: float, rhog: float, mul: fl
     .. [3] Thome, John R. "Engineering Data Book III." Wolverine Tube Inc
        (2004). http://www.wlv.com/heat-transfer-databook/
     """
-    A = 0.25*pi*D*D
-    # Liquid-only properties, for calculation of dP_lo
-    v_lo = m/(rhol*A)
-    Re_lo = Reynolds(V=v_lo, rho=rhol, mu=mul, D=D)
-    fd_lo = friction_factor(Re=Re_lo, eD=roughness/D)
-    dP_lo = fd_lo*L/D*(0.5*rhol*v_lo*v_lo)
-
-    # Gas-only properties, for calculation of dP_go
-    v_go = m/(rhog*A)
-    Re_go = Reynolds(V=v_go, rho=rhog, mu=mug, D=D)
-    fd_go = friction_factor(Re=Re_go, eD=roughness/D)
-    dP_go = fd_go*L/D*(0.5*rhog*v_go*v_go)
-
-    G_MSH = dP_lo + 2.0*(dP_go - dP_lo)*x
-    return G_MSH*cbrt(1.0-x)+ dP_go*x*x*x
+    pass
 
 
 def Lombardi_Pedrocchi(m: float, x: float, rhol: float, rhog: float, sigma: float, D: float, L: float=1.0) -> float:
@@ -882,15 +669,12 @@ def Lombardi_Pedrocchi(m: float, x: float, rhol: float, rhog: float, sigma: floa
     .. [2] Mekisso, Henock Mateos. "Comparison of Frictional Pressure Drop
        Correlations for Isothermal Two-Phase Horizontal Flow." Thesis, Oklahoma
        State University, 2013. https://shareok.org/handle/11244/11109.
-    .. [3] Turgut, Oğuz Emrah, Mustafa Turhan Çoban, and Mustafa Asker.
+    .. [3] Turgut, OÄŸuz Emrah, Mustafa Turhan Ã‡oban, and Mustafa Asker.
        "Comparison of Flow Boiling Pressure Drop Correlations for Smooth
        Macrotubes." Heat Transfer Engineering 37, no. 6 (April 12, 2016):
        487-506. doi:10.1080/01457632.2015.1060733.
     """
-    voidage_h = homogeneous(x, rhol, rhog)
-    rho_h = rhol*(1.0-voidage_h) + rhog*voidage_h
-    G_tp = m/(0.25*pi*D*D)
-    return 0.83*G_tp**1.4*sigma**0.4*L/(D**1.2*rho_h**0.866)
+    pass
 
 
 def Theissing(m: float, x: float, rhol: float, rhog: float, mul: float, mug: float, D: float, roughness: float=0.0, L: float=1.0) -> float:
@@ -959,8 +743,8 @@ def Theissing(m: float, x: float, rhol: float, rhog: float, mul: float, mug: flo
 
     References
     ----------
-    .. [1] Theissing, Peter. "Eine Allgemeingültige Methode Zur Berechnung Des
-       Reibungsdruckverlustes Der Mehrphasenströmung (A Generally Valid Method
+    .. [1] Theissing, Peter. "Eine AllgemeingÃ¼ltige Methode Zur Berechnung Des
+       Reibungsdruckverlustes Der MehrphasenstrÃ¶mung (A Generally Valid Method
        for Calculating Frictional Pressure Drop on Multiphase Flow)." Chemie
        Ingenieur Technik 52, no. 4 (January 1, 1980): 344-345.
        doi:10.1002/cite.330520414.
@@ -972,46 +756,7 @@ def Theissing(m: float, x: float, rhol: float, rhog: float, mul: float, mug: flo
        Horizontal Tube. Comparison with Correlations." Heat and Mass Transfer
        42, no. 8 (April 6, 2006): 709-725. doi:10.1007/s00231-005-0020-7.
     """
-    A = 0.25*pi*D*D
-    # Liquid-only flow
-    v_lo = m/(rhol*A)
-    Re_lo = Reynolds(V=v_lo, rho=rhol, mu=mul, D=D)
-    fd_lo = friction_factor(Re=Re_lo, eD=roughness/D)
-    dP_lo = fd_lo*L/D*(0.5*rhol*v_lo*v_lo)
-
-    # Gas-only flow
-    v_go = m/(rhog*A)
-    Re_go = Reynolds(V=v_go, rho=rhog, mu=mug, D=D)
-    fd_go = friction_factor(Re=Re_go, eD=roughness/D)
-    dP_go = fd_go*L/D*(0.5*rhog*v_go*v_go)
-
-    # Handle x = 0, x=1:
-    if x == 0:
-        return dP_lo
-    elif x == 1:
-        return dP_go
-
-    # Actual Liquid flow
-    v_l = m*(1.0-x)/(rhol*A)
-    Re_l = Reynolds(V=v_l, rho=rhol, mu=mul, D=D)
-    fd_l = friction_factor(Re=Re_l, eD=roughness/D)
-    dP_l = fd_l*L/D*(0.5*rhol*v_l*v_l)
-
-    # Actual gas flow
-    v_g = m*x/(rhog*A)
-    Re_g = Reynolds(V=v_g, rho=rhog, mu=mug, D=D)
-    fd_g = friction_factor(Re=Re_g, eD=roughness/D)
-    dP_g = fd_g*L/D*(0.5*rhog*v_g*v_g)
-
-    # The model
-    n1 = log(dP_l/dP_lo)/log(1.-x)
-    n2 = log(dP_g/dP_go)/log(x)
-    ratio = (dP_g/dP_l)**0.1
-    n = (n1 + n2*ratio)/(1.0 + ratio)
-    epsilon = 3.0 - 2.0*(2.0*sqrt(rhol/rhog)/(1.+rhol/rhog))**(0.7/n)
-    dP = (dP_lo**(1./(n*epsilon))*(1.0-x)**(1./epsilon)
-          + dP_go**(1./(n*epsilon))*x**(1./epsilon))**(n*epsilon)
-    return dP
+    pass
 
 
 def Jung_Radermacher(m: float, x: float, rhol: float, rhog: float, mul: float, mug: float, D: float, roughness: float=0.0, L: float=1.0) -> float:
@@ -1072,20 +817,12 @@ def Jung_Radermacher(m: float, x: float, rhol: float, rhog: float, mul: float, m
        Micro-Channel Flows." International Journal of Heat and Mass Transfer
        55, no. 11-12 (May 2012): 3246-61.
        doi:10.1016/j.ijheatmasstransfer.2012.02.047.
-    .. [3] Filip, Alina, Florin Băltăreţu, and Radu-Mircea Damian. "Comparison
+    .. [3] Filip, Alina, Florin BÄƒltÄƒreÅ£u, and Radu-Mircea Damian. "Comparison
        of Two-Phase Pressure Drop Models for Condensing Flows in Horizontal
        Tubes." Mathematical Modelling in Civil Engineering 10, no. 4 (2015):
        19-27. doi:10.2478/mmce-2014-0019.
     """
-    A = 0.25*pi*D*D
-    v_lo = m/(rhol*A)
-    Re_lo = Reynolds(V=v_lo, rho=rhol, mu=mul, D=D)
-    fd_lo = friction_factor(Re=Re_lo, eD=roughness/D)
-    dP_lo = fd_lo*L/D*(0.5*rhol*v_lo*v_lo)
-
-    Xtt = Lockhart_Martinelli_Xtt(x, rhol, rhog, mul, mug)
-    phi_tp2 = 12.82*Xtt**-1.47*(1.-x)**1.8
-    return phi_tp2*dP_lo
+    pass
 
 
 def Tran(m: float, x: float, rhol: float, rhog: float, mul: float, mug: float, sigma: float, D: float, roughness: float=0.0, L: float=1.0) -> float:
@@ -1159,23 +896,7 @@ def Tran(m: float, x: float, rhol: float, rhog: float, mul: float, mug: float, s
        International Journal of Refrigeration 31, no. 1 (January 2008): 119-29.
        doi:10.1016/j.ijrefrig.2007.06.006.
     """
-    A = 0.25*pi*D*D
-    # Liquid-only properties, for calculation of dP_lo
-    v_lo = m/(rhol*A)
-    Re_lo = Reynolds(V=v_lo, rho=rhol, mu=mul, D=D)
-    fd_lo = friction_factor(Re=Re_lo, eD=roughness/D)
-    dP_lo = fd_lo*L/D*(0.5*rhol*v_lo*v_lo)
-
-    # Gas-only properties, for calculation of dP_go
-    v_go = m/(rhog*A)
-    Re_go = Reynolds(V=v_go, rho=rhog, mu=mug, D=D)
-    fd_go = friction_factor(Re=Re_go, eD=roughness/D)
-    dP_go = fd_go*L/D*(0.5*rhog*v_go*v_go)
-
-    Gamma2 = dP_go/dP_lo
-    Co = Confinement(D=D, rhol=rhol, rhog=rhog, sigma=sigma)
-    phi_lo2 = 1.0 + (4.3*Gamma2 - 1.0)*(Co*x**0.875*(1.0-x)**0.875 + x**1.75)
-    return dP_lo*phi_lo2
+    pass
 
 
 def Chen_Friedel(m: float, x: float, rhol: float, rhog: float, mul: float, mug: float, sigma: float, D: float, roughness: float=0.0, L: float=1.0) -> float:
@@ -1260,46 +981,7 @@ def Chen_Friedel(m: float, x: float, rhol: float, rhog: float, mul: float, mug: 
        International Journal of Refrigeration 31, no. 1 (January 2008): 119-29.
        doi:10.1016/j.ijrefrig.2007.06.006.
     """
-    A = 0.25*pi*D*D
-    # Liquid-only properties, for calculation of E, dP_lo
-    v_lo = m/(rhol*A)
-    Re_lo = Reynolds(V=v_lo, rho=rhol, mu=mul, D=D)
-    fd_lo = friction_factor(Re=Re_lo, eD=roughness/D)
-    dP_lo = fd_lo*L/D*(0.5*rhol*v_lo*v_lo)
-
-    # Gas-only properties, for calculation of E
-    v_go = m/(rhog*A)
-    Re_go = Reynolds(V=v_go, rho=rhog, mu=mug, D=D)
-    fd_go = friction_factor(Re=Re_go, eD=roughness/D)
-
-    F = x**0.78*(1.0-x)**0.224
-    H = (rhol/rhog)**0.91*(mug/mul)**0.19*(1 - mug/mul)**0.7
-    E = (1.0-x)*(1.0-x) + x*x*(rhol*fd_go/(rhog*fd_lo))
-
-    # Homogeneous properties, for Froude/Weber numbers
-    rho_h = 1./(x/rhog + (1.0-x)/rhol)
-    Q_h = m/rho_h
-    v_h = Q_h/A
-
-    Fr = Froude(V=v_h, L=D, squared=True) # checked with (m/(pi/4*D**2))**2/g/D/rho_h**2
-    We = Weber(V=v_h, L=D, rho=rho_h, sigma=sigma) # checked with (m/(pi/4*D**2))**2*D/sigma/rho_h
-
-    phi_lo2 = E + 3.24*F*H/(Fr**0.0454*We**0.035)
-
-    dP = phi_lo2*dP_lo
-
-    # Chen modification; Weber number is the same as above
-    # Weber is same
-    Bo = Bond(rhol=rhol, rhog=rhog, sigma=sigma, L=D)/4 # Custom definition
-
-    if Bo < 2.5:
-        # Actual gas flow, needed for this case only.
-        v_g = m*x/(rhog*A)
-        Re_g = Reynolds(V=v_g, rho=rhog, mu=mug, D=D)
-        Omega = 0.0333*Re_lo**0.45/(Re_g**0.09*(1.0 + 0.4*exp(-Bo)))
-    else:
-        Omega = We**0.2/(2.5 + 0.06*Bo)
-    return dP*Omega
+    pass
 
 
 def Zhang_Webb(m: float, x: float, rhol: float, mul: float, P: float, Pc: float, D: float, roughness: float=0.0, L: float=1.0) -> float:
@@ -1363,15 +1045,7 @@ def Zhang_Webb(m: float, x: float, rhol: float, mul: float, P: float, Pc: float,
        International Journal of Refrigeration 31, no. 1 (January 2008): 119-29.
        doi:10.1016/j.ijrefrig.2007.06.006.
     """
-    # Liquid-only properties, for calculation of dP_lo
-    A = 0.25*pi*D*D
-    v_lo = m/(rhol*A)
-    Re_lo = Reynolds(V=v_lo, rho=rhol, mu=mul, D=D)
-    fd_lo = friction_factor(Re=Re_lo, eD=roughness/D)
-    dP_lo = fd_lo*L/D*(0.5*rhol*v_lo*v_lo)
-    Pr = 0.5 if (Pc is None or P is None) else P/Pc
-    phi_lo2 = (1.0-x)*(1.0-x) + 2.87*x*x/Pr + 1.68*x**0.8*sqrt(sqrt(1-x))*Pr**-1.64
-    return dP_lo*phi_lo2
+    pass
 
 
 def Bankoff(m: float, x: float, rhol: float, rhog: float, mul: float, mug: float, D: float, roughness: float=0.0, L: float=1.0) -> float:
@@ -1434,23 +1108,14 @@ def Bankoff(m: float, x: float, rhol: float, rhog: float, mul: float, mug: float
        Transfer 82, no. 4 (November 1, 1960): 265-72. doi:10.1115/1.3679930.
     .. [2] Thome, John R. "Engineering Data Book III." Wolverine Tube Inc
        (2004). http://www.wlv.com/heat-transfer-databook/
-    .. [3] Moreno Quibén, Jesús. "Experimental and Analytical Study of Two-
+    .. [3] Moreno QuibÃ©n, JesÃºs. "Experimental and Analytical Study of Two-
        Phase Pressure Drops during Evaporation in Horizontal Tubes," 2005.
        doi:10.5075/epfl-thesis-3337.
     .. [4] Mekisso, Henock Mateos. "Comparison of Frictional Pressure Drop
        Correlations for Isothermal Two-Phase Horizontal Flow." Thesis, Oklahoma
        State University, 2013. https://shareok.org/handle/11244/11109.
     """
-    A = 0.25*pi*D*D
-    # Liquid-only properties, for calculation of dP_lo
-    v_lo = m/(rhol*A)
-    Re_lo = Reynolds(V=v_lo, rho=rhol, mu=mul, D=D)
-    fd_lo = friction_factor(Re=Re_lo, eD=roughness/D)
-    dP_lo = fd_lo*L/D*(0.5*rhol*v_lo*v_lo)
-
-    gamma = (0.71 + 2.35*rhog/rhol)/(1. + (1.-x)/x*rhog/rhol)
-    phi_Bf = 1./(1.-x)*(1.0 - gamma*(1.0 - rhog/rhol))**(3.0/7.)*(1. + x*(rhol/rhog -1.))
-    return dP_lo*phi_Bf**(7/4.)
+    pass
 
 
 def Xu_Fang(m: float, x: float, rhol: float, rhog: float, mul: float, mug: float, sigma: float, D: float, roughness: float=0.0, L: float=1.0) -> float:
@@ -1521,34 +1186,7 @@ def Xu_Fang(m: float, x: float, rhol: float, rhog: float, mul: float, mug: float
        Pressure Drop for Condensing Flow in Pipes." Nuclear Engineering and
        Design 263 (October 2013): 87-96. doi:10.1016/j.nucengdes.2013.04.017.
     """
-    A = 0.25*pi*D*D
-    # Liquid-only properties, for calculation of E, dP_lo
-    v_lo = m/(rhol*A)
-    Re_lo = Reynolds(V=v_lo, rho=rhol, mu=mul, D=D)
-    fd_lo = friction_factor(Re=Re_lo, eD=roughness/D)
-    dP_lo = fd_lo*L/D*(0.5*rhol*v_lo*v_lo)
-
-    # Gas-only properties, for calculation of E
-    v_go = m/(rhog*A)
-    Re_go = Reynolds(V=v_go, rho=rhog, mu=mug, D=D)
-    fd_go = friction_factor(Re=Re_go, eD=roughness/D)
-    dP_go = fd_go*L/D*(0.5*rhog*v_go*v_go)
-
-    # Homogeneous properties, for Froude/Weber numbers
-    voidage_h = homogeneous(x, rhol, rhog)
-    rho_h = rhol*(1.0-voidage_h) + rhog*voidage_h
-
-    Q_h = m/rho_h
-    v_h = Q_h/A
-
-    Fr = Froude(V=v_h, L=D, squared=True)
-    We = Weber(V=v_h, L=D, rho=rho_h, sigma=sigma)
-    Y2 = dP_go/dP_lo
-
-    phi_lo2 = Y2*x*x*x + (1.0-x**2.59)**0.632*(1.0 + 2.0*x**1.17*(Y2-1.0)
-            + 0.00775*x**-0.475*Fr**0.535*We**0.188)
-
-    return phi_lo2*dP_lo
+    pass
 
 
 def Yu_France(m: float, x: float, rhol: float, rhog: float, mul: float, mug: float, D: float, roughness: float=0.0, L: float=1.0) -> float:
@@ -1616,20 +1254,7 @@ def Yu_France(m: float, x: float, rhol: float, rhog: float, mul: float, mug: flo
        in Pipes." Nuclear Engineering and Design, SI : CFD4NRS-3, 253 (December
        2012): 86-97. doi:10.1016/j.nucengdes.2012.08.007.
     """
-    A = 0.25*pi*D*D
-    # Actual Liquid flow
-    v_l = m*(1.0-x)/(rhol*A)
-    Re_l = Reynolds(V=v_l, rho=rhol, mu=mul, D=D)
-    fd_l = friction_factor(Re=Re_l, eD=roughness/D)
-    dP_l = fd_l*L/D*(0.5*rhol*v_l*v_l)
-
-    # Actual gas flow
-    v_g = m*x/(rhog*A)
-    Re_g = Reynolds(V=v_g, rho=rhog, mu=mug, D=D)
-
-    X = 18.65*sqrt(rhog/rhol)*(1.0-x)/x*Re_g**0.1/sqrt(Re_l)
-    phi_l2 = X**-1.9
-    return phi_l2*dP_l
+    pass
 
 
 def Wang_Chiang_Lu(m: float, x: float, rhol: float, rhog: float, mul: float, mug: float, D: float, roughness: float=0.0, L: float=1.0) -> float:
@@ -1703,32 +1328,7 @@ def Wang_Chiang_Lu(m: float, x: float, rhol: float, rhog: float, mul: float, mug
        in Pipes." Nuclear Engineering and Design, SI : CFD4NRS-3, 253 (December
        2012): 86-97. doi:10.1016/j.nucengdes.2012.08.007.
     """
-    A = 0.25*pi*D*D
-    G_tp = m/A
-
-    # Actual Liquid flow
-    v_l = m*(1.0-x)/(rhol*A)
-    Re_l = Reynolds(V=v_l, rho=rhol, mu=mul, D=D)
-    fd_l = friction_factor(Re=Re_l, eD=roughness/D)
-    dP_l = fd_l*L/D*(0.5*rhol*v_l*v_l)
-
-    # Actual gas flow
-    v_g = m*x/(rhog*A)
-    Re_g = Reynolds(V=v_g, rho=rhog, mu=mug, D=D)
-    fd_g = friction_factor(Re=Re_g, eD=roughness/D)
-    dP_g = fd_g*L/D*(0.5*rhog*v_g*v_g)
-
-    X = sqrt(dP_l/dP_g)
-
-    if G_tp >= 200.0:
-        phi_g2 = 1.0 + 9.397*X**0.62 + 0.564*X**2.45
-    else:
-        # Liquid-only flow; Re_lo is oddly needed
-        v_lo = m/(rhol*A)
-        Re_lo = Reynolds(V=v_lo, rho=rhol, mu=mul, D=D)
-        C = 0.000004566*X**0.128*Re_lo**0.938*(rhol/rhog)**-2.15*(mul/mug)**5.1
-        phi_g2 = 1 + C*X + X*X
-    return dP_g*phi_g2
+    pass
 
 
 def Hwang_Kim(m: float, x: float, rhol: float, rhog: float, mul: float, mug: float, sigma: float, D: float, roughness: float=0.0, L: float=1.0) -> float:
@@ -1802,29 +1402,7 @@ def Hwang_Kim(m: float, x: float, rhol: float, rhog: float, mul: float, mug: flo
        in Pipes." Nuclear Engineering and Design, SI : CFD4NRS-3, 253 (December
        2012): 86-97. doi:10.1016/j.nucengdes.2012.08.007.
     """
-    A = 0.25*pi*D*D
-    # Liquid-only flow
-    v_lo = m/(rhol*A)
-    Re_lo = Reynolds(V=v_lo, rho=rhol, mu=mul, D=D)
-
-    # Actual Liquid flow
-    v_l = m*(1.0-x)/(rhol*A)
-    Re_l = Reynolds(V=v_l, rho=rhol, mu=mul, D=D)
-    fd_l = friction_factor(Re=Re_l, eD=roughness/D)
-    dP_l = fd_l*L/D*(0.5*rhol*v_l*v_l)
-
-    # Actual gas flow
-    v_g = m*x/(rhog*A)
-    Re_g = Reynolds(V=v_g, rho=rhog, mu=mug, D=D)
-    fd_g = friction_factor(Re=Re_g, eD=roughness/D)
-    dP_g = fd_g*L/D*(0.5*rhog*v_g*v_g)
-
-    # Actual model
-    X = sqrt(dP_l/dP_g)
-    Co = Confinement(D=D, rhol=rhol, rhog=rhog, sigma=sigma)
-    C = 0.227*Re_lo**0.452*X**-0.320*Co**-0.820
-    phi_l2 = 1 + C/X + 1./(X*X)
-    return dP_l*phi_l2
+    pass
 
 
 def Zhang_Hibiki_Mishima(m: float, x: float, rhol: float, rhog: float, mul: float, mug: float, sigma: float, D: float, roughness: float=0.0,
@@ -1912,35 +1490,7 @@ def Zhang_Hibiki_Mishima(m: float, x: float, rhol: float, rhog: float, mul: floa
        in Pipes." Nuclear Engineering and Design, SI : CFD4NRS-3, 253 (December
        2012): 86-97. doi:10.1016/j.nucengdes.2012.08.007.
     """
-    # Actual Liquid flow
-    A = 0.25*pi*D*D
-    v_l = m*(1.0-x)/(rhol*A)
-    Re_l = Reynolds(V=v_l, rho=rhol, mu=mul, D=D)
-    fd_l = friction_factor(Re=Re_l, eD=roughness/D)
-    dP_l = fd_l*L/D*(0.5*rhol*v_l*v_l)
-
-    # Actual gas flow
-    v_g = m*x/(rhog*A)
-    Re_g = Reynolds(V=v_g, rho=rhog, mu=mug, D=D)
-    fd_g = friction_factor(Re=Re_g, eD=roughness/D)
-    dP_g = fd_g*L/D*(0.5*rhog*v_g*v_g)
-
-    # Actual model
-    X = sqrt(dP_l/dP_g)
-    Co = Confinement(D=D, rhol=rhol, rhog=rhog, sigma=sigma)
-
-    if flowtype == "adiabatic vapor":
-        C = 21*(1 - exp(-0.142/Co))
-    elif flowtype == "adiabatic gas":
-        C = 21*(1 - exp(-0.674/Co))
-    elif flowtype == "flow boiling":
-        C = 21*(1 - exp(-0.358/Co))
-    else:
-        raise ValueError("Only flow types 'adiabatic vapor', 'adiabatic gas', \
-and 'flow boiling' are recognized.")
-
-    phi_l2 = 1 + C/X + 1./(X*X)
-    return dP_l*phi_l2
+    pass
 
 
 def Mishima_Hibiki(m: float, x: float, rhol: float, rhog: float, mul: float, mug: float, sigma: float, D: float, roughness: float=0.0, L: float=1.0) -> float:
@@ -2012,33 +1562,12 @@ def Mishima_Hibiki(m: float, x: float, rhol: float, rhog: float, mul: float, mug
        in Pipes." Nuclear Engineering and Design, SI : CFD4NRS-3, 253 (December
        2012): 86-97. doi:10.1016/j.nucengdes.2012.08.007.
     """
-    A = 0.25*pi*D*D
-    # Actual Liquid flow
-    v_l = m*(1.0-x)/(rhol*A)
-    Re_l = Reynolds(V=v_l, rho=rhol, mu=mul, D=D)
-    fd_l = friction_factor(Re=Re_l, eD=roughness/D)
-    dP_l = fd_l*L/D*(0.5*rhol*v_l*v_l)
+    pass
 
-    # Actual gas flow
-    v_g = m*x/(rhog*A)
-    Re_g = Reynolds(V=v_g, rho=rhog, mu=mug, D=D)
-    fd_g = friction_factor(Re=Re_g, eD=roughness/D)
-    dP_g = fd_g*L/D*(0.5*rhog*v_g*v_g)
 
-    # Actual model
-    X = sqrt(dP_l/dP_g)
-    C = 21*(1.0 - exp(-0.319E3*D))
-    phi_l2 = 1.0 + C/X + 1./(X*X)
-    return dP_l*phi_l2
 
 def friction_factor_Kim_Mudawar(Re: float) -> float:
-    if Re < 2000:
-        return 64./Re
-    elif Re < 20000:
-        return 0.316/sqrt(sqrt(Re))
-    else:
-        return 0.184*Re**-0.2
-
+    pass
 
 def Kim_Mudawar(m: float, x: float, rhol: float, rhog: float, mul: float, mug: float, sigma: float, D: float, L: float=1.0) -> float:
     r"""Calculates two-phase pressure drop with the Kim and Mudawar (2012)
@@ -2147,38 +1676,7 @@ def Kim_Mudawar(m: float, x: float, rhol: float, rhog: float, mul: float, mug: f
        Mass Transfer 77 (October 2014): 74-97.
        doi:10.1016/j.ijheatmasstransfer.2014.04.035.
     """
-    A = 0.25*pi*D*D
-    # Actual Liquid flow
-    v_l = m*(1.0-x)/(rhol*A)
-    Re_l = Reynolds(V=v_l, rho=rhol, mu=mul, D=D)
-    fd_l = friction_factor_Kim_Mudawar(Re=Re_l)
-    dP_l = fd_l*L/D*(0.5*rhol*v_l*v_l)
-
-    # Actual gas flow
-    v_g = m*x/(rhog*A)
-    Re_g = Reynolds(V=v_g, rho=rhog, mu=mug, D=D)
-    fd_g = friction_factor_Kim_Mudawar(Re=Re_g)
-    dP_g = fd_g*L/D*(0.5*rhog*v_g*v_g)
-
-    # Liquid-only flow
-    v_lo = m/(rhol*A)
-    Re_lo = Reynolds(V=v_lo, rho=rhol, mu=mul, D=D)
-
-    Su = Suratman(L=D, rho=rhog, mu=mug, sigma=sigma)
-    X = sqrt(dP_l/dP_g)
-    Re_c = 2000.0 # Transition Reynolds number
-
-    if Re_l < Re_c and Re_g < Re_c:
-        C = 3.5E-5*Re_lo**0.44*sqrt(Su)*(rhol/rhog)**0.48
-    elif Re_l < Re_c and Re_g >= Re_c:
-        C = 0.0015*Re_lo**0.59*Su**0.19*(rhol/rhog)**0.36
-    elif Re_l >= Re_c and Re_g < Re_c:
-        C = 8.7E-4*Re_lo**0.17*sqrt(Su)*(rhol/rhog)**0.14
-    else: # Turbulent case
-        C = 0.39*Re_lo**0.03*Su**0.10*(rhol/rhog)**0.35
-
-    phi_l2 = 1 + C/X + 1./(X*X)
-    return dP_l*phi_l2
+    pass
 
 
 def Lockhart_Martinelli(m: float, x: float, rhol: float, rhog: float, mul: float, mug: float, D: float, L: float=1.0, Re_c: float=2000.0) -> float:
@@ -2284,39 +1782,7 @@ def Lockhart_Martinelli(m: float, x: float, rhol: float, rhog: float, mul: float
        55, no. 11-12 (May 2012): 3246-61.
        doi:10.1016/j.ijheatmasstransfer.2012.02.047.
     """
-    A = 0.25*pi*D*D
-    v_l = m*(1.0-x)/(rhol*A)
-    Re_l = Reynolds(V=v_l, rho=rhol, mu=mul, D=D)
-    v_g = m*x/(rhog*A)
-    Re_g = Reynolds(V=v_g, rho=rhog, mu=mug, D=D)
-
-    if Re_l < Re_c and Re_g < Re_c:
-        C = 5.0
-    elif Re_l < Re_c and Re_g >= Re_c:
-        # Liquid laminar, gas turbulent
-        C = 12.0
-    elif Re_l >= Re_c and Re_g < Re_c:
-        # Liquid turbulent, gas laminar
-        C = 10.0
-    else: # Turbulent case
-        C = 20.0
-
-    # Friction factor as in the original model
-    x_only_liquid_tol = 1e-30
-    x_only_vapor_tol = 1e-13
-    fd_g =  64./Re_g if Re_g < Re_c else 0.184*Re_g**-0.2
-    dP_g = fd_g*L/D*(0.5*rhog*v_g**2)
-    if x > 1.0 - x_only_vapor_tol:
-        return dP_g
-    fd_l =  64./Re_l if Re_l < Re_c else 0.184*Re_l**-0.2
-    dP_l = fd_l*L/D*(0.5*rhol*v_l*v_l)
-    if x < x_only_liquid_tol:
-        return dP_l
-
-    X = sqrt(dP_l/dP_g)
-
-    phi_l2 = 1 + C/X + 1./(X*X)
-    return dP_l*phi_l2
+    pass
 
 
 two_phase_correlations = {
@@ -2403,19 +1869,7 @@ def two_phase_dP_methods(m: float, x: float, rhol: float, D: float, L: float=1.0
     >>> len(two_phase_dP_methods(m=0.6, x=0.1, rhol=915., rhog=2.67, mul=180E-6, mug=14E-6, sigma=0.0487, D=0.05, L=1.0, angle=30.0, roughness=1e-4, P=1e5, Pc=1e6))
     24
     """
-    usable_indices = []
-    if rhog is not None and sigma is not None:
-        usable_indices.append(5)
-    if rhog is not None and sigma is not None and mul is not None and mug is not None:
-        usable_indices.extend([4, 3, 102, 103]) # Differs only in the addition of roughness
-    if rhog is not None and mul is not None and mug is not None:
-        usable_indices.extend([1,2, 101]) # Differs only in the addition of roughness
-    if mul is not None and P is not None and Pc is not None:
-        usable_indices.append(0)
-    if (rhog is not None and mul is not None and mug is not None
-        and sigma is not None and P is not None and angle is not None):
-        usable_indices.append(104)
-    return [key for key, value in two_phase_correlations.items() if value[1] in usable_indices]
+    pass
 
 # # Uncomment to regenerate the frozensets when adding new methods:
 # def _generate_two_phase_dP_parameter_requirements():
@@ -2528,117 +1982,7 @@ def two_phase_dP(m: float, x: float, rhol: float, D: float, L: float=1.0, rhog: 
     ... sigma=0.0487, D=0.05, L=1.0)
     840.4137796786
     """
-    if Method is None:
-        if rhog is not None and mul is not None and mug is not None and sigma is not None:
-            Method2 = "Kim_Mudawar" # Kim_Mudawar preferred
-        elif rhog is not None and mul is not None and mug is not None:
-            Method2 = "Chisholm" # Second choice, indexes 1 or 2
-        elif mul is not None and P is not None and Pc is not None:
-            Method2 = "Zhang_Webb" # Not a good choice
-        elif rhog is not None and sigma is not None:
-            Method2 = "Lombardi_Pedrocchi" # Last try
-        else:
-            raise ValueError("All possible methods require more information \
-than provided; provide more inputs!")
-    else:
-        Method2 = Method
-
-    # Type narrowing: validate required parameters based on selected method
-    # Initialize to dummy values for numba (will be overwritten before use)
-    rhog2 = 0.0
-    mul2 = 0.0
-    mug2 = 0.0
-    sigma2 = 0.0
-    P2 = 0.0
-    Pc2 = 0.0
-    angle2 = 0.0
-
-    if Method2 in two_phase_dP_methods_needing_rhog:
-        if rhog is None:
-            raise TypeError(f"{Method2} requires rhog")
-        rhog2 = rhog
-    if Method2 in two_phase_dP_methods_needing_mul:
-        if mul is None:
-            raise TypeError(f"{Method2} requires mul")
-        mul2 = mul
-    if Method2 in two_phase_dP_methods_needing_mug:
-        if mug is None:
-            raise TypeError(f"{Method2} requires mug")
-        mug2 = mug
-    if Method2 in two_phase_dP_methods_needing_sigma:
-        if sigma is None:
-            raise TypeError(f"{Method2} requires sigma")
-        sigma2 = sigma
-    if Method2 in two_phase_dP_methods_needing_P:
-        if P is None:
-            raise TypeError(f"{Method2} requires P")
-        P2 = P
-    if Method2 in two_phase_dP_methods_needing_Pc:
-        if Pc is None:
-            raise TypeError(f"{Method2} requires Pc")
-        Pc2 = Pc
-    if Method2 in two_phase_dP_methods_needing_angle:
-        if angle is None:
-            raise TypeError(f"{Method2} requires angle")
-        angle2 = angle
-
-    if Method2 == "Zhang_Webb":
-        return Zhang_Webb(m=m, x=x, rhol=rhol, mul=mul2, P=P2, Pc=Pc2, D=D, roughness=roughness, L=L)
-    elif Method2 == "Lockhart_Martinelli":
-        return Lockhart_Martinelli(m=m, x=x, rhol=rhol, rhog=rhog2, mul=mul2, mug=mug2, D=D, L=L)
-    elif Method2 == "Bankoff":
-        return Bankoff(m=m, x=x, rhol=rhol, rhog=rhog2, mul=mul2, mug=mug2, D=D, roughness=roughness, L=L)
-    elif Method2 == "Baroczy_Chisholm":
-        return Baroczy_Chisholm(m=m, x=x, rhol=rhol, rhog=rhog2, mul=mul2, mug=mug2, D=D, roughness=roughness, L=L)
-    elif Method2 == "Chisholm":
-        return Chisholm(m=m, x=x, rhol=rhol, rhog=rhog2, mul=mul2, mug=mug2, D=D, roughness=roughness, L=L)
-    elif Method2 == "Gronnerud":
-        return Gronnerud(m=m, x=x, rhol=rhol, rhog=rhog2, mul=mul2, mug=mug2, D=D, roughness=roughness, L=L)
-    elif Method2 == "Jung_Radermacher":
-        return Jung_Radermacher(m=m, x=x, rhol=rhol, rhog=rhog2, mul=mul2, mug=mug2, D=D, roughness=roughness, L=L)
-    elif Method2 == "Muller_Steinhagen_Heck":
-        return Muller_Steinhagen_Heck(m=m, x=x, rhol=rhol, rhog=rhog2, mul=mul2, mug=mug2, D=D, roughness=roughness, L=L)
-    elif Method2 == "Theissing":
-        return Theissing(m=m, x=x, rhol=rhol, rhog=rhog2, mul=mul2, mug=mug2, D=D, roughness=roughness, L=L)
-    elif Method2 == "Wang_Chiang_Lu":
-        return Wang_Chiang_Lu(m=m, x=x, rhol=rhol, rhog=rhog2, mul=mul2, mug=mug2, D=D, roughness=roughness, L=L)
-    elif Method2 == "Yu_France":
-        return Yu_France(m=m, x=x, rhol=rhol, rhog=rhog2, mul=mul2, mug=mug2, D=D, roughness=roughness, L=L)
-    elif Method2 == "Kim_Mudawar":
-        return Kim_Mudawar(m=m, x=x, rhol=rhol, rhog=rhog2, mul=mul2, mug=mug2, sigma=sigma2, D=D, L=L)
-    elif Method2 == "Friedel":
-        return Friedel(m=m, x=x, rhol=rhol, rhog=rhog2, mul=mul2, mug=mug2, sigma=sigma2, D=D, roughness=roughness, L=L)
-    elif Method2 == "Hwang_Kim":
-        return Hwang_Kim(m=m, x=x, rhol=rhol, rhog=rhog2, mul=mul2, mug=mug2, sigma=sigma2, D=D, roughness=roughness, L=L)
-    elif Method2 == "Mishima_Hibiki":
-        return Mishima_Hibiki(m=m, x=x, rhol=rhol, rhog=rhog2, mul=mul2, mug=mug2, sigma=sigma2, D=D, roughness=roughness, L=L)
-    elif Method2 == "Tran":
-        return Tran(m=m, x=x, rhol=rhol, rhog=rhog2, mul=mul2, mug=mug2, sigma=sigma2, D=D, roughness=roughness, L=L)
-    elif Method2 == "Xu_Fang":
-        return Xu_Fang(m=m, x=x, rhol=rhol, rhog=rhog2, mul=mul2, mug=mug2, sigma=sigma2, D=D, roughness=roughness, L=L)
-    elif Method2 == "Zhang_Hibiki_Mishima":
-        return Zhang_Hibiki_Mishima(m=m, x=x, rhol=rhol, rhog=rhog2, mul=mul2, mug=mug2, sigma=sigma2, D=D, roughness=roughness, L=L)
-    elif Method2 == "Chen_Friedel":
-        return Chen_Friedel(m=m, x=x, rhol=rhol, rhog=rhog2, mul=mul2, mug=mug2, sigma=sigma2, D=D, roughness=roughness, L=L)
-    elif Method2 == "Lombardi_Pedrocchi":
-        return Lombardi_Pedrocchi(m=m, x=x, rhol=rhol, rhog=rhog2, sigma=sigma2, D=D, L=L)
-    elif Method2 == "Chisholm rough":
-        return Chisholm(m=m, x=x, rhol=rhol, rhog=rhog2, mul=mul2, mug=mug2, D=D,
-                     L=L, roughness=roughness, rough_correction=True)
-    elif Method2 == "Zhang_Hibiki_Mishima adiabatic gas":
-        return Zhang_Hibiki_Mishima(m=m, x=x, rhol=rhol, rhog=rhog2, mul=mul2, mug=mug2,
-                     sigma=sigma2, D=D, L=L, roughness=roughness,
-                     flowtype="adiabatic gas")
-    elif Method2 == "Zhang_Hibiki_Mishima flow boiling":
-        return Zhang_Hibiki_Mishima(m=m, x=x, rhol=rhol, rhog=rhog2, mul=mul2, mug=mug2,
-                     sigma=sigma2, D=D, L=L, roughness=roughness,
-                     flowtype="flow boiling")
-    elif Method2 == "Beggs-Brill":
-        return Beggs_Brill(m=m, x=x, rhol=rhol, rhog=rhog2, mul=mul2, mug=mug2,
-                     sigma=sigma2, P=P2, D=D, angle=angle2, L=L,
-                     roughness=roughness, acceleration=False, g=g)
-    else:
-        raise ValueError(_unknown_msg_two_phase)
+    pass
 
 
 def two_phase_dP_acceleration(m: float, D: float, xi: float, xo: float, alpha_i: float, alpha_o: float, rho_li: float, rho_gi: float,
@@ -2716,14 +2060,7 @@ def two_phase_dP_acceleration(m: float, D: float, xi: float, xo: float, alpha_i:
        Mass Transfer 77 (October 2014): 74-97.
        doi:10.1016/j.ijheatmasstransfer.2014.04.035.
     """
-    G = 4.0*m/(pi*D*D)
-    if rho_lo is None:
-        rho_lo = rho_li
-    if rho_go is None:
-        rho_go = rho_gi
-    in_term = (1.-xi)*(1.-xi)/(rho_li*(1.-alpha_i)) + xi*xi/(rho_gi*alpha_i)
-    out_term = (1.-xo)*(1.-xo)/(rho_lo*(1.-alpha_o)) + xo*xo/(rho_go*alpha_o)
-    return G*G*(out_term - in_term)
+    pass
 
 
 def two_phase_dP_dz_acceleration(m: float, D: float, x: float, rhol: float, rhog: float, dv_dP_l: float, dv_dP_g: float, dx_dP: float,
@@ -2799,13 +2136,7 @@ def two_phase_dP_dz_acceleration(m: float, D: float, x: float, rhol: float, rhog
        Mass Transfer 77 (October 2014): 74-97.
        doi:10.1016/j.ijheatmasstransfer.2014.04.035.
     """
-    A = 0.25*pi*D*D
-    G = m/A
-    t1 = (1.0/rhog - 1.0/rhol)*dP_dL*dx_dP + dP_dL*(x*dv_dP_g + (1.0 - x)*dv_dP_l)
-
-    voidage_h = homogeneous(x, rhol, rhog)
-    rho_h = rhol*(1.0 - voidage_h) + rhog*voidage_h
-    return -G*G*(t1 - dA_dL/(rho_h*A))
+    pass
 
 
 
@@ -2889,16 +2220,7 @@ def two_phase_dP_gravitational(angle: float, z: float, alpha_i: float, rho_li: f
     .. [3] Thome, John R. "Engineering Data Book III." Wolverine Tube Inc
        (2004). http://www.wlv.com/heat-transfer-databook/
     """
-    if rho_lo is None:
-        rho_lo = rho_li
-    if rho_go is None:
-        rho_go = rho_gi
-    if alpha_o is None:
-        alpha_o = alpha_i
-    angle = radians(angle)
-    in_term = alpha_i*rho_gi + (1. - alpha_i)*rho_li
-    out_term = alpha_o*rho_go + (1. - alpha_o)*rho_lo
-    return g*z*sin(angle)*(out_term + in_term)*0.5
+    pass
 
 
 def two_phase_dP_dz_gravitational(angle: float, alpha: float, rhol: float, rhog: float, g: float=g) -> float:
@@ -2948,8 +2270,7 @@ def two_phase_dP_dz_gravitational(angle: float, alpha: float, rhol: float, rhog:
        Mass Transfer 77 (October 2014): 74-97.
        doi:10.1016/j.ijheatmasstransfer.2014.04.035.
     """
-    angle = radians(angle)
-    return g*sin(angle)*(alpha*rhog + (1. - alpha)*rhol)
+    pass
 
 Dukler_XA_tck = implementation_optimize_tck([[-2.4791105294648372, -2.4791105294648372, -2.4791105294648372,
                            -2.4791105294648372, 0.14360803483759585, 1.7199938263676038,
@@ -3060,51 +2381,7 @@ def Taitel_Dukler_regime(m: float, x: float, rhol: float, rhog: float, mul: floa
        Pipes. Pap/Cdr edition. Richardson, TX: Society of Petroleum Engineers,
        2006.
     """
-    angle = radians(angle)
-    A = 0.25*pi*D*D
-    # Liquid-superficial properties, for calculation of dP_ls, dP_ls
-    # Paper and Brill Beggs 1991 confirms not v_lo but v_sg
-    v_ls =  m*(1.0 - x)/(rhol*A)
-    Re_ls = Reynolds(V=v_ls, rho=rhol, mu=mul, D=D)
-    fd_ls = friction_factor(Re=Re_ls, eD=roughness/D)
-    dP_ls = fd_ls/D*(0.5*rhol*v_ls*v_ls)
-
-    # Gas-superficial properties, for calculation of dP_gs
-    v_gs = m*x/(rhog*A)
-    Re_gs = Reynolds(V=v_gs, rho=rhog, mu=mug, D=D)
-    fd_gs = friction_factor(Re=Re_gs, eD=roughness/D)
-    dP_gs = fd_gs/D*(0.5*rhog*v_gs*v_gs)
-
-    X = sqrt(dP_ls/dP_gs)
-
-    F = sqrt(rhog/(rhol-rhog))*v_gs/sqrt(D*g*cos(angle))
-
-    # Paper only uses kinematic viscosity
-    nul = mul/rhol
-
-    T = sqrt(dP_ls/((rhol-rhog)*g*cos(angle)))
-    K = sqrt(rhog*v_gs*v_gs*v_ls/((rhol-rhog)*g*nul*cos(angle)))
-
-    F_A_at_X = XA_interp_obj(X)
-
-    X_B_transition = 1.7917 # Roughly
-
-    if F >= F_A_at_X and X <= X_B_transition:
-        regime = "annular"
-    elif F >= F_A_at_X:
-        T_D_at_X = XD_interp_obj(X)
-        if T >= T_D_at_X:
-            regime = "bubbly"
-        else:
-            regime = "intermittent"
-    else:
-        K_C_at_X = XC_interp_obj(X)
-        if K >= K_C_at_X:
-            regime = "stratified wavy"
-        else:
-            regime = "stratified smooth"
-
-    return regime, X, T, F, K
+    pass
 
 
 def Mandhane_Gregory_Aziz_regime(m: float, x: float, rhol: float, rhog: float, mul: float, mug: float, sigma: float, D: float) -> tuple[str, float, float]:
@@ -3165,62 +2442,7 @@ def Mandhane_Gregory_Aziz_regime(m: float, x: float, rhol: float, rhog: float, m
        Multiphase Flow 1, no. 4 (October 30, 1974): 537-53.
        doi:10.1016/0301-9322(74)90006-8.
     """
-    A = 0.25*pi*D*D
-    Vsl =  m*(1.0 - x)/(rhol*A)
-    Vsg = m*x/(rhog*A)
-
-    # Convert to imperial units
-    Vsl, Vsg = Vsl/0.3048, Vsg/0.3048
-#    X1 = (rhog/0.0808)**0.333 * (rhol*72.4/62.4/sigma)**0.25 * (mug/0.018)**0.2
-#    Y1 = (rhol*72.4/62.4/sigma)**0.25 * (mul/1.)**0.2
-    X1 = (rhog/1.294292)**0.333 * sqrt(sqrt(rhol*0.0724/(999.552*sigma))) * (mug*1.8E5)**0.2
-    Y1 = sqrt(sqrt(rhol*0.0724/999.552/sigma)) * (mul*1E3)**0.2
-
-    if Vsl < 14.0*Y1:
-        if Vsl <= 0.1:
-            Y1345 = 14.0*(Vsl/0.1)**-0.368
-        elif Vsl <= 0.2:
-            Y1345 = 14.0*(Vsl/0.1)**-0.415
-        elif Vsl <= 1.15:
-            Y1345 = 10.5*(Vsl/0.2)**-0.816
-        elif Vsl <= 4.8:
-            Y1345 = 2.5
-        else:
-            Y1345 = 2.5*(Vsl/4.8)**0.248
-
-        if Vsl <= 0.1:
-            Y456 = 70.0*(Vsl/0.01)**-0.0675
-        elif Vsl <= 0.3:
-            Y456 = 60.0*(Vsl/0.1)**-0.415
-        elif Vsl <= 0.56:
-            Y456 = 38.0*(Vsl/0.3)**0.0813
-        elif Vsl <= 1.0:
-            Y456 = 40.0*(Vsl/0.56)**0.385
-        elif Vsl <= 2.5:
-            Y456 = 50.0*(Vsl/1.)**0.756
-        else:
-            Y456 = 100.0*(Vsl/2.5)**0.463
-
-        Y45 = 0.3*Y1
-        Y31 = 0.5/Y1
-        Y1345 = Y1345*X1
-        Y456 = Y456*X1
-
-        if Vsg <= Y1345 and Vsl >= Y31:
-            regime = "elongated bubble"
-        elif Vsg <= Y1345 and Vsl <= Y31:
-            regime = "stratified"
-        elif Vsg >= Y1345 and Vsg <= Y456 and Vsl > Y45:
-            regime = "slug"
-        elif Vsg >= Y1345 and Vsg <= Y456 and Vsl <= Y45:
-            regime = "wave"
-        else:
-            regime = "annular mist"
-    elif Vsg <= (230.*(Vsl/14.)**0.206)*X1:
-        regime = "dispersed bubble"
-    else:
-        regime = "annular mist"
-    return regime, Vsl, Vsg
+    pass
 
 Mandhane_Gregory_Aziz_regimes = {"elongated bubble": 1, "stratified": 2,
                                  "slug":3, "wave": 4,

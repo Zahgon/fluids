@@ -154,47 +154,9 @@ def liquid_jet_pump_ancillary(rhop: float, rhos: float, Kp: float, Ks: float, d_
     .. [1] Ejectors and Jet Pumps. Design and Performance for Incompressible
        Liquid Flow. 85032. ESDU International PLC, 1985.
     """
-    unknowns = sum(i is None for i in (d_nozzle, d_mixing, Qs, Qp, P1, P2))
-    if unknowns > 1:
-        raise ValueError("Too many unknowns")
-    elif unknowns < 1:
-        raise ValueError("Overspecified")
-    C = rhos/rhop
+    pass
 
-    if Qp is not None and Qs is not None:
-        M = Qs/Qp
-    if d_nozzle is not None:
-        A_nozzle = pi/4*d_nozzle*d_nozzle
-        if d_mixing is not None:
-            A_mixing = pi/4*d_mixing*d_mixing
-            R = A_nozzle/A_mixing
 
-    if P1 is None and Qp is not None and A_nozzle is not None and M is not None and R is not None and P2 is not None:
-        return rhop/2*(Qp/A_nozzle)**2*((1+Kp) - C*(1 + Ks)*((M*R)/(1-R))**2 ) + P2
-    elif P2 is None and Qp is not None and A_nozzle is not None and M is not None and R is not None and P1 is not None:
-        return -rhop/2*(Qp/A_nozzle)**2*((1+Kp) - C*(1 + Ks)*((M*R)/(1-R))**2 ) + P1
-    elif Qs is None and A_nozzle is not None and A_mixing is not None and P1 is not None and P2 is not None and Qp is not None:
-        try:
-            return sqrt((-2*A_nozzle**2*P1 + 2*A_nozzle**2*P2 + Kp*Qp**2*rhop + Qp**2*rhop)/(C*rhop*(Ks + 1)))*(A_mixing - A_nozzle)/A_nozzle
-        except ValueError:
-            return float("nan")
-    elif Qp is None and A_nozzle is not None and A_mixing is not None and P1 is not None and P2 is not None and Qs is not None:
-        return A_nozzle*sqrt((2*A_mixing**2*P1 - 2*A_mixing**2*P2 - 4*A_mixing*A_nozzle*P1 + 4*A_mixing*A_nozzle*P2 + 2*A_nozzle**2*P1 - 2*A_nozzle**2*P2 + C*Ks*Qs**2*rhop + C*Qs**2*rhop)/(rhop*(Kp + 1)))/(A_mixing - A_nozzle)
-    elif d_nozzle is None and d_mixing is not None and P1 is not None and P2 is not None and Qp is not None and Qs is not None:
-        def err(d_nozzle):
-            return P1 - liquid_jet_pump_ancillary(rhop=rhop, rhos=rhos, Kp=Kp, Ks=Ks, d_nozzle=d_nozzle, d_mixing=d_mixing, Qp=Qp, Qs=Qs,
-                              P1=None, P2=P2)
-        return brenth(err, 1E-9, d_mixing*20)
-    elif d_mixing is None and d_nozzle is not None and P1 is not None and P2 is not None and Qp is not None and Qs is not None:
-        def err(d_mixing):
-            return P1 - liquid_jet_pump_ancillary(rhop=rhop, rhos=rhos, Kp=Kp, Ks=Ks, d_nozzle=d_nozzle, d_mixing=d_mixing, Qp=Qp, Qs=Qs,
-                              P1=None, P2=P2)
-        try:
-            return brenth(err, 1E-9, d_nozzle*20)
-        except:
-            return secant(err, d_nozzle*2)
-    else:
-        raise ValueError("Impossible")
 
 
 
@@ -203,50 +165,7 @@ def liquid_jet_pump_pressure_ratio(rhop, rhos, Km, Kd, Ks, Kp,
                      d_nozzle=None, d_mixing=None, d_diffuser=None,
                      Qp=None, Qs=None, P1=None, P2=None, P5=None,
                      nozzle_retracted=True):
-    C = rhos/rhop
-    if nozzle_retracted:
-        j = 0.0
-    else:
-        j = 1.0
-
-    R = d_nozzle**2/d_mixing**2
-    alpha = d_mixing**2/d_diffuser**2
-    M = Qs/Qp
-
-    M2, R2, alpha2 = M*M, R*R, alpha*alpha
-    num = 2.0*R + 2*C*M2*R2/(1.0 - R)
-    num -= R2*(1.0 + C*M)*(1.0 + M)*(1.0 + Km + Kd + alpha2)
-    num -= C*M2*R2/(1.0 - R)**2*(1.0 + Ks)
-
-    den = (1.0 + Kp) - 2.0*R - 2.0*C*M2*R2/(1.0 - R)
-    den += R2*(1.0 + C*M)*(1.0 + M)*(1.0 + Km + Kd + alpha2)
-    den += (1.0 - j)*(C*M2/((1.0 - R)/R)**2)*(1.0 - Ks)
-    N = num/den
-    if P1 is None:
-        P1 = (-P2 + P5*N + P5)/N
-    elif P2 is None:
-        P2 = -P1*N + P5*N + P5
-    elif P5 is None:
-        P5 = (P1*N + P2)/(N + 1.0)
-    else:
-        return N - (P5 - P2)/(P1 - P5)
-
-    solution = {}
-    solution["P1"] = P1
-    solution["P2"] = P2
-    solution["P5"] = P5
-#    solution['d_nozzle'] = d_nozzle
-#    solution['d_mixing'] = d_mixing
-#    solution['d_diffuser'] = d_diffuser
-#    solution['Qs'] = Qs
-#    solution['Qp'] = Qp
-#    solution['N'] = N
-#    solution['M'] = M
-#    solution['R'] = R
-#    solution['alpha'] = alpha
-#    solution['efficiency'] = M*N
-    return solution
-
+    pass
 
 def liquid_jet_pump(rhop, rhos, Kp=0.0, Ks=0.1, Km=.15, Kd=0.1,
                     d_nozzle=None, d_mixing=None, d_diffuser=None,
@@ -413,200 +332,7 @@ def liquid_jet_pump(rhop, rhos, Kp=0.0, Ks=0.1, Km=.15, Kd=0.1,
     .. [4] Ejectors and Jet Pumps. Design and Performance for Incompressible
        Liquid Flow. 85032. ESDU International PLC, 1985.
     """
-    from random import uniform
-    solution_vars = ["d_nozzle", "d_mixing", "Qp", "Qs", "P1", "P2", "P5"]
-    unknown_vars = []
-    for i in solution_vars:
-         if locals()[i] is None:
-             unknown_vars.append(i)
-
-    if len(unknown_vars) > 2:
-        raise ValueError("Too many unknowns")
-    elif len(unknown_vars) < 2:
-        raise ValueError("Overspecified")
-
-
-    vals = {"d_nozzle": d_nozzle, "d_mixing": d_mixing, "Qp": Qp,
-            "Qs": Qs, "P1": P1, "P2": P2, "P5": P5}
-    var_guesses = []
-    # Initial guess algorithms for each variable here
-    # No clever algorithms invented yet
-    for v in unknown_vars:
-        if v == "d_nozzle":
-            try:
-                var_guesses.append(d_mixing*0.4)
-            except:
-                var_guesses.append(0.01)
-        if v == "d_mixing":
-            try:
-                var_guesses.append(d_nozzle*2)
-            except:
-                var_guesses.append(0.02)
-        elif v == "P1":
-            try:
-                var_guesses.append(P2*5)
-            except:
-                var_guesses.append(P5*5)
-        elif v == "P2":
-            try:
-                var_guesses.append((P1 + P5)*0.5)
-            except:
-                try:
-                    var_guesses.append(P1/1.1)
-                except:
-                    var_guesses.append(P5*1.25)
-        elif v == "P5":
-            try:
-                var_guesses.append(P1*1.12)
-            except:
-                var_guesses.append(P2*1.12)
-        elif v == "Qp":
-            try:
-                var_guesses.append(Qs*1.04)
-            except:
-                var_guesses.append(0.01)
-        elif v == "Qs":
-            try:
-                var_guesses.append(Qp*0.5)
-            except:
-                var_guesses.append(0.01)
-
-    C = rhos/rhop
-    if nozzle_retracted:
-        j = 0.0
-    else:
-        j = 1.0
-    # The diffuser diameter, if not specified, is set to a very large diameter
-    # so as to not alter the results
-    if d_diffuser is None:
-        if d_mixing is not None:
-            d_diffuser = d_mixing*1E3
-        elif d_nozzle is not None:
-            d_diffuser = d_nozzle*1E3
-        else:
-            d_diffuser = 1000.0
-    vals["d_diffuser"] = d_diffuser
-
-
-    def obj_err(val):
-        # Use the dictionary `vals` to keep track of the currently iterating
-        # variables
-        for i, v in zip(unknown_vars, val):
-            vals[i] = abs(float(v))
-
-        # Keep the pressure limits sane
-#        if 'P1' in unknown_vars:
-#            if 'P5' not in unknown_vars:
-#                vals['P1'] = max(vals['P1'], 1.001*vals['P5'])
-#            elif 'P2' not in unknown_vars:
-#                vals['P1'] = max(vals['P1'], 1.001*vals['P2'])
-#        if 'P2' in unknown_vars:
-#            if 'P1' not in unknown_vars:
-#                vals['P2'] = min(vals['P2'], 0.999*vals['P1'])
-#            if 'P5' not in unknown_vars:
-#                vals['P2'] = max(vals['P2'], 1.001*vals['P2'])
-
-        # Prelimary numbers
-        A_nozzle = pi/4*vals["d_nozzle"]**2
-        alpha = vals["d_mixing"]**2/d_diffuser**2
-        R = vals["d_nozzle"]**2/vals["d_mixing"]**2
-        M = vals["Qs"]/vals["Qp"]
-
-        err1 = liquid_jet_pump_pressure_ratio(rhop=rhop, rhos=rhos, Km=Km, Kd=Kd,
-                                              Ks=Ks, Kp=Kp, d_nozzle=vals["d_nozzle"],
-                                              d_mixing=vals["d_mixing"],
-                                              Qs=vals["Qs"], Qp=vals["Qp"],
-                                              P2=vals["P2"], P1=vals["P1"],
-                                              P5=vals["P5"],
-                                              nozzle_retracted=nozzle_retracted,
-                                              d_diffuser=d_diffuser)
-
-        rhs = rhop/2.0*(vals["Qp"]/A_nozzle)**2*((1.0 + Kp) - C*(1.0 + Ks)*((M*R)/(1.0 - R))**2 )
-
-        err2 = rhs  - (vals["P1"] - vals["P2"])
-
-        vals["N"] = N = (vals["P5"] - vals["P2"])/(vals["P1"]-vals["P5"])
-        vals["M"] = M
-        vals["R"] = R
-        vals["alpha"] = alpha
-        vals["efficiency"] = M*N
-
-        if vals["efficiency"] < 0:
-            if err1 < 0:
-                err1 -= abs(vals["efficiency"])
-            else:
-                err1 += abs(vals["efficiency"])
-            if err2 < 0:
-                err2 -= abs(vals["efficiency"])
-            else:
-                err2 += abs(vals["efficiency"])
-
-#        elif vals['N'] < 0:
-#            err1, err2 =  abs(vals['N']) + err1,  abs(vals['N']) + err2
-#        print(err1, err2)
-        return err1, err2
-
-    # Only one unknown var
-    if "P5" in unknown_vars:
-        ancillary = liquid_jet_pump_ancillary(rhop=rhop, rhos=rhos, Kp=Kp,
-                                              Ks=Ks, d_nozzle=d_nozzle,
-                                              d_mixing=d_mixing, Qp=Qp, Qs=Qs,
-                                              P1=P1, P2=P2)
-        if unknown_vars[0] == "P5":
-            vals[unknown_vars[1]] = ancillary
-        else:
-            vals[unknown_vars[0]] = ancillary
-
-        vals["P5"] = liquid_jet_pump_pressure_ratio(rhop=rhop, rhos=rhos, Km=Km, Kd=Kd, Ks=Ks, Kp=Kp, d_nozzle=vals["d_nozzle"],
-                               d_mixing=vals["d_mixing"], Qs=vals["Qs"], Qp=vals["Qp"], P2=vals["P2"],
-                               P1=vals["P1"], P5=None,
-                               nozzle_retracted=nozzle_retracted, d_diffuser=d_diffuser)["P5"]
-        # Compute the remaining parameters
-        obj_err([vals[unknown_vars[0]], vals[unknown_vars[1]]])
-        return vals
-
-    with np.errstate(all="ignore"):
-        def solve_with_newton(var_guesses):
-            solver = SolverInterface(method="newton_system_line_search_progress", objf=obj_err, xtol=3E-7, maxiter=100, jacobian_perturbation=1e-7)
-            solution = solver.solve(var_guesses)
-            errs = obj_err(solution)
-
-            if (abs(errs[0]) + abs(errs[1])) > 1E-5:
-                raise ValueError("Could not solve")
-
-            for u, v in zip(unknown_vars, solution):
-                vals[u] = abs(v)
-            return vals
-
-        try:
-            return solve_with_newton(var_guesses)
-        except:
-            pass
-        # Just do variations on this until it works
-        for _ in range(int(max_variations/8)):
-            for idx in [0, 1]:
-                for r in [(1, 10), (0.1, 1)]:
-                    i = uniform(*r)
-                    try:
-                        l = list(var_guesses)
-                        l[idx] = l[idx]*i
-                        return solve_with_newton(l)
-                    except:
-                        pass
-        # Vary both parameters at once
-        for _ in range(int(max_variations/8)):
-            for r in [(1, 10), (0.1, 1)]:
-                i = uniform(*r)
-                for s in [(1, 10), (0.1, 1)]:
-                    j = uniform(*s)
-                    try:
-                        l = list(var_guesses)
-                        l[0] = l[0]*i
-                        l[1] = l[1]*j
-                        return solve_with_newton(l)
-                    except:
-                        pass
-        raise ValueError("Could not solve")
+    pass
 
 
 def vacuum_air_leakage_Ryans_Croll(V: float, P: float, P_atm: float=101325.0) -> float:
@@ -664,18 +390,7 @@ def vacuum_air_leakage_Ryans_Croll(V: float, P: float, P_atm: float=101325.0) ->
     .. [3] Govoni, Patrick. "An Overview of Vacuum System Design"
        Chemical Engineering Magazine, September 2017.
     """
-    V *= foot_cubed_inv
-    P *= torr_inv
-    P_atm *= torr_inv
-    P_vacuum = P_atm - P
-    if P_vacuum < 10:
-        air_leakage = 0.026*P_vacuum**0.34*V**0.6
-    elif P_vacuum < 100:
-        air_leakage = 0.032*P_vacuum**0.26*V**0.6
-    else:
-        air_leakage = 0.106*V**0.6
-    leakage = air_leakage*lb*hour_inv
-    return leakage
+    pass
 
 def vacuum_air_leakage_Seider(V: float, P: float, P_atm: float=101325.0) -> float:
     r"""Calculates an estimated leakage of air into a vessel using
@@ -718,14 +433,7 @@ def vacuum_air_leakage_Seider(V: float, P: float, P_atm: float=101325.0) -> floa
        Product and Process Design Principles: Synthesis, Analysis,
        and Evaluation. 2nd edition. New York: Wiley, 2003.
     """
-    P *= torr_inv
-    P_atm *= torr_inv
-    P_vacuum = P_atm - P
-    V *= foot_cubed_inv
-    lnP = log(P_vacuum)
-    leakage_lb_hr = 5.0 + (0.0289 + 0.03088*lnP - 0.0005733*lnP*lnP)*V**0.66
-    leakage = leakage_lb_hr*lb*hour_inv
-    return leakage
+    pass
 
 def vacuum_air_leakage_HEI2633(V: float, P: float, P_atm: float=101325.0) -> float:
     r"""Calculates an estimated leakage of air into a vessel using
@@ -770,27 +478,7 @@ def vacuum_air_leakage_HEI2633(V: float, P: float, P_atm: float=101325.0) -> flo
     ----------
     .. [1] "Standards for Steam Jet Vacuum Systems", 5th Edition
     """
-    P_atm *= mmHg_inv
-    P *= mmHg_inv
-    P_vacuum = P_atm - P
-    V *= foot_cubed_inv
-    if V < 10:
-        V = 10.0
-    logV = log(V)
-
-    if P_vacuum <= 1:
-        c0, c1 = 0.6667235169997174, -3.71246576520232
-    elif P_vacuum <= 3:
-        c0, c1 = 0.664489357445796, -3.0147277548691274
-    elif P_vacuum <= 20:
-        c0, c1 = 0.6656780453394583, -2.34007321331419
-    elif P_vacuum <= 90:
-        c0, c1 = 0.663080000739313, -1.9278288516732665
-    else:
-        c0, c1 = 0.6658471905826482, -1.6641585778506027
-    leakage_lb_hr = exp(c1 + logV*c0)
-    leakage = leakage_lb_hr*lb*hour_inv
-    return leakage
+    pass
 
 def vacuum_air_leakage_Coker_Worthington(P: float, P_atm: float=101325.0, conservative: bool=True) -> float:
     r"""Calculates an estimated leakage of air into a vessel using
@@ -825,27 +513,5 @@ def vacuum_air_leakage_Coker_Worthington(P: float, P_atm: float=101325.0, conser
        Petrochemical Plants. 4 edition. Amsterdam ; Boston: Gulf Professional
        Publishing, 2007.
     """
-    P /= inchHg # convert to inch Hg
-    P_atm /= inchHg # convert to inch Hg
-    P_vacuum = P_atm - P
-    if conservative:
-        if P_vacuum > 8:
-            leakage = 40.0
-        elif P_vacuum > 5:
-            leakage = 30.0
-        elif P_vacuum > 3:
-            leakage = 25.0
-        else:
-            leakage = 20.0
-    else:
-        if P_vacuum > 8:
-            leakage = 30.0
-        elif P_vacuum > 5:
-            leakage = 25.0
-        elif P_vacuum > 3:
-            leakage = 20.0
-        else:
-            leakage = 10.0
-    leakage = leakage*lb*hour_inv
-    return leakage
+    pass
 

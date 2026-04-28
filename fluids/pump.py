@@ -141,9 +141,7 @@ def Corripio_pump_efficiency(Q: float) -> float:
        Centrifugal Pumps and Electric Motors," Chem. Eng., 89, 115-118,
        February 22 (1982).
     """
-    Q *= 15850.323
-    logQ = log(Q)
-    return -0.316 + 0.24015*logQ - 0.01199*logQ*logQ
+    pass
 
 
 def Corripio_motor_efficiency(P: float) -> float:
@@ -181,9 +179,7 @@ def Corripio_motor_efficiency(P: float) -> float:
        Centrifugal Pumps and Electric Motors," Chem. Eng., 89, 115-118,
        February 22 (1982).
     """
-    P = P/745.69987
-    logP = log(P)
-    return 0.8 + 0.0319*logP - 0.00182*logP*logP
+    pass
 
 VFD_efficiencies = [[0.31, 0.77, 0.86, 0.9, 0.91, 0.93, 0.94],
                     [0.35, 0.8, 0.88, 0.91, 0.92, 0.94, 0.95],
@@ -248,14 +244,7 @@ def VFD_efficiency(P: float, load: float=1) -> float:
     .. [1] GoHz.com. Variable Frequency Drive Efficiency.
        http://www.variablefrequencydrive.org/vfd-efficiency
     """
-    P = P/hp # convert to hp
-    if P < 3.0:
-        P = 3.0
-    elif P > 400.0:
-        P = 400.0
-    if load < 0.016:
-        load = 0.016
-    return round(float(bisplev(load, P, VFD_efficiency_tck)), 4)
+    pass
 
 
 nema_sizes_hp = [0.25, 0.3333333333333333, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0, 4.0,
@@ -299,10 +288,7 @@ def motor_round_size(P: float) -> float:
        375 kW). As modified 2015-12-17.
        https://www.nrcan.gc.ca/energy/regulations-codes-standards/products/6885
     """
-    for P_actual in nema_sizes:
-        if P_actual >= P:
-            return P_actual
-    raise ValueError("Required power is larger than can be provided with one motor")
+    pass
 
 
 nema_high_P = [1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 5.5, 7.5, 10.0, 15.0, 20.0, 25.0, 30.0, 40.0, 50.0, 60.0, 75.0, 100.0, 125.0, 150.0, 175.0, 200.0]
@@ -388,44 +374,7 @@ def CSA_motor_efficiency(P: float, closed: bool=False, poles: int=2, high_effici
        375 kW). As modified 2015-12-17.
        https://www.nrcan.gc.ca/energy/regulations-codes-standards/products/6885
     """
-    P = P/hp
-    # This could be replaced by a dict and a jump list
-    if high_efficiency:
-        if closed:
-            if poles == 2:
-                efficiency = interp(P, nema_high_P, nema_high_full_closed_2p)
-            elif poles == 4:
-                efficiency = interp(P, nema_high_P, nema_high_full_closed_4p)
-            elif poles == 6:
-                efficiency = interp(P, nema_high_P, nema_high_full_closed_6p)
-        else:
-            if poles == 2:
-                efficiency = interp(P, nema_high_P, nema_high_full_open_2p)
-            elif poles == 4:
-                efficiency = interp(P, nema_high_P, nema_high_full_open_4p)
-            elif poles == 6:
-                efficiency = interp(P, nema_high_P, nema_high_full_open_6p)
-    else:
-        if closed:
-            if poles == 2:
-                efficiency = interp(P, nema_min_P, nema_min_full_closed_2p)
-            elif poles == 4:
-                efficiency = interp(P, nema_min_P, nema_min_full_closed_4p)
-            elif poles == 6:
-                efficiency = interp(P, nema_min_P, nema_min_full_closed_6p)
-            elif poles == 8:
-                efficiency = interp(P, nema_min_P, nema_min_full_closed_8p)
-        else:
-            if poles == 2:
-                efficiency = interp(P, nema_min_P, nema_min_full_open_2p)
-            elif poles == 4:
-                efficiency = interp(P, nema_min_P, nema_min_full_open_4p)
-            elif poles == 6:
-                efficiency = interp(P, nema_min_P, nema_min_full_open_6p)
-            elif poles == 8:
-                efficiency = interp(P, nema_min_P, nema_min_full_open_8p)
-
-    return round(efficiency, 4)
+    pass
 
 
 _to_1 = [0.015807118828266818, 4.3158627514876216, -8.5612097969025438, 8.2040355039147386, -3.0147603718043068]
@@ -475,24 +424,7 @@ def motor_efficiency_underloaded(P: float, load: float=0.5) -> float:
     .. [1] Washington State Energy Office. Energy-Efficient Electric Motor
        Selection Handbook. 1993.
     """
-    P = P/hp
-    if P <= 1.0:
-        i = 0
-    elif P <= 5.0:
-        i = 1
-    elif P <= 10.0:
-        i = 2
-    elif P <= 25.0:
-        i = 3
-    elif P <= 60:
-        i = 4
-    else:
-        i = 5
-    if load > _efficiency_ones[i]:
-        return 1
-    else:
-        cs = _efficiency_lists[i]
-        return cs[0] + cs[1]*load + cs[2]*load**2 + cs[3]*load**3 + cs[4]*load**4
+    pass
 
 
 def specific_speed(Q: float, H: float, n: float=3600.) -> float:
@@ -532,7 +464,7 @@ def specific_speed(Q: float, H: float, n: float=3600.) -> float:
     ----------
     .. [1] HI 1.3 Rotodynamic Centrifugal Pumps for Design and Applications
     """
-    return n*sqrt(Q)/H**0.75
+    pass
 
 
 def specific_diameter(Q: float, H: float, D: float) -> float:
@@ -570,7 +502,7 @@ def specific_diameter(Q: float, H: float, D: float) -> float:
     .. [1] Green, Don, and Robert Perry. Perry's Chemical Engineers' Handbook,
        Eighth Edition. McGraw-Hill Professional, 2007.
     """
-    return D*sqrt(sqrt(H)/Q)
+    pass
 
 
 def speed_synchronous(f, poles=2):
@@ -608,7 +540,7 @@ def speed_synchronous(f, poles=2):
     .. [1] All About Circuits. Synchronous Motors. Chapter 13 - AC Motors
        http://www.allaboutcircuits.com/textbook/alternating-current/chpt-13/synchronous-motors/
     """
-    return 120.*f/poles
+    pass
 
 
 def current_ideal(P: float, V: float, phase: int=3, PF: float=1) -> float:
@@ -658,12 +590,7 @@ def current_ideal(P: float, V: float, phase: int=3, PF: float=1) -> float:
        3-Phase Parameters." April 1, 2008.
        http://ecmweb.com/basics/calculating-single-and-3-phase-parameters.
     """
-    if phase not in (1, 3):
-        raise ValueError("Only 1 and 3 phase power supported")
-    if phase == 3:
-        return P/(V*sqrt(3)*PF)
-    else:
-        return P/(V*PF)
+    pass
 
 
 class CountryPower:
@@ -831,7 +758,7 @@ residential_power = {
     "bi": CountryPower(plugs=("C", "E"), voltage=220, freq=50, country="Burundi"),
     "lv": CountryPower(plugs=("C", "F"), voltage=230, freq=50, country="Latvia"),
     "fj": CountryPower(plugs=("I",), voltage=240, freq=50, country="Fiji"),
-    "ci": CountryPower(plugs=("C", "E"), voltage=230, freq=50, country="Côte d'Ivoire"),
+    "ci": CountryPower(plugs=("C", "E"), voltage=230, freq=50, country="CÃ´te d'Ivoire"),
     "ai": CountryPower(plugs=("A",), voltage=110, freq=60, country="Anguilla"),
     "gu": CountryPower(plugs=("A", "B"), voltage=110, freq=60, country="Guam"),
     "lr": CountryPower(plugs=("A", "B", "C", "E", "F"), voltage=120, freq=60, country="Liberia"),
@@ -847,7 +774,7 @@ residential_power = {
     "sd": CountryPower(plugs=("C", "D"), voltage=230, freq=50, country="Sudan"),
     "mm": CountryPower(plugs=("C", "D", "F", "G"), voltage=230, freq=50, country="Myanmar"),
     "gd": CountryPower(plugs=("G",), voltage=230, freq=50, country="Grenada"),
-    "st": CountryPower(plugs=("C", "F"), voltage=220, freq=50, country="São Tomé and Príncipe"),
+    "st": CountryPower(plugs=("C", "F"), voltage=220, freq=50, country="SÃ£o TomÃ© and PrÃ­ncipe"),
     "sz": CountryPower(plugs=("M",), voltage=230, freq=50, country="Swaziland"),
     "ro": CountryPower(plugs=("C", "F"), voltage=230, freq=50, country="Romania"),
     "xk": CountryPower(plugs=("C", "F"), voltage=230, freq=50, country="Kosovo"),
@@ -1046,7 +973,7 @@ industrial_power = {
     "bi": CountryPower(voltage=TUP_380, freq=50, country="Burundi"),
     "lv": CountryPower(voltage=TUP_400, freq=50, country="Latvia"),
     "fj": CountryPower(voltage=TUP_415, freq=50, country="Fiji"),
-    "ci": CountryPower(voltage=TUP_380, freq=50, country="Côte d’Ivoire"),
+    "ci": CountryPower(voltage=TUP_380, freq=50, country="CÃ´te dâ€™Ivoire"),
     "ai": CountryPower(voltage=(120, 208, 127, 220, 240, 415), freq=60, country="Anguilla"),
     "gu": CountryPower(voltage=TUP_190, freq=60, country="Guam"),
     "lr": CountryPower(voltage=TUP_208, freq=60, country="Liberia"),
@@ -1062,7 +989,7 @@ industrial_power = {
     "jo": CountryPower(voltage=TUP_400, freq=50, country="Jordan"),
     "mm": CountryPower(voltage=TUP_400, freq=50, country="Myanmar"),
     "gd": CountryPower(voltage=TUP_400, freq=50, country="Grenada"),
-    "st": CountryPower(voltage=TUP_400, freq=50, country="São Tomé and Príncipe"),
+    "st": CountryPower(voltage=TUP_400, freq=50, country="SÃ£o TomÃ© and PrÃ­ncipe"),
     "sz": CountryPower(voltage=TUP_400, freq=50, country="Swaziland"),
     "ro": CountryPower(voltage=TUP_400, freq=50, country="Romania"),
     "xk": CountryPower(voltage=(230, 400), freq=50, country="Kosovo"),

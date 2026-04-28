@@ -124,9 +124,7 @@ def dP_demister_dry_Setekleiv_Svendsen(S: float, voidage: float, vs: float, rho:
        Engineering Research and Design 109 (May 2016): 141-149.
        doi:10.1016/j.cherd.2016.01.019.
     """
-    term = 10.29 - 565./(69.6*S*L - (S*L)**2 - 779) - 74.9/(160.9 - 4.85*S*L)
-    right = term + 45.33*(mu*voidage*S**2*L/rho/vs)**0.75
-    return right*rho*vs**2/voidage**2
+    pass
 
 
 def dP_demister_dry_Setekleiv_Svendsen_lit(S: float, voidage: float, vs: float, rho: float, mu: float, L: float=1.0) -> float:
@@ -178,9 +176,7 @@ def dP_demister_dry_Setekleiv_Svendsen_lit(S: float, voidage: float, vs: float, 
        Engineering Research and Design 109 (May 2016): 141-149.
        doi:10.1016/j.cherd.2016.01.019.
     """
-    term = 7.3 - 320./(69.6*S*L - (S*L)**2 - 779) - 52.4/(161 - 4.85*S*L)
-    right = term + 27.2*(mu*voidage*S**2*L/rho/vs)**0.75
-    return right*rho*vs**2/voidage**2
+    pass
 
 
 def dP_demister_wet_ElDessouky(vs: float, voidage: float, d_wire: float, L: float=1.0) -> float:
@@ -243,7 +239,7 @@ def dP_demister_wet_ElDessouky(vs: float, voidage: float, d_wire: float, L: floa
        Engineering and Processing: Process Intensification 39, no. 2 (March
        2000): 129-39. doi:10.1016/S0255-2701(99)00033-1.
     """
-    return L*0.002356999643727531*(1-voidage)**0.375798*vs**0.81317*d_wire**-1.56114147
+    pass
 
 
 def separation_demister_ElDessouky(vs: float, voidage: float, d_wire: float, d_drop: float) -> float:
@@ -306,8 +302,7 @@ def separation_demister_ElDessouky(vs: float, voidage: float, d_wire: float, d_d
        Engineering and Processing: Process Intensification 39, no. 2 (March
        2000): 129-39. doi:10.1016/S0255-2701(99)00033-1.
     """
-    eta = 0.858352355761947*d_wire**-0.28264*(1-voidage)**0.099625*vs**0.106878*d_drop**0.383197
-    return min(eta, 1.0)
+    pass
 
 
 def voidage_experimental(m: float, rho: float, D: float, H: float) -> float:
@@ -346,12 +341,12 @@ def voidage_experimental(m: float, rho: float, D: float, H: float) -> float:
 
     References
     ----------
-    .. [1] Helsør, T., and H. Svendsen. "Experimental Characterization of
+    .. [1] HelsÃ¸r, T., and H. Svendsen. "Experimental Characterization of
        Pressure Drop in Dry Demisters at Low and Elevated Pressures." Chemical
        Engineering Research and Design 85, no. 3 (2007): 377-85.
        doi:10.1205/cherd06048.
     """
-    return 1 - m/(pi/4*D**2*H)/rho
+    pass
 
 
 def specific_area_mesh(voidage: float, d: float) -> float:
@@ -387,12 +382,12 @@ def specific_area_mesh(voidage: float, d: float) -> float:
 
     References
     ----------
-    .. [1] Helsør, T., and H. Svendsen. "Experimental Characterization of
+    .. [1] HelsÃ¸r, T., and H. Svendsen. "Experimental Characterization of
        Pressure Drop in Dry Demisters at Low and Elevated Pressures." Chemical
        Engineering Research and Design 85, no. 3 (2007): 377-85.
        doi:10.1205/cherd06048.
     """
-    return 4*(1-voidage)/d
+    pass
 
 ### Packing
 
@@ -458,16 +453,12 @@ def Stichlmair_dry(Vg: float, rhog: float, mug: float, voidage: float, specific_
        Packed Columns." Gas Separation & Purification 3, no. 1 (March 1989):
        19-28. doi:10.1016/0950-4214(89)80016-7.
     """
-    dp = 6*(1-voidage)/specific_area
-    Re = Vg*rhog*dp/mug
-    f0 = C1/Re + C2/sqrt(Re) + C3
-    return 3/4.*f0*(1-voidage)/voidage**4.65*rhog*H/dp*Vg**2
+    pass
+
 
 
 def _Stichlmair_wet_err(dP_irr: float, h0: float, c1: float, dP_dry: float, H: float, voidage: float, c: float) -> float:
-    hT = h0*(1.0 + 20.0*dP_irr*dP_irr*c1)
-    err = dP_dry/H*((1-voidage+hT)/(1.0 - voidage))**((2.0 + c)/3.)*(voidage/(voidage-hT))**4.65 -dP_irr/H
-    return err
+    pass
 
 def Stichlmair_wet(Vg: float, Vl: float, rhog: float, rhol: float, mug: float, voidage: float, specific_area: float, C1: float, C2: float, C3: float, H: float=1.0) -> float:
     r"""Calculates wet pressure drop across a packed column, using the
@@ -562,17 +553,7 @@ def Stichlmair_wet(Vg: float, Vl: float, rhog: float, rhol: float, mug: float, v
        Absorption Towers." The Canadian Journal of Chemical Engineering 79,
        no. 4 (August 1, 2001): 584-94. doi:10.1002/cjce.5450790417.
     """
-    dp = 6.0*(1.0 - voidage)/specific_area
-    Re = Vg*rhog*dp/mug
-    f0 = C1/Re + C2/sqrt(Re) + C3
-    dP_dry = 3/4.*f0*(1-voidage)/voidage**4.65*rhog*H/dp*Vg*Vg
-    c = (-C1/Re - C2/(2*sqrt(Re)))/f0
-    Frl = Vl**2*specific_area/(g*voidage**4.65)
-    h0 = 0.555*Frl**(1/3.)
-
-    c1 = 1.0/(H*rhol*g)
-    c1 *= c1
-    return secant(_Stichlmair_wet_err, dP_dry, args=(h0, c1, dP_dry, H, voidage, c))
+    pass
 
 
 # def _Stichlmair_flood_f(inputs, Vl, rhog, rhol, mug, voidage, specific_area,
@@ -602,66 +583,7 @@ def _Stichlmair_flood_f_and_jac(inputs: list[float], Vl: float, rhog: float, rho
 
     Derived using SymPy on the main flooding function.
     """
-    Vg, dP_irr = inputs[0], inputs[1]
-    x0 = 1.0/H
-    x1 = Vg*Vg
-    x2 = voidage**(-4.65)
-    x3 = specific_area*x2
-    x4 = Vl*Vl*x3/g
-    x5 = x4**0.333333333333333
-    x6 = dP_irr*dP_irr
-    x7 = H*H
-    x8 = 1.0/x7
-    x9 = g*g
-    x10 = 1.0/x9
-    x11 = rhol*rhol
-    x12 = 1.0/x11
-    x13 = x5*(20.0*x10*x12*x6*x8 + 1.0)
-    x14 = 0.555*x13
-    x15 = (voidage/(voidage - x14))**4.65
-    x16 = 1.0/Vg
-    x17 = 1.0/rhog
-    x18 = voidage - 1.0
-    x19 = 1.0/x18
-    x20 = C1*mug*specific_area*x16*x17*x19
-    x21 = 2.44948974278318*C2
-    x22 = Vg*rhog/(mug*specific_area)
-    x23 = x21*1.0/sqrt(-x18*x22)
-    x24 = 6.0*C3 - x20 + x23
-    x25 = 1.0 - voidage
-    x26 = x14 + x25
-    x27 = -x19*x26
-    x28 = 2.0*C1*mug*specific_area*x16*x17/x25 + x21*1.0/sqrt(x22*x25)
-    x29 = 1.0/x24
-    x30 = x28*x29
-    x31 = x27**(-0.166666666666667*x30 + 0.666666666666667)
-    x32 = x11*x7*x9
-    x33 = 200.0*voidage
-    x34 = 111.0*x13
-    x35 = x33 - x34
-    x36 = 1.0/x35
-    x37 = -x33 + x34 + 200.0
-    x38 = 1.0/x37
-    x39 = 2.0*x20
-    x40 = -4.0*x20 + x23 + x29*(-x23 + x39)*(x23 - x39)
-    x41 = dP_irr*rhog*specific_area*x0*x1*x10*x12*x15*x2*x24*x31
-    x42 = dP_irr*x10*x12*x4**0.666666666666667*x8
-
-    F1, F2, dF1_dVg, dF2_dVg, dF1_dP_irr, dF2_dP_irr = (
-            -dP_irr*x0 + 0.0208333333333333*rhog*specific_area*x1*x15*x2*x24*x31,
-             x32/x6 - 20646.0*x36*x5 - x38*x5*(2960.0 - 740.0*x28*x29),
-             0.00173611111111111*Vg*rhog*x15*x3*x31*(144.0*C3 - 12.0*x20 + 18.0*x23 + x40*log(x27)),
-             x0*(430.125*x36*x41*x5 - 15.4166666666667*x38*x41*x5*(x30 - 4.0) - 1.0),
-             -1.85*x16*x29*x40*x5/x26,
-             3285600.0*x42*(-x30 + 4.0)*x38*x38- 91668240.0*x42*x36*x36 - 2.0*x32/(dP_irr*x6))
-
-    err = [0.0]*2
-    err[0] = F1
-    err[1] = F2
-
-    jac = [[dF1_dVg, dF2_dVg], [dF1_dP_irr, dF2_dP_irr]]# numba: delete
-#    jac = np.array([[dF1_dVg, dF2_dVg], [dF1_dP_irr, dF2_dP_irr]]) # numba: uncomment
-    return err, jac
+    pass
 
 
 
@@ -747,12 +669,7 @@ def Stichlmair_flood(Vl: float, rhog: float, rhol: float, mug: float, voidage: f
        Packed Columns." Gas Separation & Purification 3, no. 1 (March 1989):
        19-28. doi:10.1016/0950-4214(89)80016-7.
     """
-    guess = [0.0]*2
-    guess[0] = Vl*100.0
-    guess[1] = 1000.0
-    return newton_system(_Stichlmair_flood_f_and_jac, x0=guess, jac=True,
-                         args=(Vl, rhog, rhol, mug, voidage, specific_area, C1,
-                         C2, C3, H), ytol=1e-11, solve_func=solve_2_direct)[0][0]
+    pass
 
 
 def Robbins(L: float, G: float, rhol: float, rhog: float, mul: float, H: float=1.0, Fpd: float=24.0) -> float:
@@ -810,20 +727,4 @@ def Robbins(L: float, G: float, rhol: float, rhog: float, mul: float, H: float=1
     .. [1] Robbins [Chem. Eng. Progr., p. 87 (May 1991)] Improved Pressure Drop
        Prediction with a New Correlation.
     """
-    # Convert SI units to imperial for use in correlation
-    L = L*737.33812 # kg/s/m^2 to lb/hr/ft^2
-    G = G*737.33812 # kg/s/m^2 to lb/hr/ft^2
-    rhol = rhol*0.062427961 # kg/m^3 to lb/ft^3
-    rhog = rhog*0.062427961 # kg/m^3 to lb/ft^3
-    mul = mul*1000.0 # Pa*s to cP
-
-    C3 = 7.4E-8
-    C4 = 2.7E-5
-    Fpd_root_term = sqrt(.05*Fpd)
-    Lf = L*(62.4/rhol)*Fpd_root_term*mul**0.1
-    Gf = G*sqrt(0.075/rhog)*Fpd_root_term
-    Gf2 = Gf*Gf
-    C4LF_10_GF2_C3 = C3*Gf2*10.0**(C4*Lf)
-    C4LF_10_GF2_C3_2 = C4LF_10_GF2_C3*C4LF_10_GF2_C3
-    dP = C4LF_10_GF2_C3 + 0.4*(5e-5*Lf)**0.1*(C4LF_10_GF2_C3_2*C4LF_10_GF2_C3_2)
-    return dP*817.22083*H # in. H2O to Pa
+    pass

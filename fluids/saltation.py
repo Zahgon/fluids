@@ -107,13 +107,7 @@ def Rizk(mp: float, dp: float, rhog: float, D: float) -> float:
        Springer, 2013.
     .. [3] Rhodes, Martin J. Introduction to Particle Technology. Wiley, 2013.
     """
-    alpha = 1440.0*dp + 1.96
-    beta = 1100.0*dp + 2.5
-    term1 = 0.1**alpha
-    Frs_sorta = 1.0/sqrt(g*D)
-    expression1 = term1*Frs_sorta**beta
-    expression2 = mp/rhog/(pi/4*D*D)
-    return (expression2/expression1)**(1./(1. + beta))
+    pass
 
 
 def Matsumoto_1974(mp: float, rhop: float, dp: float, rhog: float, D: float, Vterminal: float=1) -> float:
@@ -176,12 +170,7 @@ def Matsumoto_1974(mp: float, rhop: float, dp: float, rhog: float, D: float, Vte
        Engineering Chemistry Process Design and Development 17, no. 4
        (October 1, 1978): 571-75. doi:10.1021/i260068a031
     """
-    A = pi/4*D**2
-    Frp = Vterminal/sqrt(g*dp)
-    Frs_sorta = 1./sqrt(g*D)
-    expression1 = 0.448*sqrt(rhop/rhog)*(Frp/10.)**-1.75*(Frs_sorta/10.)**3
-    expression2 = mp/rhog/A
-    return (expression2/expression1)**(1/4.)
+    pass
 
 
 def Matsumoto_1975(mp: float, rhop: float, dp: float, rhog: float, D: float, Vterminal: float=1) -> float:
@@ -244,12 +233,7 @@ def Matsumoto_1975(mp: float, rhop: float, dp: float, rhog: float, D: float, Vte
        Engineering Chemistry Process Design and Development 17, no. 4
        (October 1, 1978): 571-75. doi:10.1021/i260068a031
     """
-    A = pi/4*D**2
-    Frp = Vterminal/sqrt(g*dp)
-    Frs_sorta = 1./sqrt(g*D)
-    expression1 = 1.11*(rhop/rhog)**0.55*(Frp/10.)**-2.3*(Frs_sorta/10.)**3
-    expression2 = mp/rhog/A
-    return (expression2/expression1)**(1/4.)
+    pass
 
 
 def Matsumoto_1977(mp: float, rhop: float, dp: float, rhog: float, D: float, Vterminal: float=1) -> float:
@@ -330,20 +314,7 @@ def Matsumoto_1977(mp: float, rhop: float, dp: float, rhog: float, D: float, Vte
        Reviews in Chemical Engineering 27, no. 5-6 (January 1, 2011).
        doi:10.1515/REVCE.2011.011.
     """
-    limit = 1.39*D*(rhop/rhog)**-0.74
-    A = pi/4*D**2
-    if limit < dp:
-        # Coarse routine
-        Frp = Vterminal/sqrt(g*dp)
-        Frs_sorta = 1./sqrt(g*D)
-        expression1 = 0.373*(rhop/rhog)**1.06*(Frp/10.)**-3.7*(Frs_sorta/10.)**3.61
-        expression2 = mp/rhog/A
-        return (expression2/expression1)**(1/4.61)
-    else:
-        Frs_sorta = 1./sqrt(g*D)
-        expression1 = 5560*(dp/D)**1.43*(Frs_sorta/10.)**4
-        expression2 = mp/rhog/A
-        return (expression2/expression1)**(0.2)
+    pass
 
 
 def Schade(mp: float, rhop: float, dp: float, rhog: float, D: float) -> float:
@@ -410,10 +381,7 @@ def Schade(mp: float, rhop: float, dp: float, rhog: float, D: float) -> float:
        Journal of Chemical Engineering 31, no. 1 (March 2014): 35-46.
        doi:10.1590/S0104-66322014000100005
     """
-    B = (D/dp)**0.025*(rhop/rhog)**0.34
-    A = sqrt(g*D)
-    C = mp/(rhog*pi/4*D**2)
-    return (C**0.11*B*A)**(1/1.11)
+    pass
 
 
 def Weber_saltation(mp: float, rhop: float, dp: float, rhog: float, D: float, Vterminal: float=4) -> float:
@@ -488,13 +456,7 @@ def Weber_saltation(mp: float, rhop: float, dp: float, rhog: float, D: float, Vt
        Journal of Chemical Engineering 31, no. 1 (March 2014): 35-46.
        doi:10.1590/S0104-66322014000100005
     """
-    if Vterminal <= 3:
-        term1 = (7 + 8/3.*Vterminal)*(dp/D)**0.1
-    else:
-        term1 = 15.*(dp/D)**0.1
-    term2 = 1./sqrt(g*D)
-    term3 = mp/rhog/(pi/4*D**2)
-    return (term1/term2*sqrt(sqrt(term3)))**(1/1.25)
+    pass
 
 
 def Geldart_Ling(mp: float, rhog: float, D: float, mug: float) -> float:
@@ -557,9 +519,5 @@ def Geldart_Ling(mp: float, rhog: float, D: float, mug: float) -> float:
        Journal of Chemical Engineering 31, no. 1 (March 2014): 35-46.
        doi:10.1590/S0104-66322014000100005
     """
-    Gs = mp/(0.25*pi*D*D)
-    if Gs/D <= 47000.0:
-        return 1.5*Gs**0.465*D**-0.01*mug**0.055*rhog**-0.42
-    else:
-        return 8.7*Gs**0.302*D**0.153*mug**0.055*rhog**-0.42
+    pass
 

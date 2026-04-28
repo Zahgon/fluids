@@ -203,14 +203,10 @@ def cy_bispev(tx, ty, c, kx, ky, x, y):
     return z
 
 
+
 @numba.njit(cache=caching, **extra_args_std)
 def normalize(values):
-    N = len(values)
-    tot_inv = 1.0/np.sum(values)
-    out = np.zeros(N)
-    for i in range(N):
-        out[i] = values[i]*tot_inv
-    return out
+    pass
 
 @numba.njit(cache=caching, **extra_args_std)
 def bisplev(x, y, tck, dx=0, dy=0):
@@ -218,31 +214,6 @@ def bisplev(x, y, tck, dx=0, dy=0):
     return cy_bispev(tx, ty, c, kx, ky, np.array([x]), np.array([y]))[0]
 
 
-@numba.njit(cache=caching, **extra_args_std)
-def combinations(pool, r):
-    pool = np.array(pool)
-    n = len(pool)
-#    indices = tuple(list(range(r)))
-    indices = np.arange(r)
-    empty = not (n and (0 < r <= n))
-
-    if not empty:
-#        yield [pool[i] for i in indices]
-#        yield (pool[i] for i in indices)
-        yield np.array([pool[i] for i in indices])
-
-    while not empty:
-        i = r - 1
-        while i >= 0 and indices[i] == i + n - r:
-            i -= 1
-        if i < 0:
-            empty = True
-        else:
-            indices[i] += 1
-            for j in range(i + 1, r):
-                indices[j] = indices[j - 1] + 1
-            result = np.array([pool[i] for i in indices])
-            yield result
 
 
 
@@ -252,28 +223,17 @@ to_set_num = ["bisplev", "cy_bispev", "init_w", "fpbspl"]
 
 
 
-def infer_dictionary_types(d):
-    if not d:
-        raise ValueError("Empty dictionary cannot infer")
-    keys = list(d.keys())
-    type_keys = type(keys[0])
-    for k in keys:
-        if type(k) != type_keys:
-            raise ValueError("Inconsistent key types in dictionary")
-    values = list(d.values())
-    type_values = type(values[0])
-    for v in values:
-        if type(v) != type_values:
-            raise ValueError("Inconsistent value types in dictionary")
 
-    return numba.typeof(keys[0]), numba.typeof(values[0])
+
+@numba.njit(cache=caching, **extra_args_std)
+def combinations(pool, r):
+    pass
+
+def infer_dictionary_types(d):
+    pass
 
 def numba_dict(d):
-    key_type, value_type = infer_dictionary_types(d)
-    new = numba.typed.Dict.empty(key_type=key_type, value_type=value_type)
-    for k, v in d.items():
-        new[k] = v
-    return new
+    pass
 
 def return_value_numpy(source):
     ret = re.search(r"return +\[", source)

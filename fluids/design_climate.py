@@ -79,15 +79,7 @@ def geopy_geolocator():
     This currently loads the `Nominatim` geocode and returns an instance of it,
     taking ~2 us.
     """
-    global geolocator
-    if geolocator is None:
-        try:
-            from geopy.geocoders import Nominatim
-        except ImportError:
-            return None
-        geolocator = Nominatim(user_agent=geolocator_user_agent)
-        return geolocator
-    return geolocator
+    pass
 
 
 def geopy_cache():
@@ -96,11 +88,7 @@ def geopy_cache():
     This creates a sqlite database if one does not exist and initializes a
     connection to it.
     """
-    global simple_geopy_cache
-    if simple_geopy_cache is None:
-        simple_geopy_cache = SimpleGeolocatorCache(geolocator_disk_cache_loc)
-        return simple_geopy_cache
-    return simple_geopy_cache
+    pass
 
 
 class SimpleGeolocatorCache:
@@ -117,19 +105,7 @@ class SimpleGeolocatorCache:
                        "address STRING PRIMARY KEY, latitude real, longitude real )")
         self.connection.commit()
 
-    def cached_address(self, address):
-        cursor = self.connection.cursor()
-        cursor.execute("SELECT latitude, longitude FROM geopy WHERE address=?", (address, ))
-        res = cursor.fetchone()
-        if res is None:
-            return None
-        return res
 
-    def cache_address(self, address, latitude, longitude):
-        cursor = self.connection.cursor()
-        cursor.execute("INSERT INTO geopy(address, latitude, longitude) VALUES(?, ?, ?)",
-                       (address, latitude, longitude))
-        self.connection.commit()
 
 
 def geocode(address):
@@ -159,26 +135,7 @@ def geocode(address):
     >>> geocode('Fredericton, NB') # doctest: +SKIP
     (45.966425, -66.645813)
     """
-    loc_tuple = None
-    try:
-        cache = geopy_cache()
-        loc_tuple = cache.cached_address(address)
-    except:
-        # Handle bugs in the cache, i.e. if there is no space on disk to create
-        # the database, by ignoring them
-        pass
-    if loc_tuple is not None:
-        return loc_tuple
-    else:
-        geocoder = geopy_geolocator()
-        if geocoder is None:
-            return geopy_missing_msg
-        location = geocoder.geocode(address)
-        try:
-            cache.cache_address(address, location.latitude, location.longitude)
-        except:
-            pass
-        return (location.latitude, location.longitude)
+    pass
 
 
 
@@ -199,7 +156,7 @@ def heating_degree_days(T, T_base=291.4833333333333, truncate=True):
         period are used, [K]
     T_base : float, optional
         Reference temperature for the degree day calculation, defaults
-        to 65 °F (18.33 °C, 291.483 K), the value most used in the US, [K]
+        to 65 Â°F (18.33 Â°C, 291.483 K), the value most used in the US, [K]
     truncate : bool
         If truncate is True, no negative values will be returned; if negative,
         the value is truncated to 0, [-]
@@ -212,8 +169,8 @@ def heating_degree_days(T, T_base=291.4833333333333, truncate=True):
 
     Notes
     -----
-    Some common base temperatures are 18 °C (Canada), 15.5 °C (EU),
-    17 °C (Denmark, Finland), 12 °C Switzerland. The base temperature
+    Some common base temperatures are 18 Â°C (Canada), 15.5 Â°C (EU),
+    17 Â°C (Denmark, Finland), 12 Â°C Switzerland. The base temperature
     should always be presented with the results.
 
     The time unit does not have to be days; it can be any time unit, and the
@@ -235,10 +192,7 @@ def heating_degree_days(T, T_base=291.4833333333333, truncate=True):
     .. [1] "Heating Degree Day." Wikipedia, January 24, 2018.
        https://en.wikipedia.org/w/index.php?title=Heating_degree_day&oldid=822187764.
     """
-    dd = T - T_base
-    if truncate and dd < 0.0:
-        dd = 0.0
-    return dd
+    pass
 
 
 def cooling_degree_days(T, T_base=283.15, truncate=True):
@@ -255,7 +209,7 @@ def cooling_degree_days(T, T_base=283.15, truncate=True):
         period are used, [K]
     T_base : float, optional
         Reference temperature for the degree day calculation, defaults
-        to 10 °C, 283.15 K, a common value, [K]
+        to 10 Â°C, 283.15 K, a common value, [K]
     truncate : bool
         If truncate is True, no negative values will be returned; if negative,
         the value is truncated to 0, [-]
@@ -289,10 +243,7 @@ def cooling_degree_days(T, T_base=283.15, truncate=True):
     .. [1] "Heating Degree Day." Wikipedia, January 24, 2018.
        https://en.wikipedia.org/w/index.php?title=Heating_degree_day&oldid=822187764.
     """
-    dd = T_base - T
-    if truncate and dd < 0.0:
-        dd = 0.0
-    return dd
+    pass
 
 
 def get_clean_isd_history(dest=os.path.join(folder, "isd-history-cleaned.tsv"),
@@ -319,9 +270,7 @@ def get_clean_isd_history(dest=os.path.join(folder, "isd-history-cleaned.tsv"),
         by pandas, including a local file as would be useful in an offline
         situation.
     """
-    import pandas as pd
-    df = pd.read_csv(url, dtype={"USAF": str, "WBAN": str})
-    df.to_csv(dest, sep="\t", index=False, header=False)
+    pass
 
 
 class IntegratedSurfaceDatabaseStation:
@@ -424,45 +373,11 @@ class StationDataGSOD:
         self.download_data()
         self.parse_data()
 
-    def load_empty_vectors(self):
-        for year in self.year_range:
-            days_in_year = 366 if isleap(year) else 365
-            self.raw_data[year] = [None]*days_in_year
-            self.parsed_data[year] = [None]*days_in_year
-            self.raw_text[year] = None
 #        days = [None]*days_in_year(y)
 
-    def download_data(self):
-        for year in self.year_range:
-            if self.raw_text[year] is None:
-                try:
-                    year_data = get_station_year_text(self.station.USAF, self.station.WBAN, year, data_dir_override=self.data_dir_override)
-                    self.raw_text[year] = year_data
-                except:
-                    pass
 
-    def parse_data(self):
-        for year, data in self.raw_text.items():
-            if data is not None:
-                days = self.parsed_data[year]
-                for line in data.split("\n")[1:-1]:
-                    parsed = gsod_day_parser(line)
-                    doy = parsed.DATE.timetuple().tm_yday-1
-                    days[doy] = parsed
 
-    def coldest_month(self, older_year=None, newer_year=None, minimum_days=23):
-        # Tested
-        month_data = self.month_average_temperature(older_year=older_year,
-                                                    newer_year=newer_year,
-                                                    minimum_days=minimum_days)
-        return month_data.index(min(month_data))
 
-    def warmest_month(self, older_year=None, newer_year=None, minimum_days=23):
-        # Tested
-        month_data = self.month_average_temperature(older_year=older_year,
-                                                    newer_year=newer_year,
-                                                    minimum_days=minimum_days)
-        return month_data.index(max(month_data))
 
     def month_average_temperature(self, older_year=None, newer_year=None,
                                   include_yearly=False, minimum_days=23):
@@ -472,140 +387,10 @@ class StationDataGSOD:
         >> station_data.month_average_temperature(1990, 2000, include_yearly=False)
         [276.1599380905833, 277.5375516246206, 281.1881231671554, 286.7367003367004, 291.8689638318671, 296.79545454545456, 299.51868686868687, 298.2097914630174, 294.4116161616162, 288.25883023786247, 282.3188552188553, 277.8282339524275]
         """
-        # Take years, make them inclusive; add minimum valid days.
-        year_month_averages = {}
-        year_month_counts = {}
-
-        for year, data in self.parsed_data.items():
-            if not (older_year <= year <= newer_year):
-                continue # Ignore out-of-range years easily
-            year_month_averages[year] = [0.0]*12
-            year_month_counts[year] = [0]*12
-
-            for i, day in enumerate(data):
-                if day is None:
-                    continue
-                # Don't do these comparisons to make it fast
-                if day.DATE.year < older_year or day.DATE.year > newer_year:
-                    continue # Ignore out-of-range days as possible
-
-                T = day.TEMP
-                if T is None:
-                    continue
-                # Cache these lookups
-                year_month_averages[year][day.DATE.month-1] += T
-                year_month_counts[year][day.DATE.month-1] += 1
-
-            for month in range(12):
-                count = year_month_counts[year][month]
-                if count < minimum_days:
-                    ans = None
-                else:
-                    ans = year_month_averages[year][month]/count
-                year_month_averages[year][month] = ans
-
-        # Compute the average of the month
-        actual_averages = [0.0]*12
-        actual_averages_counts = [0]*12
-        for year, average in year_month_averages.items():
-            for month in range(12):
-                if average is not None and average[month] is not None:
-                    count = actual_averages_counts[month]
-                    if count is None:
-                        count = 1
-                    else:
-                        count += 1
-                    actual_averages_counts[month] = count
-                    month_average_sum = actual_averages[month]
-                    if month_average_sum is None:
-                        month_average_sum = average[month]
-                    else:
-                        month_average_sum += average[month]
-                    actual_averages[month] = month_average_sum
-
-        for month in range(12):
-            actual_averages[month] = actual_averages[month]/actual_averages_counts[month]
-
-        # Don't set anything as properties - too many variables used in calculating thems
-        # Speed is not that important.
-        if include_yearly:
-            return actual_averages, year_month_averages
-        else:
-            return actual_averages
+        pass
 
     # Copy and paste
-    def month_average_windspeed(self, older_year=None, newer_year=None,
-                                  include_yearly=False, minimum_days=23):
-        # Take years, make them inclusive; add minimum valid days.
-        year_month_averages = {}
-        year_month_counts = {}
 
-        for year, data in self.parsed_data.items():
-            if not (older_year <= year <= newer_year):
-                continue # Ignore out-of-range years easily
-            year_month_averages[year] = [0.0]*12
-            year_month_counts[year] = [0]*12
-
-            for i, day in enumerate(data):
-                if day is None:
-                    continue
-                # Don't do these comparisons to make it fast
-                if day.DATE.year < older_year or day.DATE.year > newer_year:
-                    continue # Ignore out-of-range days as possible
-
-                wind_speed = day.WDSP
-                if wind_speed is None:
-                    continue
-                # Cache these lookups
-                year_month_averages[year][day.DATE.month-1] += wind_speed
-                year_month_counts[year][day.DATE.month-1] += 1
-
-            for month in range(12):
-                count = year_month_counts[year][month]
-                if count < minimum_days:
-                    ans = None
-                else:
-                    ans = year_month_averages[year][month]/count
-                year_month_averages[year][month] = ans
-
-        # Compute the average of the month
-        actual_averages = [0.0]*12
-        actual_averages_counts = [0]*12
-        for year, average in year_month_averages.items():
-            for month in range(12):
-                if average is not None and average[month] is not None:
-                    count = actual_averages_counts[month]
-                    if count is None:
-                        count = 1
-                    else:
-                        count += 1
-                    actual_averages_counts[month] = count
-                    month_average_sum = actual_averages[month]
-                    if month_average_sum is None:
-                        month_average_sum = average[month]
-                    else:
-                        month_average_sum += average[month]
-                    actual_averages[month] = month_average_sum
-
-        for month in range(12):
-            actual_averages[month] = actual_averages[month]/actual_averages_counts[month]
-
-        # Don't set anything as properties - too many variables used in calculating thems
-        # Speed is not that important.
-        if include_yearly:
-            return actual_averages, year_month_averages
-        else:
-            return actual_averages
-
-    def percentile_extreme_condition(self, older_year=None, newer_year=None,
-                                  include_yearly=False, minimum_days=23, attr="WDSP"):
-        # Really need to normalize data with interpolation etc here.
-        # Need to get the data, and process it and score interpolation regimes.
-        # Or could just randomly drop data and try to fill it in.
-        accepted_values = []
-        for year in self.parsed_data.keys():
-            if not (older_year <= year <= newer_year):
-                continue # Ignore out-of-range years easily
 
 
 
@@ -622,64 +407,23 @@ def _load_station_data():
     2) a list of IntegratedSurfaceDatabaseStation objects; the query will return
     the index of the nearest weather stations.
     """
-    global _stations, _latlongs, _station_count, _kd_tree
-    if _stations is None:
-        _stations = []
-        temp_latlongs = []
-
-        history_file = os.path.join(folder, "isd-history-cleaned.tsv")
-        if not os.path.exists(history_file):
-            get_clean_isd_history(dest=history_file)
-
-        with open(os.path.join(folder, history_file)) as f:
-            for line in f:
-                values = line.split("\t")
-                for i in range(11):
-                    v = values[i]
-                    if v == "":
-                        values[i] = None
-                    else:
-                        try:
-                            if i > 2:
-                                values[i] = float(v)
-                            if int(v) == 99999:
-                                values[i] = None
-                        except:
-                            continue
-                lat, lon = values[6], values[7]
-                # Some stations have no lat-long; this isn't useful
-                if lat and lon:
-                    _stations.append(IntegratedSurfaceDatabaseStation(*values))
-                    temp_latlongs.append((lat, lon))
-
-        # _latlongs must be unchanged as data is not copied
-        _latlongs = np.array(temp_latlongs)
-        _station_count = len(_stations)
-        _kd_tree = cKDTree(_latlongs)
+    pass
 
 def get_station_count():
     """Get the total number of stations."""
-    if _station_count is None:
-        _load_station_data()
-    return _station_count
+    pass
 
 def get_stations():
     """Get the list of weather stations."""
-    if _stations is None:
-        _load_station_data()
-    return _stations
+    pass
 
 def get_latlongs():
     """Get the array of station coordinates."""
-    if _latlongs is None:
-        _load_station_data()
-    return _latlongs
+    pass
 
 def get_kd_tree():
     """Get the KD-tree for spatial queries."""
-    if _kd_tree is None:
-        _load_station_data()
-    return _kd_tree
+    pass
 
 
 def get_closest_station(latitude, longitude, minumum_recent_data=20140000,
@@ -722,23 +466,7 @@ def get_closest_station(latitude, longitude, minumum_recent_data=20140000,
     >>> get_closest_station(51.02532675, -114.049868485806, 20150000)
     <Weather station registered in the Integrated Surface Database, name CALGARY INTL CS, country CA, USAF 713930, WBAN None, coords (51.1, -114.0) Weather data from 2004 to 2024>
     """
-    # Both station strings may be important
-    # Searching for 100 stations is fine, 70 microseconds vs 50 microsecond for 1
-    # but there's little point for more points, it gets slower.
-    # bad data is returned if k > station_count
-    station_count = get_station_count()
-    stations = get_stations()
-    distances, indexes = get_kd_tree().query([latitude, longitude], k=min(match_max, station_count))
-    for i in indexes:
-        latlon = _latlongs[i]
-        enddate = stations[i].END
-        # Iterate for all indexes until one is found whose date is current
-        if enddate > minumum_recent_data:
-            return stations[i]
-    if match_max < station_count:
-        return get_closest_station(latitude, longitude, minumum_recent_data=minumum_recent_data, match_max=match_max*10)
-    raise ValueError("Could not find a station with more recent data than "
-                    "specified near the specified coordinates.")
+    pass
 
 
 # This should be aggressively cached
@@ -763,60 +491,7 @@ def get_station_year_text(WMO, WBAN, year, data_dir_override=None):
     data : str
         Downloaded data file
     """
-    if WMO is None:
-        WMO = 999999
-    if WBAN is None:
-        WBAN = 99999
-    station = str(int(WMO)) + "-" + str(WBAN)
-    if data_dir_override is None:
-        gsod_year_dir = os.path.join(data_dir, "gsod", str(year))
-    else:
-        gsod_year_dir = os.path.join(data_dir_override, str(year))
-    path = os.path.join(gsod_year_dir, station + ".op")
-    if os.path.exists(path):
-        with open(path) as f:
-            data = f.read()
-            if data and data != "Exception":
-                return data
-            else:
-                # Remove the bad file and try to redownload it
-                try:
-                    os.remove(path)
-                except:
-                    pass
-                # raise ValueError(data)
-
-    toget = ("ftp://ftp.ncdc.noaa.gov/pub/data/gsod/" + str(year) + "/"
-             + station + "-" + str(year) +".op.gz")
-    try:
-        data = urlopen(toget, timeout=5)  # nosec B310
-    except Exception as e:
-        if not os.path.exists(gsod_year_dir):
-            os.makedirs(gsod_year_dir)
-        with open(path, "w") as f:
-            f.write("Exception")
-        raise ValueError("Could not obtain desired data; check "
-                        "if the year has data published for the "
-                        "specified station and the station was specified "
-                        f"in the correct form. The full error is {e}")
-
-    data = data.read()
-    data_thing = StringIO(data)
-
-    f = gzip.GzipFile(fileobj=data_thing, mode="r")
-    year_station_data = f.read()
-    try:
-        year_station_data = year_station_data.decode("utf-8")
-    except:
-        pass
-
-    # Cache the data for future use
-    if not os.path.exists(gsod_year_dir):
-        os.makedirs(gsod_year_dir)
-    open(path, "w").write(year_station_data)
-
-
-    return year_station_data
+    pass
 
 
 
@@ -913,64 +588,4 @@ def gsod_day_parser(line, SI=True, to_datetime=True):
         if `SI` is True, i.e. meters, m/s, Kelvin, Pascal; otherwise the
         original unit set is used), [-]
     """
-    # Ignore STN--- and WBAN, 8-12 characters
-    fields = line.strip().split()[2:]
-    # For the case the field is blank, set it to None; strip it either way
-    for i in range(len(fields)):
-        field = fields[i].rstrip()
-        if not field:
-            field = None
-        fields[i] = field
-
-    obj = dict(zip(gsod_fields, fields))
-    # Convert the date to a datetime object if specified
-    if to_datetime and obj["DATE"] is not None:
-        date = obj["DATE"]
-        obj["DATE"] = datetime.datetime(int(date[0:4]), int(date[4:6]), int(date[6:]))
-        #obj['DATE'] = datetime.datetime.strptime(obj['DATE'], '%Y%m%d')
-
-    # Parse float values as floats
-    for field in gsod_float_fields:
-        value = obj[field].rstrip(gsod_flag_chars)
-        if value in gsod_bad_values:
-            value = None
-        else:
-            value = float(value)
-        obj[field] = value
-
-    if SI:
-        # All temperatures are in deg F
-        for field in ("TEMP", "DEWP", "MAX", "MIN"):
-            value = obj[field]
-            if value is not None:
-                # F2K inline for efficiency unfortunately
-                obj[field] = (value + 459.67)*five_ninths
-
-        # Convert visibility, wind speed, pressures
-        # to si units of meters, Pascal, and meters/second.
-        if obj["VISIB"] is not None:
-            obj["VISIB"] = obj["VISIB"]*mile
-        if obj["PRCP"] is not None:
-            obj["PRCP"] = obj["PRCP"]*inch
-        if obj["SNDP"] is not None:
-            obj["SNDP"] = obj["SNDP"]*inch
-        if obj["WDSP"] is not None:
-            obj["WDSP"] = obj["WDSP"]*knot
-        if obj["MXSPD"] is not None:
-            obj["MXSPD"] = obj["MXSPD"]*knot
-        if obj["GUST"] is not None:
-            obj["GUST"] = obj["GUST"]*knot
-        if obj["SLP"] is not None:
-            obj["SLP"] = obj["SLP"]*100.0
-        if obj["STP"] is not None:
-            obj["STP"] = obj["STP"]*100.0
-
-    # Parse int values as ints
-    for field in gsod_int_fields:
-        value = obj[field]
-        if value is not None:
-            obj[field] = int(value)
-
-    indicator_values = [flag == "1" for flag in obj["FRSHTT"]]
-    obj.update(zip(gsod_indicator_names, indicator_values))
-    return gsod_day(**obj)
+    pass

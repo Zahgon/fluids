@@ -167,7 +167,7 @@ def isothermal_work_compression(P1: float, P2: float, T: float, Z: float=1.0) ->
        Equipment: Selection and Design. 2nd ed. Amsterdam ; Boston: Gulf
        Professional Publishing, 2009.
     """
-    return Z*R*T*log(P2/P1)
+    pass
 
 
 def isentropic_work_compression(T1: float, k: float, Z: float=1.0, P1: float | None=None, P2: float | None=None, W: float | None=None, eta: float | None=None) -> float:
@@ -265,16 +265,7 @@ def isentropic_work_compression(T1: float, k: float, Z: float=1.0, P1: float | N
        Equipment: Selection and Design. 2nd ed. Amsterdam ; Boston: Gulf
        Professional Publishing, 2009.
     """
-    if W is None and eta is not None and P1 is not None and P2 is not None:
-        return k/(k - 1.0)*Z*R*T1*((P2/P1)**((k - 1.0)/k) - 1.0)/eta
-    elif P1 is None and eta is not None and W is not None and P2 is not None:
-        return P2*(1.0 + W*eta/(R*T1*Z) - W*eta/(R*T1*Z*k))**(-k/(k - 1.0))
-    elif P2 is None and eta is not None and W is not None and P1 is not None:
-        return P1*(1.0 + W*eta/(R*T1*Z) - W*eta/(R*T1*Z*k))**(k/(k - 1.0))
-    elif eta is None and P1 is not None and P2 is not None and W is not None:
-        return R*T1*Z*k*((P2/P1)**((k - 1.0)/k) - 1.0)/(W*(k - 1.0))
-    else:
-        raise ValueError("Three of W, P1, P2, and eta must be specified.")
+    pass
 
 
 def isentropic_T_rise_compression(T1: float, P1: float, P2: float, k: float, eta: float=1) -> float:
@@ -328,8 +319,7 @@ def isentropic_T_rise_compression(T1: float, P1: float, P2: float, k: float, eta
     .. [2] GPSA. GPSA Engineering Data Book. 13th edition. Gas Processors
        Suppliers Association, Tulsa, OK, 2012.
     """
-    dT = T1*((P2/P1)**((k - 1.0)/k) - 1.0)/eta
-    return T1 + dT
+    pass
 
 
 def isentropic_efficiency(P1: float, P2: float, k: float, eta_s: float | None=None, eta_p: float | None=None) -> float:
@@ -379,13 +369,7 @@ def isentropic_efficiency(P1: float, P2: float, k: float, eta_s: float | None=No
        Equipment: Selection and Design. 2nd ed. Amsterdam ; Boston: Gulf
        Professional Publishing, 2009.
     """
-    if eta_s is None and eta_p is not None:
-        return ((P2/P1)**((k-1.0)/k)-1.0)/((P2/P1)**((k-1.0)/(k*eta_p))-1.0)
-    elif eta_p is None and eta_s is not None:
-        return (k - 1.0)*log(P2/P1)/(k*log(
-            (eta_s + (P2/P1)**((k - 1.0)/k) - 1.0)/eta_s))
-    else:
-        raise ValueError("Either eta_s or eta_p is required")
+    pass
 
 
 def polytropic_exponent(k: float, n: float | None=None, eta_p: float | None=None) -> float:
@@ -426,12 +410,7 @@ def polytropic_exponent(k: float, n: float | None=None, eta_p: float | None=None
        Equipment: Selection and Design. 2nd ed. Amsterdam ; Boston: Gulf
        Professional Publishing, 2009.
     """
-    if n is None and eta_p is not None:
-        return k*eta_p/(1.0 - k*(1.0 - eta_p))
-    elif eta_p is None and n is not None:
-        return n*(k - 1.0)/(k*(n - 1.0))
-    else:
-        raise ValueError("Either n or eta_p is required")
+    pass
 
 
 def T_critical_flow(T: float, k: float) -> float:
@@ -471,7 +450,7 @@ def T_critical_flow(T: float, k: float) -> float:
     .. [1] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and
        Applications. Boston: McGraw Hill Higher Education, 2006.
     """
-    return T*2.0/(k + 1.0)
+    pass
 
 
 def P_critical_flow(P: float, k: float) -> float:
@@ -511,7 +490,7 @@ def P_critical_flow(P: float, k: float) -> float:
     .. [1] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and
        Applications. Boston: McGraw Hill Higher Education, 2006.
     """
-    return P*(2.0/(k + 1.0))**(k/(k - 1.0))
+    pass
 
 
 def P_isothermal_critical_flow(P: float, fd: float, D: float, L: float) -> float:
@@ -559,9 +538,7 @@ def P_isothermal_critical_flow(P: float, fd: float, D: float, L: float) -> float
        Microfluidics and CFD. 2 edition. Upper Saddle River, NJ: Prentice Hall,
        2005.
     """
-    # Correct branch of lambertw found by trial and error
-    lambert_term = float((lambertw(-exp((-D - L*fd)/D), -1)).real)
-    return P*exp((D*(lambert_term + 1.0) + L*fd)/(2.0*D))
+    pass
 
 
 def P_upstream_isothermal_critical_flow(P: float, fd: float, D: float, L: float) -> float:
@@ -573,8 +550,7 @@ def P_upstream_isothermal_critical_flow(P: float, fd: float, D: float, L: float)
     ... L=1000., D=0.5)
     1000000.00000
     """
-    lambertw_term = float(lambertw(-exp(-(fd*L+D)/D), -1).real)
-    return exp(-0.5*(D*lambertw_term+fd*L+D)/D)*P
+    pass
 
 
 def is_critical_flow(P1: float, P2: float, k: float) -> bool:
@@ -615,8 +591,7 @@ def is_critical_flow(P1: float, P2: float, k: float) -> bool:
     .. [1] API. 2014. API 520 - Part 1 Sizing, Selection, and Installation of
        Pressure-relieving Devices, Part I - Sizing and Selection, 9E.
     """
-    Pcf = P_critical_flow(P1, k)
-    return Pcf > P2
+    pass
 
 
 def stagnation_energy(V: float) -> float:
@@ -650,7 +625,7 @@ def stagnation_energy(V: float) -> float:
     .. [1] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and
        Applications. Boston: McGraw Hill Higher Education, 2006.
     """
-    return 0.5*V*V
+    pass
 
 
 def P_stagnation(P: float, T: float, Tst: float, k: float) -> float:
@@ -693,7 +668,7 @@ def P_stagnation(P: float, T: float, Tst: float, k: float) -> float:
     .. [1] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and
        Applications. Boston: McGraw Hill Higher Education, 2006.
     """
-    return P*(Tst/T)**(k/(k - 1.0))
+    pass
 
 
 def T_stagnation(T: float, P: float, Pst: float, k: float) -> float:
@@ -736,7 +711,7 @@ def T_stagnation(T: float, P: float, Pst: float, k: float) -> float:
     .. [1] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and
        Applications. Boston: McGraw Hill Higher Education, 2006.
     """
-    return T*(Pst/P)**((k - 1.0)/k)
+    pass
 
 
 def T_stagnation_ideal(T: float, V: float, Cp: float) -> float:
@@ -773,19 +748,23 @@ def T_stagnation_ideal(T: float, V: float, Cp: float) -> float:
     .. [1] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and
        Applications. Boston: McGraw Hill Higher Education, 2006.
     """
-    return T + 0.5*V*V/Cp
+    pass
+
+
+
+
 
 def isothermal_gas_err_P1(P1: float, fd: float, rho: float, P2: float, L: float, D: float, m: float) -> float:
-    return m - isothermal_gas(rho, fd, P1=P1, P2=P2, L=L, D=D)
+    pass
 
 def isothermal_gas_err_P2(P2: float, rho: float, fd: float, P1: float, L: float, D: float, m: float) -> float:
-    return m - isothermal_gas(rho, fd, P1=P1, P2=P2, L=L, D=D)
+    pass
 
 def isothermal_gas_err_P2_basis(P1: float, P2: float, rho: float, fd: float, m: float, L: float, D: float) -> float:
-    return abs(P2 - isothermal_gas(rho, fd, m=m, P1=P1, P2=None, L=L, D=D))
+    pass
 
 def isothermal_gas_err_D(D: float, m: float, rho: float, fd: float, P1: float, P2: float, L: float) -> float:
-    return m - isothermal_gas(rho, fd, P1=P1, P2=P2, L=L, D=D)
+    pass
 
 def isothermal_gas(rho: float, fd: float, P1: float | None=None, P2: float | None=None, L: float | None=None, D: float | None=None, m: float | None=None) -> float:
     r"""Calculation function for dealing with flow of a compressible gas in a
@@ -895,79 +874,7 @@ def isothermal_gas(rho: float, fd: float, P1: float | None=None, P2: float | Non
     .. [4] Rennels, Donald C., and Hobart M. Hudson. Pipe Flow: A Practical
        and Comprehensive Guide. 1st edition. Hoboken, N.J: Wiley, 2012.
     """
-    if m is None and P1 is not None and P2 is not None and L is not None and D is not None:
-        Pcf = P_isothermal_critical_flow(P=P1, fd=fd, D=D, L=L)
-        if P2 < Pcf:
-            raise ValueError("Given outlet pressure is not physically possible " # numba: delete
-f"due to the formation of choked flow at P2={Pcf:f}, specified outlet pressure was {P2:f}") # numba: delete
-#            raise ValueError("Not possible") # numba: uncomment
-        if P2 > P1:
-            raise ValueError("Specified outlet pressure is larger than the "
-                             "inlet pressure; fluid will flow backwards.")
-        return sqrt(0.0625*pi*pi*D**4*rho/(P1*(fd*L/D + 2.0*log(P1/P2)))*(P1*P1 - P2*P2))
-    elif L is None and P1 is not None and P2 is not None and D is not None and m is not None:
-        return D*(pi*pi*D**4*rho*(P1*P1 - P2*P2) - 32.0*P1*m*m*log(P1/P2))/(16.0*P1*fd*m*m)
-    elif P1 is None and L is not None and P2 is not None and D is not None and m is not None:
-        Pcf = P_upstream_isothermal_critical_flow(P=P2, fd=fd, D=D, L=L)
-
-        try:
-            # Use the explicit solution for P2 with different P1 guesses;
-            # newton doesn't like solving for m.
-            P1 = secant(isothermal_gas_err_P2_basis, (P2+Pcf)/2., args=(P2, rho, fd, m, L, D))
-            if not (P2 <= P1):
-                raise ValueError("Failed")
-            return P1
-        except:
-            try:
-                return brenth(isothermal_gas_err_P1, P2, Pcf, args=(fd, rho, P2, L, D, m))
-            except:
-                m_max = isothermal_gas(rho, fd, P1=Pcf, P2=P2, L=L, D=D)  # numba: delete
-                raise ValueError(f"The desired mass flow rate of {m:f} kg/s cannot " # numba: delete
-                                 "be achieved with the specified downstream pressure; the maximum flow rate is " # numba: delete
-                                 f"{m_max:f} kg/s at an upstream pressure of {Pcf:f} Pa") # numba: delete
-#                raise ValueError("Failed") # numba: uncomment
-    elif P2 is None and L is not None and P1 is not None and D is not None and m is not None:
-        try:
-            Pcf = P_isothermal_critical_flow(P=P1, fd=fd, D=D, L=L)
-            m_max = isothermal_gas(rho, fd, P1=P1, P2=Pcf, L=L, D=D)
-            if not (m <= m_max):
-                raise ValueError("Failed")
-
-            C = fd*L/D
-            B = (pi/4*D**2)**2*rho
-            arg = -B/m**2*P1*exp(-(-C*m**2+B*P1)/m**2)
-            # Consider the two real branches of the lambertw function.
-            # The k=-1 branch produces the higher P2 values; the k=0 branch is
-            # physically impossible.
-            lambert_ans = float(lambertw(arg, k=-1).real)
-            # Large overflow problem here; also divide by zero problems!
-            # Fail and try a numerical solution if it doesn't work.
-            if isinf(lambert_ans):
-                raise ValueError("Should not be infinity")
-            P2 = P1/exp((-C*m**2+lambert_ans*m**2+B*P1)/m**2/2.)
-            if not (P2 < P1):
-                raise ValueError("Should not be the case")
-            return P2
-        except:
-            Pcf = P_isothermal_critical_flow(P=P1, fd=fd, D=D, L=L)
-            try:
-                return brenth(isothermal_gas_err_P2, Pcf, P1, args=(rho, fd, P1, L, D, m))
-            except:
-                m_max = isothermal_gas(rho, fd, P1=P1, P2=Pcf, L=L, D=D)
-                raise ValueError("The desired mass flow rate cannot be achieved " # numba: delete
-                                 f"with the specified upstream pressure of {P1:f} Pa; the maximum flow rate is {m_max:f} " # numba: delete
-                                 f"kg/s at a downstream pressure of {Pcf:f}") # numba: delete
-#                raise ValueError("Failed") # numba: uncomment
-            # A solver which respects its boundaries is required here.
-            # brenth cuts the time down from 2 ms to 200 microseconds.
-            # It is believed Pcf and P1 will always bracket the root, however
-            # leave the commented code for testing
-    elif D is None and P2 is not None and P1 is not None and L is not None and m is not None:
-        return secant(isothermal_gas_err_D, 0.1, args=(m, rho, fd, P1, P2, L))
-    else:
-        raise ValueError("This function solves for either mass flow, upstream \
-pressure, downstream pressure, diameter, or length; all other inputs \
-must be provided.")
+    pass
 
 
 def Panhandle_A(SG: float, Tavg: float, L: float | None=None, D: float | None=None, P1: float | None=None, P2: float | None=None, Q: float | None=None, Ts: float=288.7,
@@ -1071,25 +978,7 @@ def Panhandle_A(SG: float, Tavg: float, L: float | None=None, D: float | None=No
     .. [6] Ikoku, Chi U. Natural Gas Production Engineering. Malabar, Fla:
        Krieger Pub Co, 1991.
     """
-    c1 = 1.0788
-    c2 = 0.8539
-    c3 = 0.5394
-    c4 = 2.6182
-    c5 = 158.0205328706957220332831680508433862787 # 45965*10**(591/1250)/864
-    if Q is None and L is not None and D is not None and P1 is not None and P2 is not None:
-        return c5*E*(Ts/Ps)**c1*((P1**2 - P2**2)/(L*SG**c2*Tavg*Zavg))**c3*D**c4
-    elif D is None and L is not None and Q is not None and P1 is not None and P2 is not None:
-        return (Q*(Ts/Ps)**(-c1)*(SG**(-c2)*(P1**2 - P2**2)/(L*Tavg*Zavg))**(-c3)/(E*c5))**(1./c4)
-    elif P1 is None and L is not None and Q is not None and D is not None and P2 is not None:
-        return sqrt(L*SG**c2*Tavg*Zavg*(D**(-c4)*Q*(Ts/Ps)**(-c1)/(E*c5))**(1./c3) + P2**2)
-    elif P2 is None and L is not None and Q is not None and D is not None and P1 is not None:
-        return sqrt(-L*SG**c2*Tavg*Zavg*(D**(-c4)*Q*(Ts/Ps)**(-c1)/(E*c5))**(1./c3) + P1**2)
-    elif L is None and P2 is not None and Q is not None and D is not None and P1 is not None:
-        return SG**(-c2)*(D**(-c4)*Q*(Ts/Ps)**(-c1)/(E*c5))**(-1./c3)*(P1**2 - P2**2)/(Tavg*Zavg)
-    else:
-        raise ValueError("This function solves for either flow, upstream \
-pressure, downstream pressure, diameter, or length; all other inputs \
-must be provided.")
+    pass
 
 
 def Panhandle_B(SG: float, Tavg: float, L: float | None=None, D: float | None=None, P1: float | None=None, P2: float | None=None, Q: float | None=None, Ts: float=288.7,
@@ -1190,25 +1079,7 @@ def Panhandle_B(SG: float, Tavg: float, L: float | None=None, D: float | None=No
     .. [6] Ikoku, Chi U. Natural Gas Production Engineering. Malabar, Fla:
        Krieger Pub Co, 1991.
     """
-    c1 = 1.02 # reference condition power
-    c2 = 0.961 # sg power
-    c3 = 0.51 # main power
-    c4 = 2.53 # diameter power
-    c5 = 152.8811634298055458624385985866624419060 # 4175*10**(3/25)/36
-    if Q is None and L is not None and D is not None and P1 is not None and P2 is not None:
-        return c5*E*(Ts/Ps)**c1*((P1**2 - P2**2)/(L*SG**c2*Tavg*Zavg))**c3*D**c4
-    elif D is None and L is not None and Q is not None and P1 is not None and P2 is not None:
-        return (Q*(Ts/Ps)**(-c1)*(SG**(-c2)*(P1**2 - P2**2)/(L*Tavg*Zavg))**(-c3)/(E*c5))**(1./c4)
-    elif P1 is None and L is not None and Q is not None and D is not None and P2 is not None:
-        return sqrt(L*SG**c2*Tavg*Zavg*(D**(-c4)*Q*(Ts/Ps)**(-c1)/(E*c5))**(1./c3) + P2**2)
-    elif P2 is None and L is not None and Q is not None and D is not None and P1 is not None:
-        return sqrt(-L*SG**c2*Tavg*Zavg*(D**(-c4)*Q*(Ts/Ps)**(-c1)/(E*c5))**(1./c3) + P1**2)
-    elif L is None and P2 is not None and Q is not None and D is not None and P1 is not None:
-        return SG**(-c2)*(D**(-c4)*Q*(Ts/Ps)**(-c1)/(E*c5))**(-1./c3)*(P1**2 - P2**2)/(Tavg*Zavg)
-    else:
-        raise ValueError("This function solves for either flow, upstream \
-pressure, downstream pressure, diameter, or length; all other inputs \
-must be provided.")
+    pass
 
 
 def Weymouth(SG: float, Tavg: float, L: float | None=None, D: float | None=None, P1: float | None=None, P2: float | None=None, Q: float | None=None, Ts: float=288.7,
@@ -1308,28 +1179,12 @@ def Weymouth(SG: float, Tavg: float, L: float | None=None, D: float | None=None,
     .. [6] Ikoku, Chi U. Natural Gas Production Engineering. Malabar, Fla:
        Krieger Pub Co, 1991.
     """
-    c3 = 0.5 # main power
-    c4 = 2.667 # diameter power
-    c5 = 137.3295809942512546732179684618143090992 # 37435*10**(501/1000)/864
-    if Q is None and L is not None and D is not None and P1 is not None and P2 is not None:
-        return c5*E*(Ts/Ps)*((P1**2 - P2**2)/(L*SG*Tavg*Zavg))**c3*D**c4
-    elif D is None and L is not None and Q is not None and P1 is not None and P2 is not None:
-        return (Ps*Q*((P1**2 - P2**2)/(L*SG*Tavg*Zavg))**(-c3)/(E*Ts*c5))**(1./c4)
-    elif P1 is None and L is not None and Q is not None and D is not None and P2 is not None:
-        return sqrt(L*SG*Tavg*Zavg*(D**(-c4)*Ps*Q/(E*Ts*c5))**(1./c3) + P2**2)
-    elif P2 is None and L is not None and Q is not None and D is not None and P1 is not None:
-        return sqrt(-L*SG*Tavg*Zavg*(D**(-c4)*Ps*Q/(E*Ts*c5))**(1./c3) + P1**2)
-    elif L is None and P2 is not None and Q is not None and D is not None and P1 is not None:
-        return (D**(-c4)*Ps*Q/(E*Ts*c5))**(-1./c3)*(P1**2 - P2**2)/(SG*Tavg*Zavg)
-    else:
-        raise ValueError("This function solves for either flow, upstream \
-pressure, downstream pressure, diameter, or length; all other inputs \
-must be provided.")
+    pass
+
 
 
 def _to_solve_Spitzglass_high(D: float, Q: float, SG: float, Tavg: float, L: float, P1: float, P2: float, Ts: float, Ps: float, Zavg: float, E: float) -> float:
-     return Q - Spitzglass_high(SG=SG, Tavg=Tavg, L=L, D=D,
-                                  P1=P1, P2=P2, Ts=Ts, Ps=Ps, Zavg=Zavg, E=E)
+     pass
 
 def Spitzglass_high(SG: float, Tavg: float, L: float | None=None, D: float | None=None, P1: float | None=None, P2: float | None=None, Q: float | None=None, Ts: float=288.7,
                 Ps: float=101325., Zavg: float=1.0, E: float=1.) -> float:
@@ -1406,34 +1261,11 @@ def Spitzglass_high(SG: float, Tavg: float, L: float | None=None, D: float | Non
     .. [2] Menon, E. Shashi. Gas Pipeline Hydraulics. 1st edition. Boca Raton,
        FL: CRC Press, 2005.
     """
-    c3 = 1.181102362204724409448818897637795275591 # 0.03/inch or 150/127
-    c4 = 0.09144
-    c5 = 125.1060
-    if Q is None and L is not None and D is not None and P1 is not None and P2 is not None:
-        return (c5*E*Ts/Ps*D**2.5*sqrt((P1**2-P2**2)
-                        /(L*SG*Zavg*Tavg*(1 + c4/D + c3*D))))
-    elif D is None and L is not None and Q is not None and P1 is not None and P2 is not None:
-        return secant(_to_solve_Spitzglass_high, 0.5, args=(Q, SG, Tavg, L, P1, P2, Ts, Ps, Zavg, E))
-    elif P1 is None and L is not None and Q is not None and D is not None and P2 is not None:
-        return sqrt((D**6*E**2*P2**2*Ts**2*c5**2
-                         + D**2*L*Ps**2*Q**2*SG*Tavg*Zavg*c3
-                         + D*L*Ps**2*Q**2*SG*Tavg*Zavg
-                         + L*Ps**2*Q**2*SG*Tavg*Zavg*c4)/(D**6*E**2*Ts**2*c5**2))
-    elif P2 is None and L is not None and Q is not None and D is not None and P1 is not None:
-        return sqrt((D**6*E**2*P1**2*Ts**2*c5**2
-                         - D**2*L*Ps**2*Q**2*SG*Tavg*Zavg*c3
-                         - D*L*Ps**2*Q**2*SG*Tavg*Zavg
-                         - L*Ps**2*Q**2*SG*Tavg*Zavg*c4)/(D**6*E**2*Ts**2*c5**2))
-    elif L is None and P2 is not None and Q is not None and D is not None and P1 is not None:
-        return (D**6*E**2*Ts**2*c5**2*(P1**2 - P2**2)
-                /(Ps**2*Q**2*SG*Tavg*Zavg*(D**2*c3 + D + c4)))
-    else:
-        raise ValueError("This function solves for either flow, upstream \
-pressure, downstream pressure, diameter, or length; all other inputs \
-must be provided.")
+    pass
+
 
 def _to_solve_Spitzglass_low(D: float, Q: float, SG: float, Tavg: float, L: float, P1: float, P2: float, Ts: float, Ps: float, Zavg: float, E: float) -> float:
-    return Q - Spitzglass_low(SG=SG, Tavg=Tavg, L=L, D=D, P1=P1, P2=P2, Ts=Ts, Ps=Ps, Zavg=Zavg, E=E)
+    pass
 
 def Spitzglass_low(SG: float, Tavg: float, L: float | None=None, D: float | None=None, P1: float | None=None, P2: float | None=None, Q: float | None=None, Ts: float=288.7,
                 Ps: float=101325., Zavg: float=1.0, E: float=1.) -> float:
@@ -1530,26 +1362,11 @@ def Spitzglass_low(SG: float, Tavg: float, L: float | None=None, D: float | None
     .. [4] PetroWiki. "Pressure Drop Evaluation along Pipelines" Accessed
        September 11, 2016. http://petrowiki.org/Pressure_drop_evaluation_along_pipelines#Spitzglass_equation_2.
     """
-    c3 = 1.181102362204724409448818897637795275591 # 0.03/inch or 150/127
-    c4 = 0.09144
-    c5 = 125.1060
-    if Q is None and L is not None and D is not None and P1 is not None and P2 is not None:
-        return c5*Ts/Ps*D**2.5*E*sqrt(((P1-P2)*2*(Ps+1210.))/(L*SG*Tavg*Zavg*(1 + c4/D + c3*D)))
-    elif D is None and L is not None and Q is not None and P1 is not None and P2 is not None:
-        return secant(_to_solve_Spitzglass_low, 0.5, args=(Q, SG, Tavg, L, P1, P2, Ts, Ps, Zavg, E))
-    elif P1 is None and L is not None and Q is not None and D is not None and P2 is not None:
-        return 0.5*(2.0*D**6*E**2*P2*Ts**2*c5**2*(Ps + 1210.0) + D**2*L*Ps**2*Q**2*SG*Tavg*Zavg*c3 + D*L*Ps**2*Q**2*SG*Tavg*Zavg + L*Ps**2*Q**2*SG*Tavg*Zavg*c4)/(D**6*E**2*Ts**2*c5**2*(Ps + 1210.0))
-    elif P2 is None and L is not None and Q is not None and D is not None and P1 is not None:
-        return 0.5*(2.0*D**6*E**2*P1*Ts**2*c5**2*(Ps + 1210.0) - D**2*L*Ps**2*Q**2*SG*Tavg*Zavg*c3 - D*L*Ps**2*Q**2*SG*Tavg*Zavg - L*Ps**2*Q**2*SG*Tavg*Zavg*c4)/(D**6*E**2*Ts**2*c5**2*(Ps + 1210.0))
-    elif L is None and P2 is not None and Q is not None and D is not None and P1 is not None:
-        return 2.0*D**6*E**2*Ts**2*c5**2*(P1*Ps + 1210.0*P1 - P2*Ps - 1210.0*P2)/(Ps**2*Q**2*SG*Tavg*Zavg*(D**2*c3 + D + c4))
-    else:
-        raise ValueError("This function solves for either flow, upstream \
-pressure, downstream pressure, diameter, or length; all other inputs \
-must be provided.")
+    pass
+
 
 def _to_solve_Oliphant(D: float, Q: float, SG: float, Tavg: float, L: float, P1: float, P2: float, Ts: float, Ps: float, Zavg: float, E: float) -> float:
-    return Q - Oliphant(SG=SG, Tavg=Tavg, L=L, D=D, P1=P1, P2=P2, Ts=Ts, Ps=Ps, Zavg=Zavg, E=E)
+    pass
 
 def Oliphant(SG: float, Tavg: float, L: float | None=None, D: float | None=None, P1: float | None=None, P2: float | None=None, Q: float | None=None, Ts: float=288.7,
              Ps: float=101325., Zavg: float=1.0, E: float=0.92) -> float:
@@ -1626,23 +1443,7 @@ def Oliphant(SG: float, Tavg: float, L: float | None=None, D: float | None=None,
        Suppliers Association, Tulsa, OK, 2012.
     .. [2] F. N. Oliphant, "Production of Natural Gas," Report. USGS, 1902.
     """
-    # c1 = 42*24*Q*foot**3/day*(mile)**0.5*9/5.*(5/9.)**0.5*psi*(1/psi)*14.4/520.*0.6**0.5*520**0.5/inch**2.5
-    c1 = 84.587176139918568651410168968141078948974609375000
-    c2 = 0.2091519350460528670065940559652517549694 # 1/(30.*0.0254**0.5)
-    if Q is None and L is not None and D is not None and P1 is not None and P2 is not None:
-        return c1*(D**2.5 + c2*D**3)*Ts/Ps*sqrt((P1**2-P2**2)/(L*SG*Tavg))
-    elif D is None and L is not None and Q is not None and P1 is not None and P2 is not None:
-        return secant(_to_solve_Oliphant, 0.5, args=(Q, SG, Tavg, L, P1, P2, Ts, Ps, Zavg, E))
-    elif P1 is None and L is not None and Q is not None and D is not None and P2 is not None:
-        return sqrt(L*Ps**2*Q**2*SG*Tavg/(Ts**2*c1**2*(D**3*c2 + D**2.5)**2) + P2**2)
-    elif P2 is None and L is not None and Q is not None and D is not None and P1 is not None:
-        return sqrt(-L*Ps**2*Q**2*SG*Tavg/(Ts**2*c1**2*(D**3*c2 + D**2.5)**2) + P1**2)
-    elif L is None and P2 is not None and Q is not None and D is not None and P1 is not None:
-        return Ts**2*c1**2*(P1**2 - P2**2)*(D**3*c2 + D**2.5)**2/(Ps**2*Q**2*SG*Tavg)
-    else:
-        raise ValueError("This function solves for either flow, upstream \
-pressure, downstream pressure, diameter, or length; all other inputs \
-must be provided.")
+    pass
 
 
 def Fritzsche(SG: float, Tavg: float, L: float | None=None, D: float | None=None, P1: float | None=None, P2: float | None=None, Q: float | None=None, Ts: float=288.7,
@@ -1720,23 +1521,7 @@ def Fritzsche(SG: float, Tavg: float, L: float | None=None, D: float | None=None
        Brazilian Society of Mechanical Sciences and Engineering 29, no. 3
        (September 2007): 262-73. doi:10.1590/S1678-58782007000300005.
     """
-    # Rational('2.827E-3')/(3600*24)*(1000)**Rational('2.69')*(1000)**Rational('0.538')*1000/(1000**2)**Rational('0.538')
-    c5 = 93.50009798751128188757518688244137811221 # 14135*10**(57/125)/432
-    c2 = 0.8587
-    c3 = 0.538
-    c4 = 2.69
-    if Q is None and L is not None and D is not None and P1 is not None and P2 is not None:
-        return c5*E*(Ts/Ps)*((P1**2 - P2**2)/(SG**c2*Tavg*L*Zavg))**c3*D**c4
-    elif D is None and L is not None and Q is not None and P1 is not None and P2 is not None:
-        return (Ps*Q*(SG**(-c2)*(P1**2 - P2**2)/(L*Tavg*Zavg))**(-c3)/(E*Ts*c5))**(1./c4)
-    elif P1 is None and L is not None and Q is not None and D is not None and P2 is not None:
-        return sqrt(L*SG**c2*Tavg*Zavg*(D**(-c4)*Ps*Q/(E*Ts*c5))**(1./c3) + P2**2)
-    elif P2 is None and L is not None and Q is not None and D is not None and P1 is not None:
-        return sqrt(-L*SG**c2*Tavg*Zavg*(D**(-c4)*Ps*Q/(E*Ts*c5))**(1./c3) + P1**2)
-    elif L is None and P2 is not None and Q is not None and D is not None and P1 is not None:
-        return SG**(-c2)*(D**(-c4)*Ps*Q/(E*Ts*c5))**(-1./c3)*(P1**2 - P2**2)/(Tavg*Zavg)
-    else:
-        raise ValueError("This function solves for either flow, upstream pressure, downstream pressure, diameter, or length; all other inputs must be provided.")
+    pass
 
 
 def Muller(SG: float, Tavg: float, mu: float, L: float | None=None, D: float | None=None, P1: float | None=None, P2: float | None=None, Q: float | None=None, Ts: float=288.7,
@@ -1829,24 +1614,7 @@ def Muller(SG: float, Tavg: float, mu: float, L: float | None=None, D: float | N
        Brazilian Society of Mechanical Sciences and Engineering 29, no. 3
        (September 2007): 262-73. doi:10.1590/S1678-58782007000300005.
     """
-    # 1000*foot**3/hour*0.4937/inch**2.725*foot**0.575*(5/9.)**0.575*9/5.*(pound/foot)**0.15*psi*(1/psi**2)**0.575
-    c5 = 15.77439908642077352939746374951659525108 # 5642991*196133**(17/20)*2**(3/5)*3**(11/40)*5**(7/40)/30645781250
-    c2 = 0.575 # main power
-    c3 = 2.725 # D power
-    c4 = 0.425 # SG power
-    c1 = 0.15 # mu power
-    if Q is None and L is not None and D is not None and P1 is not None and P2 is not None:
-        return c5*Ts/Ps*E*((P1**2-P2**2)/Tavg/L/Zavg)**c2*D**c3/SG**c4/mu**c1
-    elif D is None and L is not None and Q is not None and P1 is not None and P2 is not None:
-        return (Ps*Q*SG**c4*mu**c1*((P1**2 - P2**2)/(L*Tavg*Zavg))**(-c2)/(E*Ts*c5))**(1./c3)
-    elif P1 is None and L is not None and Q is not None and D is not None and P2 is not None:
-        return sqrt(L*Tavg*Zavg*(D**(-c3)*Ps*Q*SG**c4*mu**c1/(E*Ts*c5))**(1/c2) + P2**2)
-    elif P2 is None and L is not None and Q is not None and D is not None and P1 is not None:
-        return sqrt(-L*Tavg*Zavg*(D**(-c3)*Ps*Q*SG**c4*mu**c1/(E*Ts*c5))**(1/c2) + P1**2)
-    elif L is None and P2 is not None and Q is not None and D is not None and P1 is not None:
-        return (D**(-c3)*Ps*Q*SG**c4*mu**c1/(E*Ts*c5))**(-1/c2)*(P1**2 - P2**2)/(Tavg*Zavg)
-    else:
-        raise ValueError("This function solves for either flow, upstream pressure, downstream pressure, diameter, or length; all other inputs must be provided.")
+    pass
 
 
 def IGT(SG: float, Tavg: float, mu: float, L: float | None=None, D: float | None=None, P1: float | None=None, P2: float | None=None, Q: float | None=None, Ts: float=288.7,
@@ -1936,21 +1704,4 @@ def IGT(SG: float, Tavg: float, mu: float, L: float | None=None, D: float | None
        Brazilian Society of Mechanical Sciences and Engineering 29, no. 3
        (September 2007): 262-73. doi:10.1590/S1678-58782007000300005.
     """
-    # 1000*foot**3/hour*0.6643/inch**(8/3.)*foot**(5/9.)*(5/9.)**(5/9.)*9/5.*(pound/foot)**(1/9.)*psi*(1/psi**2)**(5/9.)
-    c5 = 24.62412451461407054875301709443930350550 # 1084707*196133**(8/9)*2**(1/9)*6**(1/3)/4377968750
-    c2 = 5.0/9.0 # main power
-    c3 = 8.0/3.0 # D power
-    c4 = 4.0/9.0 # SG power
-    c1 = 1.0/9.0 # mu power
-    if Q is None and L is not None and D is not None and P1 is not None and P2 is not None:
-        return c5*Ts/Ps*E*((P1**2-P2**2)/Tavg/L/Zavg)**c2*D**c3/SG**c4/mu**c1
-    elif D is None and L is not None and Q is not None and P1 is not None and P2 is not None:
-        return (Ps*Q*SG**c4*mu**c1*((P1**2 - P2**2)/(L*Tavg*Zavg))**(-c2)/(E*Ts*c5))**(1./c3)
-    elif P1 is None and L is not None and Q is not None and D is not None and P2 is not None:
-        return sqrt(L*Tavg*Zavg*(D**(-c3)*Ps*Q*SG**c4*mu**c1/(E*Ts*c5))**(1/c2) + P2**2)
-    elif P2 is None and L is not None and Q is not None and D is not None and P1 is not None:
-        return sqrt(-L*Tavg*Zavg*(D**(-c3)*Ps*Q*SG**c4*mu**c1/(E*Ts*c5))**(1/c2) + P1**2)
-    elif L is None and P2 is not None and Q is not None and D is not None and P1 is not None:
-        return (D**(-c3)*Ps*Q*SG**c4*mu**c1/(E*Ts*c5))**(-1/c2)*(P1**2 - P2**2)/(Tavg*Zavg)
-    else:
-        raise ValueError("This function solves for either flow, upstream pressure, downstream pressure, diameter, or length; all other inputs must be provided.")
+    pass

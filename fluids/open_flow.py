@@ -149,9 +149,7 @@ def Q_weir_V_Shen(h1: float, angle: int=90) -> float:
     .. [2] Blevins, Robert D. Applied Fluid Dynamics Handbook. New York, N.Y.:
        Van Nostrand Reinhold Co., 1984.
     """
-    C = interp(angle, angles_Shen, Cs_Shen)
-    k = interp(angle, angles_Shen, k_Shen)
-    return C*tan(radians(angle)/2)*sqrt(g)*(h1 + k)**2.5
+    pass
 
 
 ### Rectangular Weirs
@@ -187,7 +185,7 @@ def Q_weir_rectangular_Kindsvater_Carter(h1: float, h2: float, b: float) -> floa
     -----
     The following limits apply to the use of this equation:
 
-    b/b1 ≤ 0.2
+    b/b1 â‰¤ 0.2
     h1/h2 < 2
     b > 0.15 m
     h1 > 0.03 m
@@ -206,7 +204,7 @@ def Q_weir_rectangular_Kindsvater_Carter(h1: float, h2: float, b: float) -> floa
     .. [2] Blevins, Robert D. Applied Fluid Dynamics Handbook. New York, N.Y.:
        Van Nostrand Reinhold Co., 1984.
     """
-    return 0.554*(1 - 0.0035*h1/h2)*(b + 0.0025)*sqrt(g)*(h1 + 0.0001)**1.5
+    pass
 
 
 def Q_weir_rectangular_SIA(h1: float, h2: float, b: float, b1: float) -> float:
@@ -243,7 +241,7 @@ def Q_weir_rectangular_SIA(h1: float, h2: float, b: float, b1: float) -> float:
     -----
     The following limits apply to the use of this equation:
 
-    b/b1 ≤ 0.2
+    b/b1 â‰¤ 0.2
     h1/h2 < 2
     b > 0.15 m
     h1 > 0.03 m
@@ -256,15 +254,12 @@ def Q_weir_rectangular_SIA(h1: float, h2: float, b: float, b1: float) -> float:
 
     References
     ----------
-    .. [1] Normen für Wassermessungen: bei Durchführung von Abnahmeversuchen
+    .. [1] Normen fÃ¼r Wassermessungen: bei DurchfÃ¼hrung von Abnahmeversuchen
        an Wasserkraftmaschinen. SIA, 1924.
     .. [2] Blevins, Robert D. Applied Fluid Dynamics Handbook. New York, N.Y.:
        Van Nostrand Reinhold Co., 1984.
     """
-    h = h1 + h2
-    Q = 0.544*(1 + 0.064*(b/b1)**2 + (0.00626 - 0.00519*(b/b1)**2)/(h1 + 0.0016))\
-    *(1 + 0.5*(b/b1)**4*(h1/(h1 + h2))**2)*b*sqrt(g)*h**1.5
-    return Q
+    pass
 
 
 ### Rectangular Weirs, full channel
@@ -300,7 +295,7 @@ def Q_weir_rectangular_full_Ackers(h1: float, h2: float, b: float) -> float:
 
     h1 > 0.02 m
     h2 > 0.15 m
-    h1/h2 ≤ 2.2
+    h1/h2 â‰¤ 2.2
 
     Examples
     --------
@@ -319,7 +314,7 @@ def Q_weir_rectangular_full_Ackers(h1: float, h2: float, b: float) -> float:
     .. [3] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and
        Applications. Boston: McGraw Hill Higher Education, 2006.
     """
-    return 0.564*(1 + 0.150*h1/h2)*b*sqrt(g)*(h1 + 0.001)**1.5
+    pass
 
 
 def Q_weir_rectangular_full_SIA(h1: float, h2: float, b: float) -> float:
@@ -367,14 +362,12 @@ def Q_weir_rectangular_full_SIA(h1: float, h2: float, b: float) -> float:
 
     References
     ----------
-    .. [1] Normen für Wassermessungen: bei Durchführung von Abnahmeversuchen an
+    .. [1] Normen fÃ¼r Wassermessungen: bei DurchfÃ¼hrung von Abnahmeversuchen an
        Wasserkraftmaschinen. SIA, 1924.
     .. [2] Blevins, Robert D. Applied Fluid Dynamics Handbook. New York, N.Y.:
        Van Nostrand Reinhold Co., 1984.
     """
-    Q = 2/3.*sqrt(2)*(0.615 + 0.000615/(h1 + 0.0016))*b*sqrt(g)*h1 \
-    + 0.5*(h1/(h1+h2))**2*b*sqrt(g)*h1**1.5
-    return Q
+    pass
 
 
 def Q_weir_rectangular_full_Rehbock(h1: float, h2: float, b: float) -> float:
@@ -427,7 +420,7 @@ def Q_weir_rectangular_full_Rehbock(h1: float, h2: float, b: float) -> float:
     .. [2] Blevins, Robert D. Applied Fluid Dynamics Handbook. New York, N.Y.:
        Van Nostrand Reinhold Co., 1984.
     """
-    return 2/3.*sqrt(2)*(0.602 + 0.0832*h1/h2)*b*sqrt(g)*(h1+0.00125)**1.5
+    pass
 
 #print [Q_weir_rectangular_full_Rehbock(h1=0.3, h2=0.4, b=2)]
 
@@ -480,8 +473,7 @@ def Q_weir_rectangular_full_Kindsvater_Carter(h1: float, h2: float, b: float) ->
     .. [2] Blevins, Robert D. Applied Fluid Dynamics Handbook. New York, N.Y.:
        Van Nostrand Reinhold Co., 1984.
     """
-    Q = 2/3.*sqrt(2)*(0.602 + 0.075*h1/h2)*(b - 0.001)*sqrt(g)*(h1 + 0.001)**1.5
-    return Q
+    pass
 #print [Q_weir_rectangular_full_Kindsvater_Carter(h1=0.3, h2=0.4, b=2)]
 
 
@@ -533,7 +525,7 @@ def V_Manning(Rh: float, S: float, n: float) -> float:
     .. [2] Cengel, Yunus, and John Cimbala. Fluid Mechanics: Fundamentals and
        Applications. Boston: McGraw Hill Higher Education, 2006.
     """
-    return Rh**(2.0/3.)*sqrt(S)/n
+    pass
 
 
 def n_Manning_to_C_Chezy(n: float, Rh: float) -> float:
@@ -569,7 +561,7 @@ def n_Manning_to_C_Chezy(n: float, Rh: float) -> float:
     ----------
     .. [1] Chow, Ven Te. Open-Channel Hydraulics. New York: McGraw-Hill, 1959.
     """
-    return 1./n*Rh**(1/6.)
+    pass
 
 
 def C_Chezy_to_n_Manning(C: float, Rh: float) -> float:
@@ -605,7 +597,7 @@ def C_Chezy_to_n_Manning(C: float, Rh: float) -> float:
     ----------
     .. [1] Chow, Ven Te. Open-Channel Hydraulics. New York: McGraw-Hill, 1959.
     """
-    return Rh**(1/6.)/C
+    pass
 
 
 def V_Chezy(Rh: float, S: float, C: float) -> float:
@@ -649,7 +641,7 @@ def V_Chezy(Rh: float, S: float, C: float) -> float:
        Applications. Boston: McGraw Hill Higher Education, 2006.
     .. [3] Chow, Ven Te. Open-Channel Hydraulics. New York: McGraw-Hill, 1959.
     """
-    return C*sqrt(S*Rh)
+    pass
 
 
 

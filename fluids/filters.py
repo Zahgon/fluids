@@ -124,16 +124,7 @@ def round_edge_screen(alpha: float, Re: float, angle: float=0.0) -> float:
     .. [1] Blevins, Robert D. Applied Fluid Dynamics Handbook. New York, N.Y.:
        Van Nostrand Reinhold Co., 1984.
     """
-    beta = interp(Re, round_Res, round_betas)
-    alpha2 = alpha*alpha
-    K = beta*(1.0 - alpha2)/alpha2
-    if angle is not None:
-        if angle <= 45.0:
-            v = cos(radians(angle))
-            K *= v*v
-        else:
-            K *= interp(angle, round_thetas, round_gammas)
-    return K
+    pass
 
 
 def round_edge_open_mesh(alpha: float, subtype: str="diamond pattern wire", angle: float=0.0) -> float:
@@ -194,24 +185,7 @@ def round_edge_open_mesh(alpha: float, subtype: str="diamond pattern wire", angl
     .. [1] Blevins, Robert D. Applied Fluid Dynamics Handbook. New York, N.Y.:
        Van Nostrand Reinhold Co., 1984.
     """
-    one_m_alpha = (1.0-alpha)
-    if subtype == "round bar screen":
-        K = 0.95 + 0.2*one_m_alpha
-    elif subtype == "diamond pattern wire":
-        K = 0.67 + 1.3*one_m_alpha
-    elif subtype == "knotted net":
-        K = 0.70 + 4.9*one_m_alpha
-    elif subtype == "knotless net":
-        K = 0.72 + 2.1*one_m_alpha
-    else:
-        raise ValueError("Subtype not recognized")
-    K *= one_m_alpha
-    if angle is not None:
-        if angle < 45.0:
-            K *= cos(radians(angle))**2.0
-        else:
-            K *= interp(angle, round_thetas, round_gammas)
-    return K
+    pass
 
 
 def square_edge_screen(alpha: float) -> float:
@@ -244,7 +218,7 @@ def square_edge_screen(alpha: float) -> float:
     .. [1] Blevins, Robert D. Applied Fluid Dynamics Handbook. New York, N.Y.:
        Van Nostrand Reinhold Co., 1984.
     """
-    return interp(alpha, square_alphas, square_Ks)
+    pass
 
 
 def square_edge_grill(alpha: float, l: float | None=None, Dh: float | None=None, fd: float | None=None) -> float:
@@ -300,12 +274,7 @@ def square_edge_grill(alpha: float, l: float | None=None, Dh: float | None=None,
     .. [1] Blevins, Robert D. Applied Fluid Dynamics Handbook. New York, N.Y.:
        Van Nostrand Reinhold Co., 1984.
     """
-    x0 = 0.5*(1.0 - alpha)
-    alpha2 = alpha*alpha
-    x0 += (1.0 - alpha2)
-    if Dh is not None and l is not None and fd is not None and l > 50.0*Dh:
-        x0 += fd*l/Dh
-    return x0/alpha2
+    pass
 
 
 def round_edge_grill(alpha: float, l: float | None=None, Dh: float | None=None, fd: float | None=None) -> float:
@@ -362,9 +331,4 @@ def round_edge_grill(alpha: float, l: float | None=None, Dh: float | None=None, 
     .. [1] Blevins, Robert D. Applied Fluid Dynamics Handbook. New York, N.Y.:
        Van Nostrand Reinhold Co., 1984.
     """
-    t1 = float(splev(alpha, grills_rounded_tck))
-    if Dh and l and fd and l > 50.0*Dh:
-        alpha2 = alpha*alpha
-        return t1 + fd*l/(alpha2*Dh)
-    else:
-        return t1
+    pass

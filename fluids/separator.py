@@ -146,32 +146,7 @@ def K_separator_Watkins(x: float, rhol: float, rhog: float, horizontal: bool=Fal
     .. [3] Branan, Carl R. Pocket Guide to Chemical Engineering. 1st edition.
        Houston, Tex: Gulf Professional Publishing, 1999.
     """
-    factor = (1. - x)/x*sqrt(rhog/rhol)
-    if method == "spline":
-        K = exp(float(splev(log(factor), tck_Watkins)))
-    elif method == "blackwell":
-        X = log(factor)
-        A = -1.877478097
-        B = -0.81145804597
-        C = -0.1870744085
-        D = -0.0145228667
-        E = -0.00101148518
-        K = exp(A + X*(B + X*(C + X*(D + E*X))))
-    elif method == "branan":
-        X = log(factor)
-        A = -1.942936
-        B = -0.814894
-        C = -0.179390
-        D = -0.0123790
-        E = 0.000386235
-        F = 0.000259550
-        K = exp(A + X*(B + X*(C + X*(D + X*(E + F*X)))))
-    else:
-        raise ValueError("Only methods 'spline', 'branan', and 'blackwell' are supported.")
-    K *= foot # Converts units of ft/s to m/s; the graph and all fits are in ft/s
-    if horizontal:
-        K *= 1.25 # Watkins recommends a factor of 1.25 for horizontal separators over vertical separators
-    return K
+    pass
 
 
 def K_separator_demister_York(P: float, horizontal: bool=False) -> float:
@@ -229,26 +204,7 @@ def K_separator_demister_York(P: float, horizontal: bool=False) -> float:
        within the Right Limits" Chemical Engineering Progress, (October 1,
        1993): 53-60.
     """
-    P = P/psi # Correlation in terms of psia
-    if P < 15:
-        if P < 1:
-            P = 1 # Prevent negative K values, but as a consequence be
-            # optimistic for K values; limit is 0.185 ft/s but real values
-            # should probably be lower
-        K = 0.1821 + 0.0029*P + 0.0460*log(P)
-    elif P < 40:
-        K = 0.35
-    else:
-        if P > 5500:
-            P = 5500 # Do not allow for lower K values above 5500 psia, as
-            # the limit is stated to be 5500
-        K = 0.430 - 0.023*log(P)
-    K *= foot # Converts units of ft/s to m/s; the graph and all fits are in ft/s
-    if horizontal:
-        # Watkins recommends a factor of 1.25 for horizontal separators over
-        # vertical separators as well
-        K *= 1.25
-    return K
+    pass
 
 
 def v_Souders_Brown(K: float, rhol: float, rhog: float) -> float:
@@ -308,7 +264,7 @@ def v_Souders_Brown(K: float, rhol: float, rhog: float) -> float:
        Process Design and Economics : A Practical Guide. 2nd edition. Durham,
        N.H: Process Publishing, 2004.
     """
-    return K*sqrt((rhol - rhog)/rhog)
+    pass
 
 
 def K_Souders_Brown_theoretical(D: float, Cd: float, g: float=g) -> float:
@@ -382,7 +338,7 @@ def K_Souders_Brown_theoretical(D: float, Cd: float, g: float=g) -> float:
        within the Right Limits" Chemical Engineering Progress, (October 1,
        1993): 53-60.
     """
-    return sqrt((4.0/3.0)*g*D/(Cd))
+    pass
 
 v_Sounders_Brown = v_Souders_Brown
 K_Sounders_Brown_theoretical = K_Souders_Brown_theoretical

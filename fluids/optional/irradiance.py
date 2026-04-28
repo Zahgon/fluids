@@ -50,78 +50,48 @@ from math import acos, cos, degrees, exp, isnan, radians, sin
 nan = float("nan")
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def aoi_projection(surface_tilt, surface_azimuth, solar_zenith, solar_azimuth):
-    projection = (
-        cos(radians(surface_tilt)) * cos(radians(solar_zenith)) +
-        sin(radians(surface_tilt)) * sin(radians(solar_zenith)) *
-        cos(radians(solar_azimuth - surface_azimuth)))
-    return projection
+    pass
 
 def aoi(surface_tilt, surface_azimuth, solar_zenith, solar_azimuth):
-    projection = aoi_projection(surface_tilt, surface_azimuth,
-                                solar_zenith, solar_azimuth)
-    aoi_value = degrees(acos(projection))
-    return aoi_value
+    pass
 
 def poa_components(aoi, dni, poa_sky_diffuse, poa_ground_diffuse):
-    poa_direct = max(dni * cos(radians(aoi)), 0.0)
-
-    if poa_sky_diffuse is not None:
-        poa_diffuse = poa_sky_diffuse + poa_ground_diffuse
-    else:
-        poa_diffuse = poa_ground_diffuse
-    poa_global = poa_direct + poa_diffuse
-
-    irrads = {}
-    irrads["poa_global"] = poa_global
-    irrads["poa_direct"] = poa_direct
-    irrads["poa_diffuse"] = poa_diffuse
-    irrads["poa_sky_diffuse"] = poa_sky_diffuse
-    irrads["poa_ground_diffuse"] = poa_ground_diffuse
-
-    return irrads
+    pass
 
 def get_ground_diffuse(surface_tilt, ghi, albedo=.25, surface_type=None):
-    diffuse_irrad = ghi*albedo*(1.0 - cos(radians(surface_tilt)))*0.5
-    return diffuse_irrad
-
+    pass
 
 def get_sky_diffuse(surface_tilt, surface_azimuth,
                     solar_zenith, solar_azimuth,
                     dni, ghi, dhi, dni_extra=None, airmass=None,
                     model="isotropic",
                     model_perez="allsitescomposite1990"):
-    if model == "isotropic":
-        return isotropic(surface_tilt, dhi)
-    else:
-        from pvlib import get_sky_diffuse
-        return get_sky_diffuse(surface_tilt, surface_azimuth,
-                    solar_zenith, solar_azimuth,
-                    dni, ghi, dhi, dni_extra=dni_extra, airmass=airmass,
-                    model=model,
-                    model_perez=model_perez)
-
+    pass
 
 def get_absolute_airmass(airmass_relative, pressure=101325.):
-    airmass_absolute = airmass_relative*pressure/101325.
-    return airmass_absolute
+    pass
 
 def get_relative_airmass(zenith, model="kastenyoung1989"):
-    z = zenith
-    zenith_rad = radians(z)
-
-    if "kastenyoung1989" == model:
-        try:
-            am = (1.0 / (cos(zenith_rad) +
-                  0.50572*((6.07995 + (90.0 - z))**-1.6364)))
-        except:
-            am = nan
-        if isinstance(am, complex):
-            am = nan
-    else:
-        raise ValueError("%s is not a valid model for relativeairmass", model)
-    return am
-
+    pass
 
 def get_total_irradiance(surface_tilt, surface_azimuth,
                          solar_zenith, solar_azimuth,
@@ -129,77 +99,11 @@ def get_total_irradiance(surface_tilt, surface_azimuth,
                          albedo=.25, surface_type=None,
                          model="isotropic",
                          model_perez="allsitescomposite1990", **kwargs):
-    poa_sky_diffuse = get_sky_diffuse(
-        surface_tilt, surface_azimuth, solar_zenith, solar_azimuth,
-        dni, ghi, dhi, dni_extra=dni_extra, airmass=airmass, model=model,
-        model_perez=model_perez)
-
-    poa_ground_diffuse = get_ground_diffuse(surface_tilt, ghi, albedo,
-                                            surface_type)
-    aoi_ = aoi(surface_tilt, surface_azimuth, solar_zenith, solar_azimuth)
-    irrads = poa_components(aoi_, dni, poa_sky_diffuse, poa_ground_diffuse)
-    return irrads
-
+    pass
 
 def isotropic(surface_tilt, dhi):
-    sky_diffuse = dhi * (1 + cos(radians(surface_tilt))) * 0.5
-
-    return sky_diffuse
-
+    pass
 
 def ineichen(apparent_zenith, airmass_absolute, linke_turbidity,
              altitude=0, dni_extra=1364., perez_enhancement=False):
-    if isnan(airmass_absolute) or isnan(apparent_zenith):
-        return {"ghi": 0.0, "dni": 0.0, "dhi": 0.0}
-
-    # use max so that nighttime values will result in 0s instead of
-    # negatives. propagates nans.
-    cos_zenith = cos(radians(apparent_zenith))
-    if cos_zenith < 0.0:
-        cos_zenith = 0.0
-
-    tl = linke_turbidity
-    fh1 = exp(-altitude/8000.)
-    fh2 = exp(-altitude/1250.)
-    cg1 = 5.09e-5*altitude + 0.868
-    cg2 = 3.92e-5*altitude + 0.0387
-    ghi = exp(-cg2*airmass_absolute*(fh1 + fh2*(tl - 1.0)))
-
-    # https://github.com/pvlib/pvlib-python/issues/435
-    if perez_enhancement:
-        ghi *= exp(0.01*airmass_absolute**1.8)
-
-    # use fmax to map airmass nans to 0s. multiply and divide by tl to
-    # reinsert tl nans
-    if ghi > 0.0:
-        ghi = cg1 * dni_extra * cos_zenith * tl / tl * ghi
-    else:
-        ghi = 0.0
-
-    # BncI = "normal beam clear sky radiation"
-    b = 0.664 + 0.163/fh1
-    bnci = b * exp(-0.09 * airmass_absolute * (tl - 1))
-    if bnci > 0.0:
-        bnci = dni_extra * bnci
-    else:
-        bnci = 0.0
-
-    # "empirical correction" SE 73, 157 & SE 73, 312.
-    try:
-        bnci_2 = ((1.0 - (0.1 - 0.2*exp(-tl))/(0.1 + 0.882/fh1)) /
-                  cos_zenith)
-    except:
-        bnci_2 = 1e20
-
-    multiplier = min(bnci_2, 1e+20)
-
-    bnci_2 = ghi*multiplier
-
-    dni = min(bnci_2, bnci)
-
-    dhi = ghi - dni*cos_zenith
-
-    return {"ghi": ghi, "dni": dni, "dhi": dhi}
-
-
-
+    pass

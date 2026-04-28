@@ -600,32 +600,19 @@ schedule_lookup: dict[str, tuple[list[float|int], list[float], list[float], list
                     }
 
 pipe_too_large_msg = "Pipe input is larger than max of selected schedule"
+
+
+
+
+
 def Di_lookup(Di: float, NPSes: list[float], Dis: list[float], Dos: list[float], ts: list[float]) -> tuple[float, float, float, float]:
-    for i in range(len(Dis)): # Go up ascending list; once larger than specified, return
-        if Dis[-1] < Di:
-            raise ValueError(pipe_too_large_msg)
-        if Dis[i] >= Di:
-            _nps, _di, _do, _t = NPSes[i], Dis[i], Dos[i], ts[i]
-            return (_nps, _di, _do, _t)
-    raise ValueError("Di lookup failed")
+    pass
 
 def Do_lookup(Do: float, NPSes: list[float], Dis: list[float], Dos: list[float], ts: list[float]) -> tuple[float, float, float, float]:
-    for i in range(len(Dos)): # Go up ascending list; once larger than specified, return
-        if Dos[-1] < Do:
-            raise ValueError(pipe_too_large_msg)
-        if Dos[i] >= Do:
-            _nps, _di, _do, _t = NPSes[i], Dis[i], Dos[i], ts[i]
-            return (_nps, _di, _do, _t)
-    raise ValueError("Do lookup failed")
+    pass
 
 def NPS_lookup(NPS: float, NPSes: list[float], Dis: list[float], Dos: list[float], ts: list[float]) -> tuple[float, float, float, float]:
-    for i in range(len(NPSes)): # Go up ascending list; once larger than specified, return
-        if NPSes[i] == NPS:
-            _nps, _di, _do, _t = NPSes[i], Dis[i], Dos[i], ts[i]
-            return (_nps, _di, _do, _t)
-    raise ValueError("NPS not in list")
-
-
+    pass
 
 def nearest_pipe(Do: float | None=None, Di: float | None=None, NPS: int | None=None, schedule: str | float="40") -> tuple[float, float, float, float]:
     r"""Searches for and finds the nearest standard pipe size to a given
@@ -727,32 +714,7 @@ def nearest_pipe(Do: float | None=None, Di: float | None=None, NPS: int | None=N
     .. [11] F17 Committee. "Specification for High-Density Polyethylene (PE)
        Line Pipe." ASTM International. https://doi.org/10.1520/F2619_F2619M-20.
     """
-    if Di is not None:
-        Di *= 1E3
-    if Do is not None:
-        Do *= 1E3
-
-    # If accidentally given an numerical schedule, convert it to a string
-    if isinstance(schedule, (int, float)):
-        search_schedule = str(int(schedule))
-    else:
-        search_schedule = schedule
-
-    if search_schedule not in schedule_lookup:
-        raise ValueError("Schedule not recognized")
-    else:
-        NPSes, Dis, Dos, ts = schedule_lookup[search_schedule]
-
-    # Handle the three cases of different inputs
-    if Di is not None:
-        nums = Di_lookup(Di, NPSes, Dis, Dos, ts)
-    elif Do is not None:
-        nums = Do_lookup(Do, NPSes, Dis, Dos, ts)
-    elif NPS is not None:
-        nums = NPS_lookup(float(NPS), NPSes, Dis, Dos, ts)
-
-    _nps, _di, _do, _t = nums
-    return _nps, _di*1e-3, _do*1e-3, _t*1e-3
+    pass
 
 
 ### Wire gauge schedules
@@ -959,44 +921,7 @@ def gauge_from_t(t: float, SI: bool=True, schedule: str="BWG") -> float:
     .. [1] Oberg, Erik, Franklin D. Jones, and Henry H. Ryffel. Machinery's
        Handbook. Industrial Press, Incorporated, 2012.
     """
-    tol = 0.1
-    # Handle units
-    if SI:
-        t_inch = round(t/inch, 9) # all schedules are in inches
-    else:
-        t_inch = t
-
-    # Get the schedule
-    try:
-        sch_integers, sch_inch, sch_SI, decreasing = wire_schedules[schedule]
-    except:
-        raise ValueError("Wire gauge schedule not found")
-
-    # Check if outside limits
-    sch_max, sch_min = sch_inch[0], sch_inch[-1]
-    if t_inch > sch_max:
-        raise ValueError("Input thickness is above the largest in the selected schedule")
-
-
-    # If given thickness is exactly in the index, be happy
-    if t_inch in sch_inch:
-        gauge = sch_integers[sch_inch.index(t_inch)]
-
-    else:
-        for i in range(len(sch_inch)):
-            if sch_inch[i] >= t_inch:
-                larger = sch_inch[i]
-            else:
-                break
-        if larger == sch_min:
-            gauge = sch_min # If t is under the lowest schedule, be happy
-        else:
-            smaller = sch_inch[i]
-            if (t_inch - smaller) <= tol*(larger - smaller):
-                gauge = sch_integers[i]
-            else:
-                gauge = sch_integers[i-1]
-    return gauge
+    pass
 
 
 def t_from_gauge(gauge: float, SI: bool=True, schedule: str="BWG") -> float:
@@ -1041,20 +966,7 @@ def t_from_gauge(gauge: float, SI: bool=True, schedule: str="BWG") -> float:
     .. [1] Oberg, Erik, Franklin D. Jones, and Henry H. Ryffel. Machinery's
        Handbook. Industrial Press, Incorporated, 2012.
     """
-    try:
-        sch_integers, sch_inch, sch_SI, decreasing = wire_schedules[schedule]
-    except:
-        raise ValueError("Wire gauge schedule not found; supported gauges are \
-'BWG', 'AWG', 'SWG', 'MWG', 'BSWG', and 'SSWG'.")
-
-    try:
-        i = sch_integers.index(gauge)
-    except:
-        raise ValueError("Input gauge not found in selected schedule")
-    if SI:
-        return sch_SI[i] # returns thickness in m
-    else:
-        return sch_inch[i] # returns thickness in inch
+    pass
 
 
 def erosional_velocity(rho: int, C: int) -> float:
@@ -1106,8 +1018,5 @@ def erosional_velocity(rho: int, C: int) -> float:
        https://doi.org/10.1016/j.wear.2019.01.119.
 
     """
-    rho_lb_ft3 = rho/(lb/foot**3)
-    v_ft_s = C/sqrt(rho_lb_ft3)
-    v = v_ft_s*foot
-    return v
+    pass
 

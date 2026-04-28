@@ -61,6 +61,7 @@ Drag Correlations
 .. autofunction:: Morrison
 .. autofunction:: Song_Xu
 """
+
 from __future__ import annotations
 
 from math import exp, log, log10, sqrt, tanh
@@ -98,6 +99,7 @@ __all__: list[str] = [
     "v_terminal",
 ]
 
+
 def Stokes(Re: float) -> float:
     r"""Calculates drag coefficient of a smooth sphere using Stoke's law.
 
@@ -128,7 +130,7 @@ def Stokes(Re: float) -> float:
     ----------
     .. [1] Rhodes, Martin J. Introduction to Particle Technology. Wiley, 2013.
     """
-    return 24./Re
+    pass
 
 
 def Barati(Re: float) -> float:
@@ -170,11 +172,7 @@ def Barati(Re: float) -> float:
        Evolutionary Approach." Powder Technology 257 (May 2014): 11-19.
        doi:10.1016/j.powtec.2014.02.045.
     """
-    Re_inv = 1.0/Re
-    Cd = (5.4856E9*tanh(4.3774E-9*Re_inv) + 0.0709*tanh(700.6574*Re_inv)
-    + 0.3894*tanh(74.1539*Re_inv) - 0.1198*tanh(7429.0843*Re_inv)
-    + 1.7174*tanh(9.9851/(Re + 2.3384)) + 0.4744)
-    return Cd
+    pass
 
 
 def Barati_high(Re: float) -> float:
@@ -221,23 +219,7 @@ def Barati_high(Re: float) -> float:
        Evolutionary Approach." Powder Technology 257 (May 2014): 11-19.
        doi:10.1016/j.powtec.2014.02.045.
     """
-    if Re > 1e6:
-        Re = 1e6
-    Re2 = Re*Re
-    t0 = 1.0/Re
-    t1 = Re*(1.0/6530.)
-    t2 = Re*(1.0/1620)
-    t3 = log10(Re2 + 10.7563)
-    t4 = 1.0/(Re+Re2)
-    t4 *= t4
-    t4 *= t4
-    tanhRe = tanh(Re)
-    Cd = (8E-6*(t1*t1 + tanhRe - 8.0*log10(Re))
-    - 0.4119*exp(-2.08E43*t4)
-    - 2.1344*exp(-t0*(t3*t3 + 9.9867))
-    + 0.1357*exp(-t0*(t2*t2 + 10370.))
-    - 8.5E-3*t0*(2.0*log10(tanh(tanhRe)) - 2825.7162) + 2.4795)
-    return Cd
+    pass
 
 
 def Rouse(Re: float) -> float:
@@ -277,7 +259,7 @@ def Rouse(Re: float) -> float:
        Evolutionary Approach." Powder Technology 257 (May 2014): 11-19.
        doi:10.1016/j.powtec.2014.02.045.
     """
-    return 24./Re + 3./sqrt(Re) + 0.34
+    pass
 
 
 def Engelund_Hansen(Re: float) -> float:
@@ -318,7 +300,7 @@ def Engelund_Hansen(Re: float) -> float:
        Evolutionary Approach." Powder Technology 257 (May 2014): 11-19.
        doi:10.1016/j.powtec.2014.02.045.
     """
-    return 24./Re + 1.5
+    pass
 
 
 def Clift_Gauvin(Re: float) -> float:
@@ -359,7 +341,7 @@ def Clift_Gauvin(Re: float) -> float:
        Evolutionary Approach." Powder Technology 257 (May 2014): 11-19.
        doi:10.1016/j.powtec.2014.02.045.
     """
-    return 24./Re*(1 + 0.152*Re**0.677) + 0.417/(1 + 5070*Re**-0.94)
+    pass
 
 
 def Morsi_Alexander(Re: float) -> float:
@@ -438,22 +420,7 @@ def Morsi_Alexander(Re: float) -> float:
        Evolutionary Approach." Powder Technology 257 (May 2014): 11-19.
        doi:10.1016/j.powtec.2014.02.045.
     """
-    if Re < 0.1:
-        return 24./Re
-    elif Re < 1:
-        return 22.73/Re + 0.0903/Re**2 + 3.69
-    elif Re < 10:
-        return 29.1667/Re - 3.8889/Re**2 + 1.2220
-    elif Re < 100:
-        return 46.5/Re - 116.67/Re**2 + 0.6167
-    elif Re < 1000:
-        return 98.33/Re - 2778./Re**2 + 0.3644
-    elif Re < 5000:
-        return 148.62/Re - 4.75E4/Re**2 + 0.3570
-    elif Re < 10000:
-        return -490.546/Re + 57.87E4/Re**2 + 0.46
-    else:
-        return -1662.5/Re + 5.4167E6/Re**2 + 0.5191
+    pass
 
 
 def Graf(Re: float) -> float:
@@ -493,7 +460,7 @@ def Graf(Re: float) -> float:
        Evolutionary Approach." Powder Technology 257 (May 2014): 11-19.
        doi:10.1016/j.powtec.2014.02.045.
     """
-    return 24./Re + 7.3/(1 + sqrt(Re)) + 0.25
+    pass
 
 
 def Flemmer_Banks(Re: float) -> float:
@@ -537,8 +504,7 @@ def Flemmer_Banks(Re: float) -> float:
        Evolutionary Approach." Powder Technology 257 (May 2014): 11-19.
        doi:10.1016/j.powtec.2014.02.045.
     """
-    E = 0.383*Re**0.356 - 0.207*Re**0.396 - 0.143/(1 + (log10(Re))**2)
-    return 24./Re*10**E
+    pass
 
 
 def Khan_Richardson(Re: float) -> float:
@@ -579,7 +545,7 @@ def Khan_Richardson(Re: float) -> float:
        Evolutionary Approach." Powder Technology 257 (May 2014): 11-19.
        doi:10.1016/j.powtec.2014.02.045.
     """
-    return (2.49*Re**-0.328 + 0.34*Re**0.067)**3.18
+    pass
 
 
 def Swamee_Ojha(Re: float) -> float:
@@ -621,8 +587,7 @@ def Swamee_Ojha(Re: float) -> float:
        Evolutionary Approach." Powder Technology 257 (May 2014): 11-19.
        doi:10.1016/j.powtec.2014.02.045.
     """
-    Cd = 0.5*sqrt(sqrt(16*((24./Re)**1.6 + (130./Re)**0.72)**2.5 + 1.0/sqrt(sqrt((40000./Re)**2 + 1))))
-    return Cd
+    pass
 
 
 def Yen(Re: float) -> float:
@@ -663,7 +628,7 @@ def Yen(Re: float) -> float:
        Evolutionary Approach." Powder Technology 257 (May 2014): 11-19.
        doi:10.1016/j.powtec.2014.02.045.
     """
-    return 24./Re*(1 + 0.15*sqrt(Re) + 0.017*Re) - 0.208/(1 + 1E4*1.0/sqrt(Re))
+    pass
 
 
 def Haider_Levenspiel(Re: float) -> float:
@@ -706,7 +671,7 @@ def Haider_Levenspiel(Re: float) -> float:
        Evolutionary Approach." Powder Technology 257 (May 2014): 11-19.
        doi:10.1016/j.powtec.2014.02.045.
     """
-    return 24./Re*(1 + 0.1806*Re**0.6459) + (0.4251/(1 + 6880.95/Re))
+    pass
 
 
 def Cheng(Re: float) -> float:
@@ -747,7 +712,7 @@ def Cheng(Re: float) -> float:
        Evolutionary Approach." Powder Technology 257 (May 2014): 11-19.
        doi:10.1016/j.powtec.2014.02.045.
     """
-    return 24./Re*(1. + 0.27*Re)**0.43 + 0.47*(1. - exp(-0.04*Re**0.38))
+    pass
 
 
 def Terfous(Re: float) -> float:
@@ -789,7 +754,7 @@ def Terfous(Re: float) -> float:
        Evolutionary Approach." Powder Technology 257 (May 2014): 11-19.
        doi:10.1016/j.powtec.2014.02.045.
     """
-    return 2.689 + 21.683/Re + 0.131/Re**2 - 10.616/Re**0.1 + 12.216/Re**0.2
+    pass
 
 
 def Mikhailov_Freire(Re: float) -> float:
@@ -831,9 +796,7 @@ def Mikhailov_Freire(Re: float) -> float:
        Evolutionary Approach." Powder Technology 257 (May 2014): 11-19.
        doi:10.1016/j.powtec.2014.02.045.
     """
-    Cd = (3808.*((1617933./2030.) + (178861./1063.)*Re + (1219./1084.)*Re**2)
-          /(681.*Re*((77531./422.) + (13529./976.)*Re - (1./71154.)*Re**2)))
-    return Cd
+    pass
 
 
 def Clift(Re: float) -> float:
@@ -915,24 +878,7 @@ def Clift(Re: float) -> float:
        Evolutionary Approach." Powder Technology 257 (May 2014): 11-19.
        doi:10.1016/j.powtec.2014.02.045.
     """
-    if Re < 0.01:
-        return 24./Re + 3./16.
-    elif Re < 20:
-        return 24./Re*(1 + 0.1315*Re**(0.82 - 0.05*log10(Re)))
-    elif Re < 260:
-        return 24./Re*(1 + 0.1935*Re**(0.6305))
-    elif Re < 1500:
-        return 10**(1.6435 - 1.1242*log10(Re) + 0.1558*(log10(Re))**2)
-    elif Re < 12000:
-        return 10**(-2.4571 + 2.5558*log10(Re) - 0.9295*(log10(Re))**2 + 0.1049*log10(Re)**3)
-    elif Re < 44000:
-        return 10**(-1.9181 + 0.6370*log10(Re) - 0.0636*(log10(Re))**2)
-    elif Re < 338000:
-        return 10**(-4.3390 + 1.5809*log10(Re) - 0.1546*(log10(Re))**2)
-    elif Re < 400000:
-        return 29.78 - 5.3*log10(Re)
-    else:
-        return 0.19*log10(Re) - 0.49
+    pass
 
 
 def Ceylan(Re: float) -> float:
@@ -968,7 +914,7 @@ def Ceylan(Re: float) -> float:
 
     References
     ----------
-    .. [1] Ceylan, Kadim, Ayşe Altunbaş, and Gudret Kelbaliyev. "A New Model
+    .. [1] Ceylan, Kadim, AyÅŸe AltunbaÅŸ, and Gudret Kelbaliyev. "A New Model
        for Estimation of Drag Force in the Flow of Newtonian Fluids around
        Rigid or Deformable Particles." Powder Technology 119, no. 2-3
        (September 24, 2001): 250-56. doi:10.1016/S0032-5910(01)00261-3.
@@ -978,10 +924,7 @@ def Ceylan(Re: float) -> float:
        Evolutionary Approach." Powder Technology 257 (May 2014): 11-19.
        doi:10.1016/j.powtec.2014.02.045.
     """
-    Cd = (1 - 0.5*exp(0.182) + 10.11*Re**(-2/3.)*exp(0.952/sqrt(sqrt(Re)))
-    - 0.03859*Re**(-4/3.)*exp(1.30/sqrt(Re)) + 0.037E-4*Re*exp(-0.125E-4*Re)
-    - 0.116E-10*Re**2*exp(-0.444E-5*Re))
-    return Cd
+    pass
 
 
 def Almedeij(Re: float) -> float:
@@ -1035,11 +978,7 @@ def Almedeij(Re: float) -> float:
        Evolutionary Approach." Powder Technology 257 (May 2014): 11-19.
        doi:10.1016/j.powtec.2014.02.045.
     """
-    phi4 = ((6E-17*Re**2.63)**-10 + 0.2**-10)**-1
-    phi3 = (1.57E8*Re**-1.625)**10
-    phi2 = ((0.148*Re**0.11)**-10 + 0.5**-10)**-1
-    phi1 = (24*Re**-1)**10 + (21*Re**-0.67)**10 + (4*Re**-0.33)**10 + 0.4**10
-    return (1/((phi1 + phi2)**-1 + phi3**-1) + phi4)**0.1
+    pass
 
 
 def Morrison(Re: float) -> float:
@@ -1081,12 +1020,10 @@ def Morrison(Re: float) -> float:
        Evolutionary Approach." Powder Technology 257 (May 2014): 11-19.
        doi:10.1016/j.powtec.2014.02.045.
     """
-    Cd = (24./Re + 2.6*Re/5./(1 + (Re/5.)**1.52) + 0.411*(Re/263000.)**-7.94/(1 + (Re/263000.)**-8)
-    + Re**0.8/461000.)
-    return Cd
+    pass
 
 
-def Song_Xu(Re: float, sphericity: float=1., S: float=1.) -> float:
+def Song_Xu(Re: float, sphericity: float = 1.0, S: float = 1.0) -> float:
     r"""Calculates drag coefficient of a particle using the method in
     [1]_. Developed with data for spheres, cubes, and cylinders. Claims 3.52%
     relative error for 0.001 < Re < 100 based on 336 tests data.
@@ -1128,34 +1065,35 @@ def Song_Xu(Re: float, sphericity: float=1., S: float=1.) -> float:
        Technology 321 (November 2017): 242-50.
        doi:10.1016/j.powtec.2017.08.017.
     """
-    return 24/(Re*sphericity**0.65*S**0.3)*(1+0.35*Re)**0.44
+    pass
 
 
 drag_sphere_correlations = {
     "Stokes": (Stokes, None, 0.3),
-    "Barati": (Barati, None, 2E5),
-    "Barati_high": (Barati_high, None, 1E6),
-    "Rouse": (Rouse, None, 2E5),
-    "Engelund_Hansen": (Engelund_Hansen, None, 2E5),
-    "Clift_Gauvin": (Clift_Gauvin, None, 2E5),
-    "Morsi_Alexander": (Morsi_Alexander, None, 2E5),
-    "Graf": (Graf, None, 2E5),
-    "Flemmer_Banks": (Flemmer_Banks, None, 2E5),
-    "Khan_Richardson": (Khan_Richardson, None, 2E5),
-    "Swamee_Ojha": (Swamee_Ojha, None, 1.5E5),
-    "Yen": (Yen, None, 2E5),
-    "Haider_Levenspiel": (Haider_Levenspiel, None, 2E5),
-    "Cheng": (Cheng, None, 2E5),
-    "Terfous": (Terfous, 0.1, 5E4),
+    "Barati": (Barati, None, 2e5),
+    "Barati_high": (Barati_high, None, 1e6),
+    "Rouse": (Rouse, None, 2e5),
+    "Engelund_Hansen": (Engelund_Hansen, None, 2e5),
+    "Clift_Gauvin": (Clift_Gauvin, None, 2e5),
+    "Morsi_Alexander": (Morsi_Alexander, None, 2e5),
+    "Graf": (Graf, None, 2e5),
+    "Flemmer_Banks": (Flemmer_Banks, None, 2e5),
+    "Khan_Richardson": (Khan_Richardson, None, 2e5),
+    "Swamee_Ojha": (Swamee_Ojha, None, 1.5e5),
+    "Yen": (Yen, None, 2e5),
+    "Haider_Levenspiel": (Haider_Levenspiel, None, 2e5),
+    "Cheng": (Cheng, None, 2e5),
+    "Terfous": (Terfous, 0.1, 5e4),
     "Mikhailov_Freire": (Mikhailov_Freire, None, 118300),
-    "Clift": (Clift, None, 1E6),
-    "Ceylan": (Ceylan, 0.1, 1E6),
-    "Almedeij": (Almedeij, None, 1E6),
-    "Morrison": (Morrison, None, 1E6),
-    "Song_Xu": (Song_Xu, None, 1E3)
+    "Clift": (Clift, None, 1e6),
+    "Ceylan": (Ceylan, 0.1, 1e6),
+    "Almedeij": (Almedeij, None, 1e6),
+    "Morrison": (Morrison, None, 1e6),
+    "Song_Xu": (Song_Xu, None, 1e3),
 }
 
-def drag_sphere_methods(Re: float, check_ranges: bool=True) -> list[str]:
+
+def drag_sphere_methods(Re: float, check_ranges: bool = True) -> list[str]:
     r"""This function returns a list of methods that can be used to calculate
     the drag coefficient of a sphere.
     Twenty one methods are available, all requiring only the Reynolds number of
@@ -1184,13 +1122,10 @@ def drag_sphere_methods(Re: float, check_ranges: bool=True) -> list[str]:
     methods : list
         List of methods which can be used to calculate `Cd` with the given `Re`
     """
-    methods = []
-    for key, (func, Re_min, Re_max) in drag_sphere_correlations.items():
-        if ((Re_min is None or Re > Re_min) and (Re_max is None or Re < Re_max)) or not check_ranges:
-            methods.append(key)
-    return methods
+    pass
 
-def drag_sphere(Re: float, Method: str | None=None) -> float:
+
+def drag_sphere(Re: float, Method: str | None = None) -> float:
     r"""This function handles calculation of drag coefficient on spheres.
     Twenty methods are available, all requiring only the Reynolds number of the
     sphere. Most methods are valid from Re=0 to Re=200,000. A correlation will
@@ -1228,72 +1163,14 @@ def drag_sphere(Re: float, Method: str | None=None) -> float:
     -----
     Note that diameter is the characteristic number in the Reynolds number.
     """
-    if Method is None:
-        if Re > 0.1:
-            # Smooth transition point between the two models
-            if Re <= 212963.26847812787:
-                return Barati(Re)
-            else:
-                return Barati_high(Re)
-        elif Re >= 0.01:
-            # Re from 0.01 to 0.1
-            ratio = (Re - 0.01)/(0.1 - 0.01)
-            # Ensure a smooth transition by linearly switching to Stokes' law
-            return ratio*Barati(Re) + (1-ratio)*Stokes(Re)
-        else:
-            return Stokes(Re)
-
-    if Method == "Stokes":
-        return Stokes(Re)
-    elif Method == "Barati":
-        return Barati(Re)
-    elif Method == "Barati_high":
-        return Barati_high(Re)
-    elif Method == "Rouse":
-        return Rouse(Re)
-    elif Method == "Engelund_Hansen":
-        return Engelund_Hansen(Re)
-    elif Method == "Clift_Gauvin":
-        return Clift_Gauvin(Re)
-    elif Method == "Morsi_Alexander":
-        return Morsi_Alexander(Re)
-    elif Method == "Graf":
-        return Graf(Re)
-    elif Method == "Flemmer_Banks":
-        return Flemmer_Banks(Re)
-    elif Method == "Khan_Richardson":
-        return Khan_Richardson(Re)
-    elif Method == "Swamee_Ojha":
-        return Swamee_Ojha(Re)
-    elif Method == "Yen":
-        return Yen(Re)
-    elif Method == "Haider_Levenspiel":
-        return Haider_Levenspiel(Re)
-    elif Method == "Cheng":
-        return Cheng(Re)
-    elif Method == "Terfous":
-        return Terfous(Re)
-    elif Method == "Mikhailov_Freire":
-        return Mikhailov_Freire(Re)
-    elif Method == "Clift":
-        return Clift(Re)
-    elif Method == "Ceylan":
-        return Ceylan(Re)
-    elif Method == "Almedeij":
-        return Almedeij(Re)
-    elif Method == "Morrison":
-        return Morrison(Re)
-    elif Method == "Song_Xu":
-        return Song_Xu(Re)
-    else:
-        raise ValueError("Unrecognized method")
+    pass
 
 
 def _v_terminal_err(V: float, Method: str | None, Re_almost: float, main: float) -> float:
-    Cd = drag_sphere(Re_almost*V, Method=Method)
-    return V - sqrt(main/Cd)
+    pass
 
-def v_terminal(D: float, rhop: float, rho: float, mu: float, Method: str | None=None) -> float:
+
+def v_terminal(D: float, rhop: float, rho: float, mu: float, Method: str | None = None) -> float:
     r"""Calculates terminal velocity of a falling sphere using any drag
     coefficient method supported by `drag_sphere`. The laminar solution for
     Re < 0.01 is first tried; if the resulting terminal velocity does not
@@ -1352,29 +1229,10 @@ def v_terminal(D: float, rhop: float, rho: float, mu: float, Method: str | None=
        Solid-Liquid Filtration and Separation Technology. 1st edition. Weinheim ;
        New York: Wiley-VCH, 1996.
     """
-    """The following would be the ideal implementation. The actual function is
-    optimized for speed, not readability
-    def err(V):
-        Re = rho*V*D/mu
-        Cd = Barati_high(Re)
-        V2 = (4/3.*g*D*(rhop-rho)/rho/Cd)**0.5
-        return (V-V2)
-    return fsolve(err, 1.)"""
-    v_lam = g*D*D*(rhop-rho)/(18*mu)
-    Re_lam = Reynolds(V=v_lam, D=D, rho=rho, mu=mu)
-    if Re_lam < 0.01 or Method == "Stokes":
-        return v_lam
-
-    Re_almost = rho*D/mu
-    main = 4/3.*g*D*(rhop-rho)/rho
-    V_max = 1E6/rho/D*mu  # where the correlation breaks down, Re=1E6
-
-    # Begin the solver with 1/100 th the velocity possible at the maximum
-    # Reynolds number the correlation is good for
-    return secant(_v_terminal_err, V_max*1e-2, xtol=1E-12, args=(Method, Re_almost, main))
+    pass
 
 
-def time_v_terminal_Stokes(D: float, rhop: float, rho: float, mu: float, V0: float, tol: float=1e-14) -> float:
+def time_v_terminal_Stokes(D: float, rhop: float, rho: float, mu: float, V0: float, tol: float = 1e-14) -> float:
     r"""Calculates the time required for a particle in Stoke's regime only to
     reach terminal velocity (approximately). An infinitely long period is
     required theoretically, but with floating points, it is possible to
@@ -1427,30 +1285,12 @@ def time_v_terminal_Stokes(D: float, rhop: float, rho: float, mu: float, V0: flo
     ... tol=1e-30)
     24800.636391801996
     """
-    if tol < 1e-17:
-        tol = 2e-17
-    term = D*D*g*rho - D*D*g*rhop
-    denominator = term + 18.*mu*V0
-    v_term_base = g*D*D*(rhop-rho)/(18.*mu)
-
-    const = D*D*rhop/mu*-1.0/18.
-    for i in range(50):
-        try:
-            if v_term_base < V0:
-                v_term = v_term_base*(1.0 + tol)
-            else:
-                v_term = v_term_base*(1.0 - tol)
-            numerator = term + 18.*mu*v_term
-            return log(numerator/denominator)*const
-        except:
-            tol = tol + tol
-            if tol > 0.01:
-                raise ValueError("Could not find a solution")
-    raise ValueError("Could not find a solution")
+    pass
 
 
-def integrate_drag_sphere(D: float, rhop: float, rho: float, mu: float, t: float, V: float=0, Method: str | None=None,
-                          distance: bool=False) -> tuple[float, float] | float:
+def integrate_drag_sphere(
+    D: float, rhop: float, rho: float, mu: float, t: float, V: float = 0, Method: str | None = None, distance: bool = False
+) -> tuple[float, float] | float:
     r"""Integrates the velocity and distance traveled by a particle moving
     at a speed which will converge to its terminal velocity.
 
@@ -1526,83 +1366,4 @@ def integrate_drag_sphere(D: float, rhop: float, rho: float, mu: float, t: float
        Fall of a Ball with Linear or Quadratic Drag." American Journal of
        Physics 67, no. 6 (June 1999): 538-46. https://doi.org/10.1119/1.19320.
     """
-    # Delayed import of necessary functions
-    import numpy as np
-    from scipy.integrate import odeint
-    laminar_initial = Reynolds(V=V, rho=rho, D=D, mu=mu) < 0.01
-    v_laminar_end_assumed = v_terminal(D=D, rhop=rhop, rho=rho, mu=mu, Method=Method)
-    laminar_end = Reynolds(V=v_laminar_end_assumed, rho=rho, D=D, mu=mu) < 0.01
-    if Method == "Stokes" or (laminar_initial and laminar_end and Method is None):
-        try:
-            t1 = 18.0*mu/(D*D*rhop)
-            t2 = g*(rhop-rho)/rhop
-            V_end = exp(-t1*t)*(t1*V + t2*(exp(t1*t) - 1.0))/t1
-            x_end = exp(-t1*t)*(V*t1*(exp(t1*t) - 1.0) + t2*exp(t1*t)*(t1*t - 1.0) + t2)/(t1*t1)
-            if distance:
-                return V_end, x_end
-            else:
-                return V_end
-        except OverflowError:
-            # It is only necessary to integrate to terminal velocity
-            t_to_terminal = time_v_terminal_Stokes(D, rhop, rho, mu, V0=V, tol=1e-9)
-            if t_to_terminal > t:
-                raise ValueError("Should never happen")
-            result = integrate_drag_sphere(D=D, rhop=rhop, rho=rho, mu=mu, t=t_to_terminal, V=V, Method="Stokes", distance=True)
-            V_end, x_end = result  # type: ignore[misc]
-            # terminal velocity has been reached - V does not change, but x does
-            # No reason to believe this isn't working even though it isn't
-            # matching the ode solver
-            if distance:
-                return V_end, x_end + V_end*(t - t_to_terminal)
-            else:
-                return V_end
-
-            # This is a serious problem for small diameters
-            # It would be possible to step slowly, using smaller increments
-            # of time to avoid overflows. However, this unfortunately quickly
-            # gets much, exponentially, slower than just using odeint because
-            # for example solving 10000 seconds might require steps of .0001
-            # seconds at a diameter of 1e-7 meters.
-#            x = 0.0
-#            subdivisions = 10
-#            dt = t/subdivisions
-#            for i in range(subdivisions):
-#                V, dx = integrate_drag_sphere(D=D, rhop=rhop, rho=rho, mu=mu,
-#                                              t=dt, V=V, distance=True,
-#                                              Method=Method)
-#                x += dx
-#            if distance:
-#                return V, x
-#            else:
-#                return V
-
-    Re_ish = rho*D/mu
-    c1 = g*(rhop-rho)/rhop
-    c2 = -0.75*rho/(D*rhop)
-
-    def dv_dt(V, t):
-        V = float(V[0]) # comes in as a 1 element 1d ndarray
-        if V == 0:
-            # 64/Re goes to infinity, but gets multiplied by 0 squared.
-            t2 = 0.0
-        else:
-#            t2 = c2*V*V*Stokes(Re_ish*V)
-            t2 = c2*V*V*drag_sphere(Re_ish*V, Method=Method)
-        return c1 + t2
-
-    # Number of intervals for the solution to be solved for; the integrator
-    # doesn't care what we give it, but a large number of intervals are needed
-    # For an accurate integration of the particle's distance traveled
-    pts = 1000 if distance else 2
-    ts = np.linspace(0, t, pts)
-
-
-    # Perform the integration
-    Vs = odeint(dv_dt, [V], ts)
-    V_end = float(Vs[-1][0])
-    if distance:
-        # Calculate the distance traveled
-        x = cumulative_trapezoid(np.ravel(Vs).tolist(), ts.tolist())[-1]
-        return V_end, x
-    else:
-        return V_end
+    pass

@@ -155,17 +155,14 @@ def Ergun(dp: float, voidage: float, vs: float, rho: float, mu: float, L: float=
     ----------
     .. [1] Ergun, S. (1952) "Fluid flow through packed columns",
        Chem. Eng. Prog., 48, 89-94.
-    .. [2] Erdim, Esra, Ömer Akgiray, and İbrahim Demir. "A Revisit of Pressure
+    .. [2] Erdim, Esra, Ã–mer Akgiray, and Ä°brahim Demir. "A Revisit of Pressure
        Drop-Flow Rate Correlations for Packed Beds of Spheres." Powder
        Technology 283 (October 2015): 488-504. doi:10.1016/j.powtec.2015.06.017.
     .. [3] Jones, D. P., and H. Krier. "Gas Flow Resistance Measurements
        Through Packed Beds at High Reynolds Numbers." Journal of Fluids
        Engineering 105, no. 2 (June 1, 1983): 168-172. doi:10.1115/1.3240959.
     """
-    Re = dp*rho*vs/mu
-    holdup = 1.0 - voidage
-    fp = (150.0 + 1.75*(Re/holdup))*holdup*holdup/(voidage*voidage*voidage*Re)
-    return fp*rho*vs*vs*L/dp
+    pass
 
 
 def Kuo_Nydegger(dp: float, voidage: float, vs: float, rho: float, mu: float, L: float=1.0) -> float:
@@ -221,17 +218,14 @@ def Kuo_Nydegger(dp: float, voidage: float, vs: float, rho: float, mu: float, L:
     .. [1] Kuo, K. K. and Nydegger, C., "Flow Resistance Measurement and
        Correlation in Packed Beds of WC 870 Ball Propellants," Journal of
        Ballistics , Vol. 2, No. 1, pp. 1-26, 1978.
-    .. [2] Erdim, Esra, Ömer Akgiray, and İbrahim Demir. "A Revisit of Pressure
+    .. [2] Erdim, Esra, Ã–mer Akgiray, and Ä°brahim Demir. "A Revisit of Pressure
        Drop-Flow Rate Correlations for Packed Beds of Spheres." Powder
        Technology 283 (October 2015): 488-504. doi:10.1016/j.powtec.2015.06.017.
     .. [3] Jones, D. P., and H. Krier. "Gas Flow Resistance Measurements
        Through Packed Beds at High Reynolds Numbers." Journal of Fluids
        Engineering 105, no. 2 (June 1, 1983): 168-172. doi:10.1115/1.3240959.
     """
-    Re = dp*rho*vs/mu
-    holdup = (1.0-voidage)
-    fp = (276.23 + 5.05*(Re/holdup)**0.87)*holdup*holdup/(voidage*voidage*voidage*Re)
-    return fp*rho*vs*vs*L/dp
+    pass
 
 
 def Tallmadge(dp: float, voidage: float, vs: float, rho: float, mu: float, L: float=1.0) -> float:
@@ -283,7 +277,7 @@ def Tallmadge(dp: float, voidage: float, vs: float, rho: float, mu: float, L: fl
     ----------
     .. [1] Tallmadge, J. A. "Packed Bed Pressure Drop-an Extension to Higher
        Reynolds Numbers." AIChE Journal 16, no. 6 (November 1, 1970): 1092-93.
-    .. [2] Erdim, Esra, Ömer Akgiray, and İbrahim Demir. "A Revisit of Pressure
+    .. [2] Erdim, Esra, Ã–mer Akgiray, and Ä°brahim Demir. "A Revisit of Pressure
        Drop-Flow Rate Correlations for Packed Beds of Spheres." Powder
        Technology 283 (October 2015): 488-504. doi:10.1016/j.powtec.2015.06.017.
     .. [3] Montillet, A., E. Akkari, and J. Comiti. "About a Correlating
@@ -292,10 +286,7 @@ def Tallmadge(dp: float, voidage: float, vs: float, rho: float, mu: float, L: fl
        Processing: Process Intensification 46, no. 4 (April 2007): 329-33.
        doi:10.1016/j.cep.2006.07.002.
     """
-    Re = dp*rho*vs/mu
-    holdup = (1.0-voidage)
-    fp = (150.0 + 4.2*(Re/holdup)**(5.0/6.0))*holdup*holdup/(voidage*voidage*voidage*Re)
-    return fp*rho*vs*vs*L/dp
+    pass
 
 
 def Jones_Krier(dp: float, voidage: float, vs: float, rho: float, mu: float, L: float=1.0) -> float:
@@ -351,14 +342,11 @@ def Jones_Krier(dp: float, voidage: float, vs: float, rho: float, mu: float, L: 
     .. [1] Jones, D. P., and H. Krier. "Gas Flow Resistance Measurements
        Through Packed Beds at High Reynolds Numbers." Journal of Fluids
        Engineering 105, no. 2 (June 1, 1983): 168-172. doi:10.1115/1.3240959.
-    .. [2] Erdim, Esra, Ömer Akgiray, and İbrahim Demir. "A Revisit of Pressure
+    .. [2] Erdim, Esra, Ã–mer Akgiray, and Ä°brahim Demir. "A Revisit of Pressure
        Drop-Flow Rate Correlations for Packed Beds of Spheres." Powder
        Technology 283 (October 2015): 488-504. doi:10.1016/j.powtec.2015.06.017.
     """
-    Re = dp*rho*vs/mu
-    holdup = (1.0-voidage)
-    fp = (150 + 3.89*(Re/holdup)**0.87)*holdup*holdup/(voidage*voidage*voidage*Re)
-    return fp*rho*vs*vs*L/dp
+    pass
 
 
 def Carman(dp: float, voidage: float, vs: float, rho: float, mu: float, L: float=1.0) -> float:
@@ -411,7 +399,7 @@ def Carman(dp: float, voidage: float, vs: float, rho: float, mu: float, L: float
     ----------
     .. [1] P.C. Carman, Fluid flow through granular beds, Transactions of the
        London Institute of Chemical Engineers 15 (1937) 150-166.
-    .. [2] Erdim, Esra, Ömer Akgiray, and İbrahim Demir. "A Revisit of Pressure
+    .. [2] Erdim, Esra, Ã–mer Akgiray, and Ä°brahim Demir. "A Revisit of Pressure
        Drop-Flow Rate Correlations for Packed Beds of Spheres." Powder
        Technology 283 (October 2015): 488-504. doi:10.1016/j.powtec.2015.06.017.
     .. [3] Allen, K. G., T. W. von Backstrom, and D. G. Kroger. "Packed Bed
@@ -419,10 +407,7 @@ def Carman(dp: float, voidage: float, vs: float, rho: float, mu: float, L: float
        Arrangement and Roughness." Powder Technology 246 (September 2013):
        590-600. doi:10.1016/j.powtec.2013.06.022.
     """
-    Re = dp*rho*vs/mu
-    holdup = 1.0 - voidage
-    fp = (180 + 2.871*(Re/holdup)**0.9)*holdup*holdup/(voidage*voidage*voidage*Re)
-    return fp*rho*vs*vs*L/dp
+    pass
 
 
 def Hicks(dp: float, voidage: float, vs: float, rho: float, mu: float, L: float=1.0) -> float:
@@ -475,7 +460,7 @@ def Hicks(dp: float, voidage: float, vs: float, rho: float, mu: float, L: float=
     .. [1] Hicks, R. E. "Pressure Drop in Packed Beds of Spheres." Industrial
        Engineering Chemistry Fundamentals 9, no. 3 (August 1, 1970): 500-502.
        doi:10.1021/i160035a032.
-    .. [2] Erdim, Esra, Ömer Akgiray, and İbrahim Demir. "A Revisit of Pressure
+    .. [2] Erdim, Esra, Ã–mer Akgiray, and Ä°brahim Demir. "A Revisit of Pressure
        Drop-Flow Rate Correlations for Packed Beds of Spheres." Powder
        Technology 283 (October 2015): 488-504. doi:10.1016/j.powtec.2015.06.017.
     .. [3] Allen, K. G., T. W. von Backstrom, and D. G. Kroger. "Packed Bed
@@ -483,10 +468,7 @@ def Hicks(dp: float, voidage: float, vs: float, rho: float, mu: float, L: float=
        Arrangement and Roughness." Powder Technology 246 (September 2013):
        590-600. doi:10.1016/j.powtec.2013.06.022.
     """
-    Re = dp*rho*vs/mu
-    holdup = 1.0 - voidage
-    fp = 6.8*holdup**1.2/(Re**0.2*voidage*voidage*voidage)
-    return fp*rho*vs*vs*L/dp
+    pass
 
 
 def Brauer(dp: float, voidage: float, vs: float, rho: float, mu: float, L: float=1.0) -> float:
@@ -540,7 +522,7 @@ def Brauer(dp: float, voidage: float, vs: float, rho: float, mu: float, L: float
     ----------
     .. [1] H. Brauer, Grundlagen der Einphasen -und Mehrphasenstromungen,
        Sauerlander AG, Aarau, 1971.
-    .. [2] Erdim, Esra, Ömer Akgiray, and İbrahim Demir. "A Revisit of Pressure
+    .. [2] Erdim, Esra, Ã–mer Akgiray, and Ä°brahim Demir. "A Revisit of Pressure
        Drop-Flow Rate Correlations for Packed Beds of Spheres." Powder
        Technology 283 (October 2015): 488-504. doi:10.1016/j.powtec.2015.06.017.
     .. [3] Allen, K. G., T. W. von Backstrom, and D. G. Kroger. "Packed Bed
@@ -548,10 +530,7 @@ def Brauer(dp: float, voidage: float, vs: float, rho: float, mu: float, L: float
        Arrangement and Roughness." Powder Technology 246 (September 2013):
        590-600. doi:10.1016/j.powtec.2013.06.022.
     """
-    Re = dp*rho*vs/mu
-    holdup = 1.0 - voidage
-    fp = (160.0 + 3.1*(Re/holdup)**0.9)*holdup*holdup/(voidage*voidage*voidage*Re)
-    return fp*rho*vs*vs*L/dp
+    pass
 
 
 def KTA(dp: float, voidage: float, vs: float, rho: float, mu: float, L: float=1.0) -> float:
@@ -608,14 +587,11 @@ def KTA(dp: float, voidage: float, vs: float, rho: float, mu: float, L: float=1.
     .. [1] KTA. KTA 3102.3 Reactor Core Design of High-Temperature Gas-Cooled
        Reactors Part 3: Loss of Pressure through Friction in Pebble Bed Cores.
        Germany, 1981.
-    .. [2] Erdim, Esra, Ömer Akgiray, and İbrahim Demir. "A Revisit of Pressure
+    .. [2] Erdim, Esra, Ã–mer Akgiray, and Ä°brahim Demir. "A Revisit of Pressure
        Drop-Flow Rate Correlations for Packed Beds of Spheres." Powder
        Technology 283 (October 2015): 488-504. doi:10.1016/j.powtec.2015.06.017.
     """
-    Re = dp*rho*vs/mu
-    holdup = 1.0 - voidage
-    fp = (160.0 + 3.0*(Re/holdup)**0.9)*holdup*holdup/(voidage*voidage*voidage*Re)
-    return fp*rho*vs*vs*L/dp
+    pass
 
 
 def Erdim_Akgiray_Demir(dp: float, voidage: float, vs: float, rho: float, mu: float, L: float=1.0) -> float:
@@ -668,14 +644,11 @@ def Erdim_Akgiray_Demir(dp: float, voidage: float, vs: float, rho: float, mu: fl
 
     References
     ----------
-    .. [1] Erdim, Esra, Ömer Akgiray, and İbrahim Demir. "A Revisit of Pressure
+    .. [1] Erdim, Esra, Ã–mer Akgiray, and Ä°brahim Demir. "A Revisit of Pressure
        Drop-Flow Rate Correlations for Packed Beds of Spheres." Powder
        Technology 283 (October 2015): 488-504. doi:10.1016/j.powtec.2015.06.017.
     """
-    holdup = (1.0-voidage)
-    Rem = dp*rho*vs/(holdup*mu)
-    fv = 160.0 + 2.81*Rem**0.904
-    return fv*(mu*vs*L/(dp*dp))*holdup*holdup/(voidage*voidage*voidage)
+    pass
 
 
 def Fahien_Schriver(dp: float, voidage: float, vs: float, rho: float, mu: float, L: float=1.0) -> float:
@@ -740,19 +713,11 @@ def Fahien_Schriver(dp: float, voidage: float, vs: float, rho: float, mu: float,
     .. [1] R.W. Fahien, C.B. Schriver, Paper presented at the 1961 Denver
        meeting of AIChE, in: R.W. Fahien, Fundamentals of Transport Phenomena,
        McGraw-Hill, New York, 1983.
-    .. [2] Erdim, Esra, Ömer Akgiray, and İbrahim Demir. "A Revisit of Pressure
+    .. [2] Erdim, Esra, Ã–mer Akgiray, and Ä°brahim Demir. "A Revisit of Pressure
        Drop-Flow Rate Correlations for Packed Beds of Spheres." Powder
        Technology 283 (October 2015): 488-504. doi:10.1016/j.powtec.2015.06.017.
     """
-    holdup = (1.0-voidage)
-    voidage2 = voidage*voidage
-    Rem = dp*rho*vs/(holdup*mu)
-    q = exp(-voidage2*holdup*(1.0/12.6)*Rem)
-    f1L = 136.0/holdup**0.38
-    f1T = 29.0/(holdup**1.45*voidage2)
-    f2 = 1.87*voidage**0.75/holdup**0.26
-    fp = (q*f1L/Rem + (1.0-q)*(f2 + f1T/Rem))*holdup/(voidage2*voidage)
-    return fp*rho*vs*vs*L/dp
+    pass
 
 
 def Idelchik(dp: float, voidage: float, vs: float, rho: float, mu: float, L: float=1.0) -> float:
@@ -810,11 +775,7 @@ def Idelchik(dp: float, voidage: float, vs: float, rho: float, mu: float, L: flo
        Arrangement and Roughness." Powder Technology 246 (September 2013):
        590-600. doi:10.1016/j.powtec.2013.06.022.
     """
-    Re = rho*vs*dp/(mu*(1.0-voidage))
-    Re = (0.45/sqrt(voidage))*Re
-    right = 0.765*voidage**-4.2*(30./Re + 3.*Re**-0.7 + 0.3)
-    left = dp/(L*rho*vs*vs)
-    return right/left
+    pass
 
 
 def Harrison_Brunner_Hecker(dp: float, voidage: float, vs: float, rho: float, mu: float, L: int=1, Dt: float | None=None) -> float:
@@ -882,20 +843,11 @@ def Harrison_Brunner_Hecker(dp: float, voidage: float, vs: float, rho: float, mu
     .. [1] KTA. KTA 3102.3 Reactor Core Design of High-Temperature Gas-Cooled
        Reactors Part 3: Loss of Pressure through Friction in Pebble Bed Cores.
        Germany, 1981.
-    .. [2] Erdim, Esra, Ömer Akgiray, and İbrahim Demir. "A Revisit of Pressure
+    .. [2] Erdim, Esra, Ã–mer Akgiray, and Ä°brahim Demir. "A Revisit of Pressure
        Drop-Flow Rate Correlations for Packed Beds of Spheres." Powder
        Technology 283 (October 2015): 488-504. doi:10.1016/j.powtec.2015.06.017.
     """
-    Re = dp*rho*vs/mu
-    holdup = 1.0 - voidage
-    if Dt is None:
-        A, B = 1.0, 1.0
-    else:
-        A = (1.0 + pi*dp/(6.0*holdup*Dt))
-        A = A*A
-        B = 1 - pi*pi*dp/24/Dt*(1 - dp/(2.0*Dt))
-    fp = (119.8*A + 4.63*B*(Re/holdup)**(5/6.))*holdup*holdup/(voidage*voidage*voidage*Re)
-    return fp*rho*vs*vs*L/dp
+    pass
 
 
 def Montillet_Akkari_Comiti(dp: float, voidage: float, vs: float, rho: float, mu: float, L: float=1, Dt: float | None=None) -> float:
@@ -958,18 +910,7 @@ def Montillet_Akkari_Comiti(dp: float, voidage: float, vs: float, rho: float, mu
        Arrangement and Roughness." Powder Technology 246 (September 2013):
        590-600. doi:10.1016/j.powtec.2013.06.022.
     """
-    Re = rho*vs*dp/mu
-    if voidage < 0.4:
-        a = 0.061
-    else:
-        a = 0.05
-    if Dt is None or Dt/dp > 50:
-        Dterm = 2.2
-    else:
-        Dterm = (Dt/dp)**0.2
-    right = a*Dterm*(1000./Re + 60.0/sqrt(Re) + 12.0)
-    left = dp/(L*rho*vs*vs*(1.0-voidage))*voidage*voidage*voidage
-    return right/left
+    pass
 
 
 def Guo_Sun(dp: float, voidage: float, vs: float, rho: float, mu: float, Dt: float | None=None, L: float=1.0) -> float:
@@ -1033,12 +974,7 @@ def Guo_Sun(dp: float, voidage: float, vs: float, rho: float, mu: float, Dt: flo
        Powder Technology 321 (November 2017): 286-92.
        doi:10.1016/j.powtec.2017.08.024.
     """
-    #  2 < D/d < 3, particles in contact with the wall tend to form a highly ordered ring structure.
-    holdup = 1.0 - voidage
-    Rem = dp*rho*vs/(mu*holdup)
-    ratio = dp/Dt if Dt is not None else 3.5 # Never ran
-    fv = 180.0 + (9.5374*ratio - 2.8054)*Rem**0.97
-    return fv*(mu*vs*L/(dp*dp*voidage*voidage*voidage))*holdup*holdup
+    pass
 
 
 
@@ -1101,16 +1037,7 @@ def dP_packed_bed_methods(dp: float, voidage: float, vs: float, rho: float, mu: 
     methods : list
         List of methods which can be used to calculate `dP` with the given inputs
     """
-    methods = []
-    if (dp is not None and voidage is not None and vs is not None
-        and rho is not None and mu is not None and L is not None):
-        if Dt is not None:
-            methods = ["Harrison, Brunner & Hecker", "Montillet, Akkari & Comiti", "Guo, Sun, Zhang, Ding & Liu"]
-
-        methods.extend(["Erdim, Akgiray & Demir", "Idelchik", "Fahien & Schriver",
-                        "KTA", "Brauer", "Hicks", "Carman", "Jones & Krier", "Kuo & Nydegger",
-                        "Tallmadge", "Ergun"])
-    return methods
+    pass
 
 
 def dP_packed_bed(dp: float, voidage: float, vs: float, rho: float, mu: float, L: int=1, Dt: float | None=None, sphericity: float | None=None,
@@ -1163,44 +1090,7 @@ def dP_packed_bed(dp: float, voidage: float, vs: float, rho: float, mu: float, L
     dP : float
         Pressure drop across the bed [Pa]
     """
-    if Method is None:
-        Method2 = "Harrison, Brunner & Hecker" if Dt is not None else "Erdim, Akgiray & Demir"
-    else:
-        Method2 = Method
-
-    if dp is not None and sphericity is not None:
-        dp = dp*sphericity
-
-    if Method2 == "Ergun":
-        return Ergun(dp=dp, voidage=voidage, vs=vs, rho=rho, mu=mu, L=L)
-    elif Method2 == "Tallmadge":
-        return Tallmadge(dp=dp, voidage=voidage, vs=vs, rho=rho, mu=mu, L=L)
-    elif Method2 == "Kuo & Nydegger":
-        return Kuo_Nydegger(dp=dp, voidage=voidage, vs=vs, rho=rho, mu=mu, L=L)
-    elif Method2 == "Jones & Krier":
-        return Jones_Krier(dp=dp, voidage=voidage, vs=vs, rho=rho, mu=mu, L=L)
-    elif Method2 == "Carman":
-        return Carman(dp=dp, voidage=voidage, vs=vs, rho=rho, mu=mu, L=L)
-    elif Method2 == "Hicks":
-        return Hicks(dp=dp, voidage=voidage, vs=vs, rho=rho, mu=mu, L=L)
-    elif Method2 == "Brauer":
-        return Brauer(dp=dp, voidage=voidage, vs=vs, rho=rho, mu=mu, L=L)
-    elif Method2 == "KTA":
-        return KTA(dp=dp, voidage=voidage, vs=vs, rho=rho, mu=mu, L=L)
-    elif Method2 == "Erdim, Akgiray & Demir":
-        return Erdim_Akgiray_Demir(dp=dp, voidage=voidage, vs=vs, rho=rho, mu=mu, L=L)
-    elif Method2 == "Fahien & Schriver":
-        return Fahien_Schriver(dp=dp, voidage=voidage, vs=vs, rho=rho, mu=mu, L=L)
-    elif Method2 == "Idelchik":
-        return Idelchik(dp=dp, voidage=voidage, vs=vs, rho=rho, mu=mu, L=L)
-    elif Method2 == "Harrison, Brunner & Hecker":
-        return Harrison_Brunner_Hecker(dp=dp, voidage=voidage, vs=vs, rho=rho, mu=mu, L=L, Dt=Dt)
-    elif Method2 == "Montillet, Akkari & Comiti":
-        return Montillet_Akkari_Comiti(dp=dp, voidage=voidage, vs=vs, rho=rho, mu=mu, L=L, Dt=Dt)
-    elif Method2 == "Guo, Sun, Zhang, Ding & Liu":
-        return Guo_Sun(dp=dp, voidage=voidage, vs=vs, rho=rho, mu=mu, L=L, Dt=Dt)
-    else:
-        raise ValueError("Unrecognized method")
+    pass
 
 
 #import matplotlib.pyplot as plt
@@ -1266,8 +1156,7 @@ def voidage_Benyahia_Oneil(Dpe: float, Dt: float, sphericity: float) -> float:
        and Technology 23, no. 2 (April 1, 2005): 169-77.
        doi:10.1080/02726350590922242.
     """
-    x1 = Dt/Dpe + 0.1226
-    return 0.1504 + 0.2024/sphericity + 1.0814/(x1*x1)
+    pass
 
 def voidage_Benyahia_Oneil_spherical(Dp: float, Dt: float) -> float:
     r"""Calculates voidage of a bed of spheres
@@ -1307,8 +1196,7 @@ def voidage_Benyahia_Oneil_spherical(Dp: float, Dt: float) -> float:
        and Technology 23, no. 2 (April 1, 2005): 169-77.
        doi:10.1080/02726350590922242.
     """
-    x1 = Dt/Dp + 1.140
-    return 0.390 + 1.740/(x1*x1)
+    pass
 
 
 def voidage_Benyahia_Oneil_cylindrical(Dpe: float, Dt: float, sphericity: float) -> float:
@@ -1352,5 +1240,4 @@ def voidage_Benyahia_Oneil_cylindrical(Dpe: float, Dt: float, sphericity: float)
        and Technology 23, no. 2 (April 1, 2005): 169-77.
        doi:10.1080/02726350590922242.
     """
-    x1 = Dt/Dpe + 0.611
-    return 0.373 + 1.703/(x1*x1)
+    pass
